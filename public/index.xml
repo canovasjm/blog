@@ -17,7 +17,18 @@
       <pubDate>Thu, 05 May 2016 21:48:51 -0700</pubDate>
       
       <guid>/about/</guid>
-      <description>This is a &amp;ldquo;hello world&amp;rdquo; example website for the blogdown package. The theme was forked from @jrutheiser/hugo-lithium-theme and modified by Yihui Xie.</description>
+      <description>Me Hi! I am Juan Manuel. Proudly made in San Juan, Argentina.
+I am also a proud Fulbrighter, currently pursuing a M.Sc. in Applied Statistics at Loyola University Chicago.
+There is more information about me here: https://www.linkedin.com/in/jmcanovas/</description>
+    </item>
+    
+    <item>
+      <title></title>
+      <link>/about/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/about/</guid>
+      <description>Aboutcode{white-space: pre;}pre:not([class]) {background-color: white;}if (window.hljs) {hljs.configure({languages: []});hljs.initHighlightingOnLoad();if (document.readyState &amp;&amp; document.readyState === &#34;complete&#34;) {window.setTimeout(function() { hljs.initHighlighting(); }, 0);}}h1 {font-size: 34px;}h1.title {font-size: 38px;}h2 {font-size: 30px;}h3 {font-size: 24px;}h4 {font-size: 18px;}h5 {font-size: 16px;}h6 {font-size: 12px;}.</description>
     </item>
     
   </channel>
