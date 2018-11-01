@@ -17,7 +17,7 @@ The interesting thing about this proof is that is really hard to find (I spent s
 - *is not difficult to show...*    
 - *this easy/straightforward/simple proof is left to the reader...*    
 
-Despite all of this adjectives, $\color{red} {\text{NOBODY does the actual proof}}$. The humble purpose of this blog post is to get rid of the vanity, work the proof, and let you judge if it is *easy/straightforward/simple* (or not).   
+Despite all of this adjectives, $\color{red} {\text{it is hard to find the actual proof}}$. The humble purpose of this blog post is to get rid of the vanity, work the proof, and let you judge if it is *easy/straightforward/simple* (or not).   
 
 Finally, let me point out that this blog post assumes you are somewhat familiar with the F-test, the t-test, and notation frequently found in design of experiments like $\bar{y_{..}}$, {$\bar{y_{i.}}$}, or {$\bar{y_{.j}}$}            
 
