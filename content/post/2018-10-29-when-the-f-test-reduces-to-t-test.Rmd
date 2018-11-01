@@ -19,7 +19,7 @@ The interesting thing about this proof is that is really hard to find (I spent s
 
 Despite all of this adjectives, $\color{red} {\text{it is hard to find the actual proof}}$. The humble purpose of this blog post is to get rid of the vanity, work the proof, and let you judge if it is *easy/straightforward/simple* (or not).   
 
-Finally, let me point out that this blog post assumes you are somewhat familiar with the F-test, the t-test, and notation frequently found in design of experiments like $\bar{y_{..}}$, $\bar{y_{i.}}$, or $\bar{y_{.j}}$            
+Finally, let me point out that this blog post assumes you are somewhat familiar with the F-test, the t-test, and notation frequently found in design of experiments like $\bar{y}_{..}$, $\bar{y}_{i.}$, or $\bar{y}_{.j}$            
 
 
 
@@ -37,7 +37,7 @@ $$F_{a-1, N-a} = \frac{MST}{MSE} = \frac{\frac{SST}{a-1}}{\frac{SSE}{N-a}} \tag{
 
 reduces to
 
-$$t_{k}^2 = \frac{(\bar{y_{1.}} - \bar{y_{2.}})^2}{S_{p}^2(\frac{1}{n_{1}} + \frac{1}{n_{2}})} \tag{2}$$  
+$$t_{k}^2 = \frac{(\bar{y}_{1.} - \bar{y}_{2.})^2}{S_{p}^2(\frac{1}{n_{1}} + \frac{1}{n_{2}})} \tag{2}$$  
 
 
 
@@ -61,8 +61,8 @@ a   | Number of treatments
 $n_{1}$ | Number of observations in treatment 1    
 $n_{2}$ | Number of observations in treatment 2    
 N   | Total number of observations    
-$\bar{y_{i.}}$ | Mean of treatment $i$
-$\bar{y_{..}}$ | Global mean
+$\bar{y}_{i.}$ | Mean of treatment $i$
+$\bar{y}_{..}$ | Global mean
 $k = N - a$   | Degrees of freedom of the denominator of F
 
 ---
@@ -89,7 +89,7 @@ When $a = 2$ the denominator of expression $(1)$ is:
 $$MSE = \frac{SSE}{N-2} = \frac{\sum_{j=1}^{n_1}{(y_{1j} - \bar{y}_{1.})^2} + \sum_{j=1}^{n_2}{(y_{2j} - \bar{y}_{2.})^2}}{N-2} \tag{3}$$  
 
 Recalling that the formula for the sample variance estimator is,
-$$S_{i}^2 = \frac{\sum_{j=1}^{n_i}(y_{ij} - \bar{y_i.})^2}{n_{i} - 1}$$ 
+$$S_{i}^2 = \frac{\sum_{j=1}^{n_i}(y_{ij} - \bar{y}_{i.})^2}{n_{i} - 1}$$ 
 we can multiply and divide the terms in the numerator in $(3)$ by $(n_{i} - 1)$ and get $(4)$. Don't forget that in this case $N = n_{1} + n_{2}$   
 
 $$\frac{SSE}{N-2} = \frac{(n_{1} - 1) S_{1}^2 + (n_{2} - 1) S_{2}^2}{n_{1} + n_{2} - 2} = S_{p}^2 \tag{4}$$  
@@ -97,7 +97,10 @@ $$\frac{SSE}{N-2} = \frac{(n_{1} - 1) S_{1}^2 + (n_{2} - 1) S_{2}^2}{n_{1} + n_{
 $S_{p}^2$ is called the *pooled variance estimator*.    
 
 
+
 ---    
+
+
 
 ## 2. Numerator of equation (1)
 
@@ -109,18 +112,18 @@ Then we are going to expand the sum as follows:
 
 \[
 \begin{eqnarray}
-SST & = & \sum_{1}^2 n_{i} (\bar{y_{i.}} - \bar{y_{..}})^2 \\
-& = & n_{1} (\bar{y_{1.}} - \bar{y_{..}})^2 + n_{2} (\bar{y_{2.}} - \bar{y_{..}})^2 \\
+SST & = & \sum_{1}^2 n_{i} (\bar{y}_{i.} - \bar{y}_{..})^2 \\
+& = & n_{1} (\bar{y}_{1.} - \bar{y}_{..})^2 + n_{2} (\bar{y}_{2.} - \bar{y}_{..})^2 \\
 \end{eqnarray} \tag{5}
 \]
 
-$\bar{y_{..}}$ is called the *global mean* and we are going to write it in a different way. The new way is:
+$\bar{y}_{..}$ is called the *global mean* and we are going to write it in a different way. The new way is:
 
-$$\bar{y_{..}} = \frac{n_{1} \bar{y_{1.}} + n_{2} \bar{y_{2.}}}{N} \tag{6}$$   
+$$\bar{y}_{..} = \frac{n_{1} \bar{y}_{1.} + n_{2} \bar{y}_{2.}}{N} \tag{6}$$   
 
 Next, replace (6) in formula (5) and re-write SST as:
 
-$$SST = \underbrace{n_1 \big[ \bar{y_{1.}} - (\frac{n_1 \bar{y_{1.}} + n_2 \bar{y_{2.}}}{N}) \big]^2}_{\text{Part a}} + \underbrace{n_2 \big[ \bar{y_{2.}} - (\frac{n_1 \bar{y_{1.}} + n_2 \bar{y_{2.}}}{N}) \big]^2}_{\text{Part b}} \tag{7}$$   
+$$SST = \underbrace{n_1 \big[ \bar{y}_{1.} - (\frac{n_1 \bar{y}_{1.} + n_2 \bar{y}_{2.}}{N}) \big]^2}_{\text{Part a}} + \underbrace{n_2 \big[ \bar{y}_{2.} - (\frac{n_1 \bar{y}_{1.} + n_2 \bar{y}_{2.}}{N}) \big]^2}_{\text{Part b}} \tag{7}$$   
 
 
 
@@ -135,44 +138,44 @@ The next step is to find alternative ways for the expressions **Part a** and **P
 ### 2.a. Part a  
 
 
-$$\text{Part a} = n_1 \big[ \bar{y_{1.}} - (\frac{n_1 \bar{y_{1.}} + n_2 \bar{y_{2.}}}{N}) \big]^2$$
+$$\text{Part a} = n_1 \big[ \bar{y}_{1.} - (\frac{n_1 \bar{y}_{1.} + n_2 \bar{y}_{2.}}{N}) \big]^2$$
 
 
 
-Multiply and divide the term with $\bar{y_{1.}}$ by $N$     
+Multiply and divide the term with $\bar{y}_{1.}$ by $N$     
 
-$$n_1 \big[ \frac{N \bar{y_{1.}}}{N} - (\frac{n_1 \bar{y_{1.}} + n_2 \bar{y_{2.}}}{N}) \big]^2$$   
+$$n_1 \big[ \frac{N \bar{y}_{1.}}{N} - (\frac{n_1 \bar{y}_{1.} + n_2 \bar{y}_{2.}}{N}) \big]^2$$   
 
 
 
 N is common denominator   
 
-$$n_1 \big[\frac{N \bar{y_{1.}} - n_1 \bar{y_{1.}} - n_2 \bar{y_{2.}}}{N} \big]^2$$    
+$$n_1 \big[\frac{N \bar{y}_{1.} - n_1 \bar{y}_{1.} - n_2 \bar{y}_{2.}}{N} \big]^2$$    
 
 
 
-$\bar{y_{1.}}$ is common factor of $N$ and $n_1$    
+$\bar{y}_{1.}$ is common factor of $N$ and $n_1$    
 
-$$n_1 \big[\frac{(N - n_1) \bar{y_{1.}} - n_2 \bar{y_{2.}}}{N} \big]^2$$      
+$$n_1 \big[\frac{(N - n_1) \bar{y}_{1.} - n_2 \bar{y}_{2.}}{N} \big]^2$$      
 
 
 
 Replace $(N - n_{1}) = n_{2}$  
 
-$$n_1 \big[\frac{n_2 \bar{y_{1.}} - n_2 \bar{y_{2.}}}{N} \big]^2$$       
+$$n_1 \big[\frac{n_2 \bar{y}_{1.} - n_2 \bar{y}_{2.}}{N} \big]^2$$       
 
 
 
-Now $n_{2}$ is common factor of $\bar{y_{1.}}$ and $\bar{y_{2.}}$  
+Now $n_{2}$ is common factor of $\bar{y}_{1.}$ and $\bar{y}_{2.}$  
 
-$$n_1 \big[\frac{n_2 (\bar{y_{1.}} - \bar{y_{2.}})}{N} \big]^2$$      
+$$n_1 \big[\frac{n_2 (\bar{y}_{1.} - \bar{y}_{2.})}{N} \big]^2$$      
 
 
 
 
 Take $n_{2}$ and $N$ out of the square    
 
-$$\text{Part a} = \frac{n_{1} n_{2}^2}{N^2}  (\bar{y_{1.}} - \bar{y_{2.}})^2$$    
+$$\text{Part a} = \frac{n_{1} n_{2}^2}{N^2}  (\bar{y}_{1.} - \bar{y}_{2.})^2$$    
 
 
 
@@ -182,43 +185,43 @@ $$\text{Part a} = \frac{n_{1} n_{2}^2}{N^2}  (\bar{y_{1.}} - \bar{y_{2.}})^2$$
 
 ### 2.b. Part b  
 
-$$\text{Part b} = n_2 \big[ \bar{y_{2.}} - (\frac{n_1 \bar{y_{1.}} + n_2 \bar{y_{2.}}}{N}) \big]^2$$
+$$\text{Part b} = n_2 \big[ \bar{y}_{2.} - (\frac{n_1 \bar{y}_{1.} + n_2 \bar{y}_{2.}}{N}) \big]^2$$
 
 
 
-Multiply and divide the term with $\bar{y_{2.}}$ by $N$  
+Multiply and divide the term with $\bar{y}_{2.}$ by $N$  
 
-$$n_2 \big[ \frac{N \bar{y_{2.}}}{N} - (\frac{n_1 \bar{y_{1.}} + n_2 \bar{y_{2.}}}{N}) \big]^2$$   
+$$n_2 \big[ \frac{N \bar{y}_{2.}}{N} - (\frac{n_1 \bar{y}_{1.} + n_2 \bar{y}_{2.}}{N}) \big]^2$$   
 
 
 
 N is common denominator   
 
-$$n_2 \big[\frac{N \bar{y_{2.}} - n_1 \bar{y_{1.}} - n_2 \bar{y_{2.}}}{N} \big]^2$$    
+$$n_2 \big[\frac{N \bar{y}_{2.} - n_1 \bar{y}_{1.} - n_2 \bar{y}_{2.}}{N} \big]^2$$    
 
 
 
-$\bar{y_{2.}}$ is common factor of $N$ and $n_2$    
+$\bar{y}_{2.}$ is common factor of $N$ and $n_2$    
 
-$$n_2 \big[\frac{(N - n_2) \bar{y_{2.}} - n_1 \bar{y_{1.}}}{N} \big]^2$$      
+$$n_2 \big[\frac{(N - n_2) \bar{y}_{2.} - n_1 \bar{y}_{1.}}{N} \big]^2$$      
 
 
 
 Replace $(N - n_{2}) = n_{1}$    
 
-$$n_2 \big[\frac{n_1 \bar{y_{2.}} - n_1 \bar{y_{1.}}}{N} \big]^2$$       
+$$n_2 \big[\frac{n_1 \bar{y}_{2.} - n_1 \bar{y}_{1.}}{N} \big]^2$$       
 
 
 
-Now $n_{1}$ is common factor of $\bar{y_{1.}}$ and $\bar{y_{2.}}$  
+Now $n_{1}$ is common factor of $\bar{y}_{1.}$ and $\bar{y}_{2.}$  
 
-$$n_2 \big[\frac{n_1 (\bar{y_{2.}} - \bar{y_{1.}})}{N} \big]^2$$      
+$$n_2 \big[\frac{n_1 (\bar{y}_{2.} - \bar{y}_{1.})}{N} \big]^2$$      
 
 
 
 Take $n_{1}$ and $N$ out of the square    
 
-$$\text{Part b} = \frac{n_{2} n_{1}^2}{N^2}  (\bar{y_{2.}} - \bar{y_{1.}})^2$$    
+$$\text{Part b} = \frac{n_{2} n_{1}^2}{N^2}  (\bar{y}_{2.} - \bar{y}_{1.})^2$$    
 
 
 
