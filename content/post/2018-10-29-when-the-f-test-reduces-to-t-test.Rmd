@@ -71,12 +71,12 @@ $k = N - a$   | Degrees of freedom of the denominator of F
 
 Now that we have the formulas, we will work the following:
 
-1. Denominator of equation (1)   
+1. Denominator of equation (1)     
 2. Numerator of equation (1)    
 2.a. Part a   
-2.b. Part b
-2.c. Part c
-3. Put all together
+2.b. Part b     
+2.c. Part c     
+3. Put all together     
 
 
 ---
@@ -108,8 +108,7 @@ When $a = 2$ the numerator of expression $(1)$ is:
 
 $$\frac{SST}{2-1} = SST$$   
 
-Then we are going to expand the sum as follows:   
-
+and the general expression for SST reduces to $SST = \sum_{1}^2 n_{i} (\bar{y}_{i.} - \bar{y}_{..})^2$ . The next step is to expand the sum as follows:   
 \[
 \begin{eqnarray}
 SST & = & \sum_{1}^2 n_{i} (\bar{y}_{i.} - \bar{y}_{..})^2 \\
@@ -281,7 +280,7 @@ $$\frac{1}{\frac{N}{n_{1} n_{2}}}$$
 
 Replace $N = n_{1} + n_{2}$   
 
-$$\frac{1}{\frac{n_{1} + n_{1}}{n_{1} n_{2}}} = \frac{1}{\frac{1}{n_{1}} + \frac{1}{n_{2}}}$$
+$$\frac{1}{\frac{n_{1} + n_{2}}{n_{1} n_{2}}} = \frac{1}{\frac{1}{n_{1}} + \frac{1}{n_{2}}}$$
 
 
 
