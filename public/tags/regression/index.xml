@@ -6,20 +6,19 @@
     <description>Recent content in Regression on jmcanovas</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Thu, 23 Jul 2015 21:13:14 -0500</lastBuildDate>
+    <lastBuildDate>Mon, 29 Oct 2018 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="/tags/regression/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
-      <title>Hello R Markdown</title>
-      <link>/2015/07/23/hello-r-markdown/</link>
-      <pubDate>Thu, 23 Jul 2015 21:13:14 -0500</pubDate>
+      <title>When does the F-test reduce to a t-test?</title>
+      <link>/2018/10/29/when-does-the-f-test-reduce-to-t-test/</link>
+      <pubDate>Mon, 29 Oct 2018 00:00:00 +0000</pubDate>
       
-      <guid>/2015/07/23/hello-r-markdown/</guid>
-      <description>R MarkdownThis is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see http://rmarkdown.rstudio.com.
-You can embed an R code chunk like this:
-summary(cars)## speed dist ## Min. : 4.0 Min. : 2.00 ## 1st Qu.:12.0 1st Qu.: 26.00 ## Median :15.0 Median : 36.00 ## Mean :15.4 Mean : 42.98 ## 3rd Qu.</description>
+      <guid>/2018/10/29/when-does-the-f-test-reduce-to-t-test/</guid>
+      <description>If you have taken a regression or design of experiments class (or both), you probably have come across the following problem (or a similar one):
+“Show that the sum-of-squares decomposition and F-statistic reduces to the usual equal-variance (pooled) two sample t-test in the case of \(a = 2\) treatments - with the realization that an \(F\) statistic with \(1\) (numerator) and \(k\) (denominator) degrees of freedom is equivalent to a \(t\) statistic with \(k\) degrees of freedom, viz, \(F_{1, k} = t_{k}^2\)”</description>
     </item>
     
   </channel>

@@ -12,11 +12,11 @@
     
     
     <item>
-      <title>When the F-test reduces to a t-test?</title>
-      <link>/2018/10/29/when-the-f-test-reduces-to-t-test/</link>
+      <title>When does the F-test reduce to a t-test?</title>
+      <link>/2018/10/29/when-does-the-f-test-reduce-to-t-test/</link>
       <pubDate>Mon, 29 Oct 2018 00:00:00 +0000</pubDate>
       
-      <guid>/2018/10/29/when-the-f-test-reduces-to-t-test/</guid>
+      <guid>/2018/10/29/when-does-the-f-test-reduce-to-t-test/</guid>
       <description>If you have taken a regression or design of experiments class (or both), you probably have come across the following problem (or a similar one):
 “Show that the sum-of-squares decomposition and F-statistic reduces to the usual equal-variance (pooled) two sample t-test in the case of \(a = 2\) treatments - with the realization that an \(F\) statistic with \(1\) (numerator) and \(k\) (denominator) degrees of freedom is equivalent to a \(t\) statistic with \(k\) degrees of freedom, viz, \(F_{1, k} = t_{k}^2\)”</description>
     </item>

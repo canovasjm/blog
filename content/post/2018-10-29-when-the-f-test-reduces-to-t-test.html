@@ -1,0 +1,197 @@
+---
+title: When does the F-test reduce to a t-test?
+author: Juan M. Canovas
+date: '2018-10-29'
+slug: when-does-the-f-test-reduce-to-t-test
+categories: []
+tags: [regression, doe, design_of_experiments]
+---
+
+
+
+<p>If you have taken a regression or design of experiments class (or both), you probably have come across the following problem (or a similar one):</p>
+<p><em>“Show that the sum-of-squares decomposition and F-statistic reduces to the usual equal-variance (pooled) two sample t-test in the case of <strong><span class="math inline">\(a = 2\)</span></strong> treatments - with the realization that an <strong><span class="math inline">\(F\)</span></strong> statistic with <strong><span class="math inline">\(1\)</span></strong> (numerator) and <strong><span class="math inline">\(k\)</span></strong> (denominator) degrees of freedom is equivalent to a <strong><span class="math inline">\(t\)</span></strong> statistic with <strong><span class="math inline">\(k\)</span></strong> degrees of freedom, viz, <strong><span class="math inline">\(F_{1, k} = t_{k}^2\)</span></strong>”</em></p>
+<p>The interesting thing about this proof is that is really hard to find (I spent some reasonable amount of time googling and looking in books with no success). More interesting than that though, is that when this proof is mentioned is usually followed by the most annoying phrases in a Math textbook:</p>
+<ul>
+<li><em>is easy to prove…</em><br />
+</li>
+<li><em>is not difficult to show…</em><br />
+</li>
+<li><em>this easy/straightforward/simple proof is left to the reader…</em></li>
+</ul>
+<p>Despite all of this adjectives, <span class="math inline">\(\color{red} {\text{NOBODY does the actual proof}}\)</span>. The humble purpose of this blog post is to get rid of the vanity, work the proof, and let you judge if it is <em>easy/straightforward/simple</em> (or not).</p>
+<p>Finally, let me point out that this blog post assumes you are somewhat familiar with the F-test, the t-test, and notation frequently found in design of experiments like <span class="math inline">\(\bar{y_{..}}\)</span>, {<span class="math inline">\(\bar{y_{i.}}\)</span>}, or {<span class="math inline">\(\bar{y_{.j}}\)</span>}</p>
+<hr />
+<div id="bye-bye-words-hello-formulas" class="section level2">
+<h2>Bye-bye words, hello formulas</h2>
+<p>Let’s start by putting all the wording into formulas:</p>
+<p>We have to prove that</p>
+<p><span class="math display">\[F_{a-1, N-a} = \frac{MST}{MSE} = \frac{\frac{SST}{a-1}}{\frac{SSE}{N-a}} \tag{1}\]</span></p>
+<p>reduces to</p>
+<p><span class="math display">\[t_{k}^2 = \frac{(\bar{y_{1.}} - \bar{y_{2.}})^2}{S_{p}^2(\frac{1}{n_{1}} + \frac{1}{n_{2}})} \tag{2}\]</span></p>
+<p><span class="math inline">\(\color{red} {\text{When a = 2}}\)</span> (this is key)</p>
+<hr />
+</div>
+<div id="notation" class="section level2">
+<h2>Notation</h2>
+<table>
+<thead>
+<tr class="header">
+<th>Symbol</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>SSE</td>
+<td>Sum of Squares due to Error</td>
+</tr>
+<tr class="even">
+<td>SST</td>
+<td>Sum of Squares of Treatment</td>
+</tr>
+<tr class="odd">
+<td>MSE</td>
+<td>Mean Sum of squares Error</td>
+</tr>
+<tr class="even">
+<td>MST</td>
+<td>Mean Sum of squares Treatment</td>
+</tr>
+<tr class="odd">
+<td>a</td>
+<td>Number of treatments</td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(n_{1}\)</span></td>
+<td>Number of observations in treatment 1</td>
+</tr>
+<tr class="odd">
+<td><span class="math inline">\(n_{2}\)</span></td>
+<td>Number of observations in treatment 2</td>
+</tr>
+<tr class="even">
+<td>N</td>
+<td>Total number of observations</td>
+</tr>
+<tr class="odd">
+<td><span class="math inline">\(\bar{y_{i.}}\)</span></td>
+<td>Mean of treatment <span class="math inline">\(i\)</span></td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(\bar{y_{..}}\)</span></td>
+<td>Global mean</td>
+</tr>
+<tr class="odd">
+<td><span class="math inline">\(k = N - a\)</span></td>
+<td>Degrees of freedom of the denominator of F</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<p>Now that we have the formulas, we will work the following:</p>
+<ol style="list-style-type: decimal">
+<li>Denominator of equation (1)<br />
+</li>
+<li>Numerator of equation (1)<br />
+2.a. Part a<br />
+2.b. Part b 2.c. Part c</li>
+<li>Put all together</li>
+</ol>
+<hr />
+</div>
+<div id="denominator-of-equation-1" class="section level2">
+<h2>1. Denominator of equation (1)</h2>
+<p>When <span class="math inline">\(a = 2\)</span> the denominator of expression <span class="math inline">\((1)\)</span> is:</p>
+<p><span class="math display">\[MSE = \frac{SSE}{N-2} = \frac{\sum_{j=1}^{n_1}{(y_{1j} - \bar{y}_{1.})^2} + \sum_{j=1}^{n_2}{(y_{2j} - \bar{y}_{2.})^2}}{N-2} \tag{3}\]</span></p>
+<p>Recalling that the formula for the sample variance estimator is, <span class="math display">\[S_{i}^2 = \frac{\sum_{j=1}^{n_i}(y_{ij} - \bar{y_i.})^2}{n_{i} - 1}\]</span> we can multiply and divide the terms in the numerator in <span class="math inline">\((3)\)</span> by <span class="math inline">\((n_{i} - 1)\)</span> and get <span class="math inline">\((4)\)</span>. Don’t forget that in this case <span class="math inline">\(N = n_{1} + n_{2}\)</span></p>
+<p><span class="math display">\[\frac{SSE}{N-2} = \frac{(n_{1} - 1) S_{1}^2 + (n_{2} - 1) S_{2}^2}{n_{1} + n_{2} - 2} = S_{p}^2 \tag{4}\]</span></p>
+<p><span class="math inline">\(S_{p}^2\)</span> is called the <em>pooled variance estimator</em>.</p>
+<hr />
+</div>
+<div id="numerator-of-equation-1" class="section level2">
+<h2>2. Numerator of equation (1)</h2>
+<p>When <span class="math inline">\(a = 2\)</span> the numerator of expression <span class="math inline">\((1)\)</span> is:</p>
+<p><span class="math display">\[\frac{SST}{2-1} = SST\]</span></p>
+<p>Then we are going to expand the sum as follows:</p>
+<p><span class="math display">\[
+\begin{eqnarray}
+SST &amp; = &amp; \sum_{1}^2 n_{i} (\bar{y_{i.}} - \bar{y_{..}})^2 \\
+&amp; = &amp; n_{1} (\bar{y_{1.}} - \bar{y_{..}})^2 + n_{2} (\bar{y_{2.}} - \bar{y_{..}})^2 \\
+\end{eqnarray} \tag{5}
+\]</span></p>
+<p><span class="math inline">\(\bar{y_{..}}\)</span> is called the <em>global mean</em> and we are going to write it in a different way. The new way is:</p>
+<p><span class="math display">\[\bar{y_{..}} = \frac{n_{1} \bar{y_{1.}} + n_{2} \bar{y_{2.}}}{N} \tag{6}\]</span></p>
+<p>Next, replace (6) in formula (5) and re-write SST as:</p>
+<p><span class="math display">\[SST = \underbrace{n_1 \big[ \bar{y_{1.}} - (\frac{n_1 \bar{y_{1.}} + n_2 \bar{y_{2.}}}{N}) \big]^2}_{\text{Part a}} + \underbrace{n_2 \big[ \bar{y_{2.}} - (\frac{n_1 \bar{y_{1.}} + n_2 \bar{y_{2.}}}{N}) \big]^2}_{\text{Part b}} \tag{7}\]</span></p>
+<p>The next step is to find alternative ways for the expressions <strong>Part a</strong> and <strong>Part b</strong></p>
+<hr />
+<div id="a.-part-a" class="section level3">
+<h3>2.a. Part a</h3>
+<p><span class="math display">\[\text{Part a} = n_1 \big[ \bar{y_{1.}} - (\frac{n_1 \bar{y_{1.}} + n_2 \bar{y_{2.}}}{N}) \big]^2\]</span></p>
+<p>Multiply and divide the term with <span class="math inline">\(\bar{y_{1.}}\)</span> by <span class="math inline">\(N\)</span></p>
+<p><span class="math display">\[n_1 \big[ \frac{N \bar{y_{1.}}}{N} - (\frac{n_1 \bar{y_{1.}} + n_2 \bar{y_{2.}}}{N}) \big]^2\]</span></p>
+<p>N is common denominator</p>
+<p><span class="math display">\[n_1 \big[\frac{N \bar{y_{1.}} - n_1 \bar{y_{1.}} - n_2 \bar{y_{2.}}}{N} \big]^2\]</span></p>
+<p><span class="math inline">\(\bar{y_{1.}}\)</span> is common factor of <span class="math inline">\(N\)</span> and <span class="math inline">\(n_1\)</span></p>
+<p><span class="math display">\[n_1 \big[\frac{(N - n_1) \bar{y_{1.}} - n_2 \bar{y_{2.}}}{N} \big]^2\]</span></p>
+<p>Replace <span class="math inline">\((N - n_{1}) = n_{2}\)</span></p>
+<p><span class="math display">\[n_1 \big[\frac{n_2 \bar{y_{1.}} - n_2 \bar{y_{2.}}}{N} \big]^2\]</span></p>
+<p>Now <span class="math inline">\(n_{2}\)</span> is common factor of <span class="math inline">\(\bar{y_{1.}}\)</span> and <span class="math inline">\(\bar{y_{2.}}\)</span></p>
+<p><span class="math display">\[n_1 \big[\frac{n_2 (\bar{y_{1.}} - \bar{y_{2.}})}{N} \big]^2\]</span></p>
+<p>Take <span class="math inline">\(n_{2}\)</span> and <span class="math inline">\(N\)</span> out of the square</p>
+<p><span class="math display">\[\text{Part a} = \frac{n_{1} n_{2}^2}{N^2}  (\bar{y_{1.}} - \bar{y_{2.}})^2\]</span></p>
+<hr />
+</div>
+<div id="b.-part-b" class="section level3">
+<h3>2.b. Part b</h3>
+<p><span class="math display">\[\text{Part b} = n_2 \big[ \bar{y_{2.}} - (\frac{n_1 \bar{y_{1.}} + n_2 \bar{y_{2.}}}{N}) \big]^2\]</span></p>
+<p>Multiply and divide the term with <span class="math inline">\(\bar{y_{2.}}\)</span> by <span class="math inline">\(N\)</span></p>
+<p><span class="math display">\[n_2 \big[ \frac{N \bar{y_{2.}}}{N} - (\frac{n_1 \bar{y_{1.}} + n_2 \bar{y_{2.}}}{N}) \big]^2\]</span></p>
+<p>N is common denominator</p>
+<p><span class="math display">\[n_2 \big[\frac{N \bar{y_{2.}} - n_1 \bar{y_{1.}} - n_2 \bar{y_{2.}}}{N} \big]^2\]</span></p>
+<p><span class="math inline">\(\bar{y_{2.}}\)</span> is common factor of <span class="math inline">\(N\)</span> and <span class="math inline">\(n_2\)</span></p>
+<p><span class="math display">\[n_2 \big[\frac{(N - n_2) \bar{y_{2.}} - n_1 \bar{y_{1.}}}{N} \big]^2\]</span></p>
+<p>Replace <span class="math inline">\((N - n_{2}) = n_{1}\)</span></p>
+<p><span class="math display">\[n_2 \big[\frac{n_1 \bar{y_{2.}} - n_1 \bar{y_{1.}}}{N} \big]^2\]</span></p>
+<p>Now <span class="math inline">\(n_{1}\)</span> is common factor of <span class="math inline">\(\bar{y_{1.}}\)</span> and <span class="math inline">\(\bar{y_{2.}}\)</span></p>
+<p><span class="math display">\[n_2 \big[\frac{n_1 (\bar{y_{2.}} - \bar{y_{1.}})}{N} \big]^2\]</span></p>
+<p>Take <span class="math inline">\(n_{1}\)</span> and <span class="math inline">\(N\)</span> out of the square</p>
+<p><span class="math display">\[\text{Part b} = \frac{n_{2} n_{1}^2}{N^2}  (\bar{y_{2.}} - \bar{y_{1.}})^2\]</span></p>
+<hr />
+<p>Now that we have <strong>Part a</strong> and <strong>Part b</strong> we are going to go back to equation <span class="math inline">\((7)\)</span> and replace them:</p>
+<p><span class="math display">\[SST = \frac{n_{1} n_{2}^2}{N^2} (\bar{y}_{1.} - \bar{y}_{2.})^2 + \frac{n_{2} n_{1}^2}{N^2} (\bar{y}_{2.} - \bar{y}_{1.})^2 \tag{8}\]</span></p>
+<p>Taking into account that <span class="math inline">\((\bar{y}_{1.} - \bar{y}_{2.})^2 = (\bar{y}_{2.} - \bar{y}_{1.})^2\)</span>, we can re-write equation <span class="math inline">\((8)\)</span> as <span class="math inline">\((9)\)</span>:</p>
+<p><span class="math display">\[SST = \underbrace{\big[ \frac{n_{1} n_{2}^2}{N^2} + \frac{n_{2} n_{1}^2}{N^2} \big]}_{\text{Part c}} (\bar{y}_{1.} - \bar{y}_{2.})^2 \tag{9}\]</span></p>
+<p>This lead us with part <strong>Part c</strong>, that we are going to work next.</p>
+<hr />
+</div>
+<div id="c.-part-c" class="section level3">
+<h3>2.c. Part c</h3>
+<p><span class="math display">\[\text{Part c} = \frac{n_{1} n_{2}^2}{N^2} + \frac{n_{2} n_{1}^2}{N^2}\]</span></p>
+<p><span class="math inline">\(N^2\)</span> is common denominator and each of the summands has a <span class="math inline">\(n_{1} n_{2}\)</span> factor that we can factor out. Then we have:</p>
+<p><span class="math display">\[\frac{n_{1} n_{2} (n_{1} + n_{2})}{N^2}\]</span></p>
+<p>Replace <span class="math inline">\(N = n_{1} + n_{2}\)</span></p>
+<p><span class="math display">\[\frac{n_{1} n_{2} N}{N^2}\]</span></p>
+<p>Simplify <span class="math inline">\(N\)</span></p>
+<p><span class="math display">\[\frac{n_{1} n_{2}}{N}\]</span></p>
+<p>Re-write the fraction</p>
+<p><span class="math display">\[\frac{1}{\frac{N}{n_{1} n_{2}}}\]</span></p>
+<p>Replace <span class="math inline">\(N = n_{1} + n_{2}\)</span></p>
+<p><span class="math display">\[\frac{1}{\frac{n_{1} + n_{1}}{n_{1} n_{2}}} = \frac{1}{\frac{1}{n_{1}} + \frac{1}{n_{2}}}\]</span></p>
+<hr />
+<p>Finally, we have to replace this expression for <strong>Part c</strong> in <span class="math inline">\((9)\)</span> and re-write SST as:</p>
+<p><span class="math display">\[SST = \frac{1}{\frac{1}{n_{1}} + \frac{1}{n_{2}}} (\bar{y}_{1.} - \bar{y}_{2.})^2\]</span></p>
+<hr />
+</div>
+</div>
+<div id="put-all-together" class="section level2">
+<h2>3. Put all together</h2>
+<p>With the previous steps we have shown that, <span class="math inline">\(\color{red} {\text{when a = 2}}\)</span>, we have:</p>
+<p><span class="math display">\[\frac{SST}{2-1} = \frac{(\bar{y}_{1.} - \bar{y}_{2.})^2}{\frac{1}{n_{1}} + \frac{1}{n_{2}}}\]</span></p>
+<p>and</p>
+<p><span class="math display">\[\frac{SSE}{N-2} = S_{p}^2\]</span></p>
+<p>The ratio of these two expressions, namely the F-statistic, is then:</p>
+<p><span class="math display">\[F_{1, k} = \frac{\frac{SST}{2-1}}{\frac{SSE}{N-2}} = \frac{(\bar{y}_{1.} - \bar{y}_{2.})^2}{S_{p}^2 \big( \frac{1}{n_{1}} + \frac{1}{n_{2}} \big)} = t_{k}^2\]</span></p>
+<p>And this concludes our proof.</p>
+</div>

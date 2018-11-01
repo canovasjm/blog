@@ -1,0 +1,312 @@
+---
+title: When does the F-test reduce to a t-test?
+author: Juan M. Canovas
+date: '2018-10-29'
+slug: when-does-the-f-test-reduce-to-t-test
+categories: []
+tags: [regression, doe, design_of_experiments]
+---
+
+If you have taken a regression or design of experiments class (or both), you probably have come across the following problem (or a similar one):  
+
+*"Show that the sum-of-squares decomposition and F-statistic reduces to the usual equal-variance (pooled) two sample t-test in the case of **$a = 2$** treatments - with the realization that an **$F$** statistic with **$1$** (numerator) and **$k$** (denominator) degrees of freedom is equivalent to a **$t$** statistic with **$k$** degrees of freedom, viz, **$F_{1, k} = t_{k}^2$**"*   
+
+The interesting thing about this proof is that is really hard to find (I spent some reasonable amount of time googling and looking in books with no success). More interesting than that though, is that when this proof is mentioned is usually followed by the most annoying phrases in a Math textbook:
+
+- *is easy to prove...*    
+- *is not difficult to show...*    
+- *this easy/straightforward/simple proof is left to the reader...*    
+
+Despite all of this adjectives, $\color{red} {\text{NOBODY does the actual proof}}$. The humble purpose of this blog post is to get rid of the vanity, work the proof, and let you judge if it is *easy/straightforward/simple* (or not).   
+
+Finally, let me point out that this blog post assumes you are somewhat familiar with the F-test, the t-test, and notation frequently found in design of experiments like $\bar{y_{..}}$, {$\bar{y_{i.}}$}, or {$\bar{y_{.j}}$}            
+
+
+
+---     
+
+
+
+## Bye-bye words, hello formulas     
+
+Let's start by putting all the wording into formulas:
+
+We have to prove that
+
+$$F_{a-1, N-a} = \frac{MST}{MSE} = \frac{\frac{SST}{a-1}}{\frac{SSE}{N-a}} \tag{1}$$   
+
+reduces to
+
+$$t_{k}^2 = \frac{(\bar{y_{1.}} - \bar{y_{2.}})^2}{S_{p}^2(\frac{1}{n_{1}} + \frac{1}{n_{2}})} \tag{2}$$  
+
+
+
+$\color{red} {\text{When a = 2}}$ (this is key)
+
+
+
+---
+
+
+
+## Notation    
+
+Symbol | Description
+-------|-------------
+SSE | Sum of Squares due to Error    
+SST | Sum of Squares of Treatment    
+MSE | Mean Sum of squares Error    
+MST | Mean Sum of squares Treatment    
+a   | Number of treatments
+$n_{1}$ | Number of observations in treatment 1    
+$n_{2}$ | Number of observations in treatment 2    
+N   | Total number of observations    
+$\bar{y_{i.}}$ | Mean of treatment $i$
+$\bar{y_{..}}$ | Global mean
+$k = N - a$   | Degrees of freedom of the denominator of F
+
+---
+
+
+
+Now that we have the formulas, we will work the following:
+
+1. Denominator of equation (1)   
+2. Numerator of equation (1)    
+2.a. Part a   
+2.b. Part b
+2.c. Part c
+3. Put all together
+
+
+---
+
+
+## 1. Denominator of equation (1)  
+
+When $a = 2$ the denominator of expression $(1)$ is:
+
+$$MSE = \frac{SSE}{N-2} = \frac{\sum_{j=1}^{n_1}{(y_{1j} - \bar{y}_{1.})^2} + \sum_{j=1}^{n_2}{(y_{2j} - \bar{y}_{2.})^2}}{N-2} \tag{3}$$  
+
+Recalling that the formula for the sample variance estimator is,
+$$S_{i}^2 = \frac{\sum_{j=1}^{n_i}(y_{ij} - \bar{y_i.})^2}{n_{i} - 1}$$ 
+we can multiply and divide the terms in the numerator in $(3)$ by $(n_{i} - 1)$ and get $(4)$. Don't forget that in this case $N = n_{1} + n_{2}$   
+
+$$\frac{SSE}{N-2} = \frac{(n_{1} - 1) S_{1}^2 + (n_{2} - 1) S_{2}^2}{n_{1} + n_{2} - 2} = S_{p}^2 \tag{4}$$  
+
+$S_{p}^2$ is called the *pooled variance estimator*.    
+
+
+---    
+
+## 2. Numerator of equation (1)
+
+When $a = 2$ the numerator of expression $(1)$ is:  
+
+$$\frac{SST}{2-1} = SST$$   
+
+Then we are going to expand the sum as follows:   
+
+\[
+\begin{eqnarray}
+SST & = & \sum_{1}^2 n_{i} (\bar{y_{i.}} - \bar{y_{..}})^2 \\
+& = & n_{1} (\bar{y_{1.}} - \bar{y_{..}})^2 + n_{2} (\bar{y_{2.}} - \bar{y_{..}})^2 \\
+\end{eqnarray} \tag{5}
+\]
+
+$\bar{y_{..}}$ is called the *global mean* and we are going to write it in a different way. The new way is:
+
+$$\bar{y_{..}} = \frac{n_{1} \bar{y_{1.}} + n_{2} \bar{y_{2.}}}{N} \tag{6}$$   
+
+Next, replace (6) in formula (5) and re-write SST as:
+
+$$SST = \underbrace{n_1 \big[ \bar{y_{1.}} - (\frac{n_1 \bar{y_{1.}} + n_2 \bar{y_{2.}}}{N}) \big]^2}_{\text{Part a}} + \underbrace{n_2 \big[ \bar{y_{2.}} - (\frac{n_1 \bar{y_{1.}} + n_2 \bar{y_{2.}}}{N}) \big]^2}_{\text{Part b}} \tag{7}$$   
+
+
+
+The next step is to find alternative ways for the expressions **Part a** and **Part b**    
+
+
+
+---     
+
+
+
+### 2.a. Part a  
+
+
+$$\text{Part a} = n_1 \big[ \bar{y_{1.}} - (\frac{n_1 \bar{y_{1.}} + n_2 \bar{y_{2.}}}{N}) \big]^2$$
+
+
+
+Multiply and divide the term with $\bar{y_{1.}}$ by $N$     
+
+$$n_1 \big[ \frac{N \bar{y_{1.}}}{N} - (\frac{n_1 \bar{y_{1.}} + n_2 \bar{y_{2.}}}{N}) \big]^2$$   
+
+
+
+N is common denominator   
+
+$$n_1 \big[\frac{N \bar{y_{1.}} - n_1 \bar{y_{1.}} - n_2 \bar{y_{2.}}}{N} \big]^2$$    
+
+
+
+$\bar{y_{1.}}$ is common factor of $N$ and $n_1$    
+
+$$n_1 \big[\frac{(N - n_1) \bar{y_{1.}} - n_2 \bar{y_{2.}}}{N} \big]^2$$      
+
+
+
+Replace $(N - n_{1}) = n_{2}$  
+
+$$n_1 \big[\frac{n_2 \bar{y_{1.}} - n_2 \bar{y_{2.}}}{N} \big]^2$$       
+
+
+
+Now $n_{2}$ is common factor of $\bar{y_{1.}}$ and $\bar{y_{2.}}$  
+
+$$n_1 \big[\frac{n_2 (\bar{y_{1.}} - \bar{y_{2.}})}{N} \big]^2$$      
+
+
+
+
+Take $n_{2}$ and $N$ out of the square    
+
+$$\text{Part a} = \frac{n_{1} n_{2}^2}{N^2}  (\bar{y_{1.}} - \bar{y_{2.}})^2$$    
+
+
+
+---
+
+
+
+### 2.b. Part b  
+
+$$\text{Part b} = n_2 \big[ \bar{y_{2.}} - (\frac{n_1 \bar{y_{1.}} + n_2 \bar{y_{2.}}}{N}) \big]^2$$
+
+
+
+Multiply and divide the term with $\bar{y_{2.}}$ by $N$  
+
+$$n_2 \big[ \frac{N \bar{y_{2.}}}{N} - (\frac{n_1 \bar{y_{1.}} + n_2 \bar{y_{2.}}}{N}) \big]^2$$   
+
+
+
+N is common denominator   
+
+$$n_2 \big[\frac{N \bar{y_{2.}} - n_1 \bar{y_{1.}} - n_2 \bar{y_{2.}}}{N} \big]^2$$    
+
+
+
+$\bar{y_{2.}}$ is common factor of $N$ and $n_2$    
+
+$$n_2 \big[\frac{(N - n_2) \bar{y_{2.}} - n_1 \bar{y_{1.}}}{N} \big]^2$$      
+
+
+
+Replace $(N - n_{2}) = n_{1}$    
+
+$$n_2 \big[\frac{n_1 \bar{y_{2.}} - n_1 \bar{y_{1.}}}{N} \big]^2$$       
+
+
+
+Now $n_{1}$ is common factor of $\bar{y_{1.}}$ and $\bar{y_{2.}}$  
+
+$$n_2 \big[\frac{n_1 (\bar{y_{2.}} - \bar{y_{1.}})}{N} \big]^2$$      
+
+
+
+Take $n_{1}$ and $N$ out of the square    
+
+$$\text{Part b} = \frac{n_{2} n_{1}^2}{N^2}  (\bar{y_{2.}} - \bar{y_{1.}})^2$$    
+
+
+
+---
+
+
+
+Now that we have **Part a** and **Part b** we are going to go back to equation $(7)$ and replace them:  
+
+$$SST = \frac{n_{1} n_{2}^2}{N^2} (\bar{y}_{1.} - \bar{y}_{2.})^2 + \frac{n_{2} n_{1}^2}{N^2} (\bar{y}_{2.} - \bar{y}_{1.})^2 \tag{8}$$   
+
+
+
+Taking into account that $(\bar{y}_{1.} - \bar{y}_{2.})^2 = (\bar{y}_{2.} - \bar{y}_{1.})^2$, we can re-write equation $(8)$ as $(9)$:
+
+$$SST = \underbrace{\big[ \frac{n_{1} n_{2}^2}{N^2} + \frac{n_{2} n_{1}^2}{N^2} \big]}_{\text{Part c}} (\bar{y}_{1.} - \bar{y}_{2.})^2 \tag{9}$$  
+
+
+
+This lead us with part **Part c**, that we are going to work next.
+
+
+
+---
+
+
+
+### 2.c. Part c  
+
+$$\text{Part c} = \frac{n_{1} n_{2}^2}{N^2} + \frac{n_{2} n_{1}^2}{N^2}$$
+
+
+
+$N^2$ is common denominator and each of the summands has a $n_{1} n_{2}$ factor that we can factor out. Then we have:       
+
+$$\frac{n_{1} n_{2} (n_{1} + n_{2})}{N^2}$$ 
+
+
+
+Replace $N = n_{1} + n_{2}$   
+
+$$\frac{n_{1} n_{2} N}{N^2}$$ 
+
+
+
+Simplify $N$   
+
+$$\frac{n_{1} n_{2}}{N}$$ 
+
+
+
+Re-write the fraction   
+
+$$\frac{1}{\frac{N}{n_{1} n_{2}}}$$
+
+
+
+Replace $N = n_{1} + n_{2}$   
+
+$$\frac{1}{\frac{n_{1} + n_{1}}{n_{1} n_{2}}} = \frac{1}{\frac{1}{n_{1}} + \frac{1}{n_{2}}}$$
+
+
+
+---
+
+
+
+Finally, we have to replace this expression for **Part c** in $(9)$ and re-write SST as:
+
+$$SST = \frac{1}{\frac{1}{n_{1}} + \frac{1}{n_{2}}} (\bar{y}_{1.} - \bar{y}_{2.})^2$$  
+
+
+--- 
+
+
+
+## 3. Put all together   
+
+With the previous steps we have shown that, $\color{red} {\text{when a = 2}}$, we have:
+
+$$\frac{SST}{2-1} = \frac{(\bar{y}_{1.} - \bar{y}_{2.})^2}{\frac{1}{n_{1}} + \frac{1}{n_{2}}}$$  
+
+and
+
+$$\frac{SSE}{N-2} = S_{p}^2$$   
+
+The ratio of these two expressions, namely the F-statistic, is then:
+
+$$F_{1, k} = \frac{\frac{SST}{2-1}}{\frac{SSE}{N-2}} = \frac{(\bar{y}_{1.} - \bar{y}_{2.})^2}{S_{p}^2 \big( \frac{1}{n_{1}} + \frac{1}{n_{2}} \big)} = t_{k}^2$$   
+
+And this concludes our proof.
