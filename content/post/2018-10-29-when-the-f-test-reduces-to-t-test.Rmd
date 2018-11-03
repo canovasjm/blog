@@ -282,6 +282,10 @@ Replace $N = n_{1} + n_{2}$
 
 $$\frac{1}{\frac{n_{1} + n_{2}}{n_{1} n_{2}}} = \frac{1}{\frac{1}{n_{1}} + \frac{1}{n_{2}}}$$
 
+And we have   
+
+$$\text{Part c} = \frac{1}{\frac{1}{n_{1}} + \frac{1}{n_{2}}}$$
+
 
 
 ---
