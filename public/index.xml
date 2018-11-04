@@ -48,8 +48,11 @@ There is more information about me here: https://www.linkedin.com/in/jmcanovas/
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>/portfolio/</guid>
-      <description>Here are links to some of my projects, homeworks, exams, etc. As time permits I will start editing some of them in order to be true blog posts, but for the moment they are not.
-Forecasting with ARIMA model in R</description>
+      <description>Here are links to some of my projects, homework, exams, etc. I have also included some keywords with the concepts covered in each document. As time permits I will start editing some of them in order to be true blog posts, but for the moment they are not.
+Forecasting with ARIMA model in R
+Time series, ACF, PACF, ARIMA, seasonality, forecasting, variance stabilization transformation, differencing
+Non-parametric exam
+Kruskal-Wallis, loess, CART, bootstrap, PCA, hierarchical clustering, cluster dendrogram, k-means clustering</description>
     </item>
     
   </channel>

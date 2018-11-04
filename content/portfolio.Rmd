@@ -8,7 +8,13 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 
-Here are links to some of my projects, homeworks, exams, etc. As time permits I will start editing some of them in order to be true blog posts, but for the moment they are not.      
+Here are links to some of my projects, homework, exams, etc. I have also included some keywords with the concepts covered in each document. As time permits I will start editing some of them in order to be true blog posts, but for the moment they are not.      
 
-[Forecasting with ARIMA model in R](/portfolio/arima_forecast_in_R.html)
+[Forecasting with ARIMA model in R](/portfolio/arima_forecast_in_R.html)    
+Time series, ACF, PACF, ARIMA, seasonality, forecasting, variance stabilization transformation, differencing       
 
+[Non-parametric exam](/portfolio/non_parametric_exam_2.html)     
+Kruskal-Wallis, loess, CART, bootstrap, PCA, hierarchical clustering, cluster dendrogram, k-means clustering    
+
+[GAMs](/portfolio/Homework_4_Juan_M_Canovas.html)        
+Generalized Additive Models, concurvity, interaction, quantile GAM    
