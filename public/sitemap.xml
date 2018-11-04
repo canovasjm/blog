@@ -33,6 +33,10 @@
   </url>
   
   <url>
+    <loc>/portfolio/</loc>
+  </url>
+  
+  <url>
     <loc>/post/</loc>
     <lastmod>2018-10-29T00:00:00+00:00</lastmod>
     <priority>0</priority>

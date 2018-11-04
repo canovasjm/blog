@@ -1,0 +1,14 @@
+---
+title: "Portfolio"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+Here are links to some of my projects, homeworks, exams, etc. As time permits I will start editing some of them in order to be true blog posts, but for the moment they are not.      
+
+[Forecasting with ARIMA model in R](/portfolio/arima_forecast_in_R.html)
+

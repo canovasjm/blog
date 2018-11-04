@@ -51,19 +51,19 @@ $\color{red} {\text{When a = 2}}$ (this is key)
 
 ## Notation    
 
-Symbol | Description
+Symbol | Description  
 -------|-------------
 SSE | Sum of Squares due to Error    
 SST | Sum of Squares of Treatment    
 MSE | Mean Sum of squares Error    
 MST | Mean Sum of squares Treatment    
-a   | Number of treatments
+a   | Number of treatments   
 $n_{1}$ | Number of observations in treatment 1    
 $n_{2}$ | Number of observations in treatment 2    
 N   | Total number of observations    
-$\bar{y}_{i.}$ | Mean of treatment $i$
-$\bar{y}_{..}$ | Global mean
-$k = N - a$   | Degrees of freedom of the denominator of F
+$\bar{y}_{i.}$ | Mean of treatment $i$    
+$\bar{y}_{..}$ | Global mean     
+$k = N - a$   | Degrees of freedom of the denominator of F    
 
 ---
 

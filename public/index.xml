@@ -42,5 +42,15 @@ There is more information about me here: https://www.linkedin.com/in/jmcanovas/
       <description></description>
     </item>
     
+    <item>
+      <title>Portfolio</title>
+      <link>/portfolio/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/portfolio/</guid>
+      <description>Here are links to some of my projects, homeworks, exams, etc. As time permits I will start editing some of them in order to be true blog posts, but for the moment they are not.
+Forecasting with ARIMA model in R</description>
+    </item>
+    
   </channel>
 </rss>
