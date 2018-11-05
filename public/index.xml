@@ -49,10 +49,9 @@ There is more information about me here: https://www.linkedin.com/in/jmcanovas/
       
       <guid>/portfolio/</guid>
       <description>Here are links to some of my projects, homework, exams, etc. I have also included some keywords with the concepts covered in each document. As time permits I will start editing some of them in order to be true blog posts, but for the moment they are not.
-Forecasting with ARIMA model in R
-Time series, ACF, PACF, ARIMA, seasonality, forecasting, variance stabilization transformation, differencing
-Non-parametric exam
-Kruskal-Wallis, loess, CART, bootstrap, PCA, hierarchical clustering, cluster dendrogram, k-means clustering</description>
+Predictive Analytics exam
+Regression, Ridge, LASSO, elastic net, prediction MSE, logistic regression, log loss, cross validation, missing data
+Forecasting with ARIMA model in R</description>
     </item>
     
   </channel>
