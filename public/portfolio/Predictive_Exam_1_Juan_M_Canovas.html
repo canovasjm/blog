@@ -341,7 +341,7 @@ xtabs(~ class + age, data = breastcancer) # Zero for age 20-29</code></pre>
 <p>We can see that for variables <strong>age</strong>, <strong>tumor_size</strong>, and <strong>inv_nodes</strong> there are zeros in at least one cell of the contingency table. For those cases, I am going to reassign them to another level and redefine the levels of the corresponding factor.</p>
 <pre class="r"><code># Redefine age
 breastcancer &lt;- breastcancer %&gt;% 
-  mutate(age = factor(age, levels = c(&quot;20-29&quot;,&quot;30-39&quot;, &quot;20-39&quot;, &quot;40-49&quot;, &quot;50-59&quot;, &quot;60-69&quot;, &quot;70-79&quot;)))
+  mutate(age = factor(age, levels = c(&quot;20-29&quot;, &quot;30-39&quot;, &quot;20-39&quot;, &quot;40-49&quot;, &quot;50-59&quot;, &quot;60-69&quot;, &quot;70-79&quot;)))
 
 idx_age1 &lt;- which(breastcancer$age == &quot;20-29&quot;)
 breastcancer$age[idx_age1] &lt;- &quot;20-39&quot;
@@ -363,7 +363,7 @@ idx_tumor_size2 &lt;- which(breastcancer$tumor_size == &quot;5-9&quot;)
 breastcancer$tumor_size[idx_tumor_size2] &lt;- &quot;0-9&quot;
 
 breastcancer &lt;- breastcancer %&gt;% 
-  mutate(tumor_size = factor(tumor_size, levels = c(&quot;0-9&quot;, &quot;10-14&quot;,&quot;15-19&quot;, &quot;20-24&quot;, &quot;25-29&quot;, 
+  mutate(tumor_size = factor(tumor_size, levels = c(&quot;0-9&quot;, &quot;10-14&quot;, &quot;15-19&quot;, &quot;20-24&quot;, &quot;25-29&quot;, 
                                                     &quot;30-34&quot;, &quot;35-39&quot;, &quot;40-44&quot;, &quot;45-49&quot;, &quot;50-54&quot;)))</code></pre>
 <pre class="r"><code># Redefine inv_nodes
 breastcancer &lt;- breastcancer %&gt;% 
@@ -427,7 +427,7 @@ head(y_test)</code></pre>
 </div>
 <div id="variable-selection-with-lasso" class="section level4">
 <h4>5.5) Variable selection with LASSO</h4>
-<p>To select the variables for the model, I used LASSO with the function <code>cv.glmnet()</code> from package <strong>glmnet</strong>. It is important to note that the argument x should be obtained using the function <code>model.matrix()</code>, otherwise <code>cv.glmnet()</code> returns an error. Also, to fit the logistic regression model, we have to specify <code>type.measure = deviance</code> and <code>family = &quot;binomial&quot;</code>.<br />
+<p>To select the variables for the model, I used LASSO with the function <code>cv.glmnet()</code> from package <strong>glmnet</strong>. It is important to note that the arguments x and y should be obtained using the function <code>model.matrix()</code>, otherwise <code>cv.glmnet()</code> returns an error. Also, to fit the logistic regression model, we have to specify <code>type.measure = &quot;deviance&quot;</code> and <code>family = &quot;binomial&quot;</code>.<br />
 To fit the model <strong>p5_lasso</strong> I am using <strong>lambda.1se</strong> because in, a statistical sense, is indistinguishable from <strong>lambda.min</strong> but results in a model with fewer parameters.</p>
 <pre class="r"><code># CV to select the value of lambda
 p5_lasso_cv &lt;- cv.glmnet(x = data.matrix(x_train), y = data.matrix(y_train), 
@@ -538,11 +538,12 @@ mean(unlist(cv_log_loss))</code></pre>
 </div>
 <div id="points-read-the-following-data-set-into-r-using-the-code-below.-predict-the-price-of-a-car-as-a-function-of-the-other-variables-in-the-data-set-using-lasso-regression.-explain-all-of-the-steps-that-you-used-in-the-process-of-building-the-model." class="section level3">
 <h3>6) (15 points) Read the following data set into R using the code below. Predict the price of a car as a function of the other variables in the data set using LASSO regression. Explain all of the steps that you used in the process of building the model.</h3>
-<div id="data-import-and-cleaning-1" class="section level4">
-<h4>6.1) Data import and cleaning</h4>
-<pre class="r"><code># Data import   
+<div id="problems-when-importing-the-data" class="section level4">
+<h4>6.0) Problems when importing the data</h4>
+<p>Here I mention some problems that I had when importing the data and how I fixed them.</p>
+<pre class="r"><code># Data import (incorrect)   
 # https://archive.ics.uci.edu/ml/datasets/Automobile
-cars &lt;- read.csv(&quot;https://bit.ly/2AG1IlJ&quot;, header = FALSE, stringsAsFactors = TRUE)
+cars &lt;- read.csv(&quot;https://bit.ly/2AG1IlJ&quot;, header = FALSE)
 names(cars) &lt;- c(&quot;symboling&quot;, &quot;normalized_losses&quot;, &quot;make&quot;,
                  &quot;fuel_type&quot;, &quot;aspiration&quot;, &quot;num_of_doors&quot;,
                  &quot;body_style&quot;, &quot;drive_wheels&quot;, &quot;engine_location&quot;,
@@ -580,26 +581,69 @@ str(cars)</code></pre>
 ##  $ city_mpg         : int  21 21 19 24 18 19 19 19 17 16 ...
 ##  $ highway_mpg      : int  27 27 26 30 22 25 25 25 20 22 ...
 ##  $ price            : Factor w/ 187 levels &quot;?&quot;,&quot;10198&quot;,&quot;10245&quot;,..: 33 52 52 38 63 43 65 73 83 1 ...</code></pre>
-<p>As we can see from <code>str()</code>, we cannot work the data as it is so far. Some numeric variables were imported as factors and viceversa. Hence, we need to pre-process the following variables: <strong>symboling, normalized_losses, curb_weight, engine_size, bore, stroke, horsepower, peak_rpm, city_mpg, highway_mpg, price</strong></p>
+<p>The output of <code>str()</code> shows that there are some “?” in the data that should be missing values instead. So my first attempt was to replace them with the following code:</p>
 <pre class="r"><code># Replace ? for NA
 cars &lt;-  replace(cars, cars == &quot;?&quot;, NA)
 
-# Redefine variables type
-cars &lt;- cars %&gt;% mutate(symboling = as.factor(symboling)) %&gt;% 
-  mutate(normalized_losses = as.numeric(normalized_losses)) %&gt;% 
-  mutate(bore = as.numeric(bore)) %&gt;% 
-  mutate(stroke = as.numeric(stroke)) %&gt;% 
-  mutate(horsepower = as.numeric(horsepower)) %&gt;% 
-  mutate(peak_rpm = as.numeric(peak_rpm)) %&gt;% 
-  mutate(price = as.numeric(price))
-
-# Redefine levels of num_of_doors
-cars &lt;- cars %&gt;% mutate(num_of_doors = factor(num_of_doors, levels = c(&quot;four&quot;, &quot;two&quot;)))
-
+# Structure of the data
 str(cars)</code></pre>
 <pre><code>## 'data.frame':    205 obs. of  26 variables:
-##  $ symboling        : Factor w/ 6 levels &quot;-2&quot;,&quot;-1&quot;,&quot;0&quot;,..: 6 6 4 5 5 5 4 4 4 3 ...
-##  $ normalized_losses: num  NA NA NA 29 29 NA 27 NA 27 NA ...
+##  $ symboling        : int  3 3 1 2 2 2 1 1 1 0 ...
+##  $ normalized_losses: Factor w/ 52 levels &quot;?&quot;,&quot;101&quot;,&quot;102&quot;,..: NA NA NA 29 29 NA 27 NA 27 NA ...
+##  $ make             : Factor w/ 22 levels &quot;alfa-romero&quot;,..: 1 1 1 2 2 2 2 2 2 2 ...
+##  $ fuel_type        : Factor w/ 2 levels &quot;diesel&quot;,&quot;gas&quot;: 2 2 2 2 2 2 2 2 2 2 ...
+##  $ aspiration       : Factor w/ 2 levels &quot;std&quot;,&quot;turbo&quot;: 1 1 1 1 1 1 1 1 2 2 ...
+##  $ num_of_doors     : Factor w/ 3 levels &quot;?&quot;,&quot;four&quot;,&quot;two&quot;: 3 3 3 2 2 3 2 2 2 3 ...
+##  $ body_style       : Factor w/ 5 levels &quot;convertible&quot;,..: 1 1 3 4 4 4 4 5 4 3 ...
+##  $ drive_wheels     : Factor w/ 3 levels &quot;4wd&quot;,&quot;fwd&quot;,&quot;rwd&quot;: 3 3 3 2 1 2 2 2 2 1 ...
+##  $ engine_location  : Factor w/ 2 levels &quot;front&quot;,&quot;rear&quot;: 1 1 1 1 1 1 1 1 1 1 ...
+##  $ wheel_base       : num  88.6 88.6 94.5 99.8 99.4 ...
+##  $ length           : num  169 169 171 177 177 ...
+##  $ width            : num  64.1 64.1 65.5 66.2 66.4 66.3 71.4 71.4 71.4 67.9 ...
+##  $ height           : num  48.8 48.8 52.4 54.3 54.3 53.1 55.7 55.7 55.9 52 ...
+##  $ curb_weight      : int  2548 2548 2823 2337 2824 2507 2844 2954 3086 3053 ...
+##  $ engine_type      : Factor w/ 7 levels &quot;dohc&quot;,&quot;dohcv&quot;,..: 1 1 6 4 4 4 4 4 4 4 ...
+##  $ num_of_cylinders : Factor w/ 7 levels &quot;eight&quot;,&quot;five&quot;,..: 3 3 4 3 2 2 2 2 2 2 ...
+##  $ engine_size      : int  130 130 152 109 136 136 136 136 131 131 ...
+##  $ fuel_system      : Factor w/ 8 levels &quot;1bbl&quot;,&quot;2bbl&quot;,..: 6 6 6 6 6 6 6 6 6 6 ...
+##  $ bore             : Factor w/ 39 levels &quot;?&quot;,&quot;2.54&quot;,&quot;2.68&quot;,..: 25 25 3 15 15 15 15 15 12 12 ...
+##  $ stroke           : Factor w/ 37 levels &quot;?&quot;,&quot;2.07&quot;,&quot;2.19&quot;,..: 6 6 29 26 26 26 26 26 26 26 ...
+##  $ compression_ratio: num  9 9 9 10 8 8.5 8.5 8.5 8.3 7 ...
+##  $ horsepower       : Factor w/ 60 levels &quot;?&quot;,&quot;100&quot;,&quot;101&quot;,..: 7 7 22 4 10 6 6 6 17 25 ...
+##  $ peak_rpm         : Factor w/ 24 levels &quot;?&quot;,&quot;4150&quot;,&quot;4200&quot;,..: 12 12 12 18 18 18 18 18 18 18 ...
+##  $ city_mpg         : int  21 21 19 24 18 19 19 19 17 16 ...
+##  $ highway_mpg      : int  27 27 26 30 22 25 25 25 20 22 ...
+##  $ price            : Factor w/ 187 levels &quot;?&quot;,&quot;10198&quot;,&quot;10245&quot;,..: 33 52 52 38 63 43 65 73 83 NA ...</code></pre>
+<pre class="r"><code># Change normalized losses from factor to numeric
+cars$normalized_losses &lt;- as.numeric(cars$normalized_losses)
+summary(cars$normalized_losses)</code></pre>
+<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max.    NA's 
+##    2.00   15.00   26.00   26.57   39.00   52.00      41</code></pre>
+<p>This approach replaces the “?” by NA, but has a problem with the variable <strong>normalized_losses</strong>. This variable is imported as a factor, but in the data dictionary from UCI Machine Learning Repository, they tells us that it is a numeric variable and its range goes from 65 to 256.<br />
+When I convert to numeric using <code>as.numeric()</code> function, the values of the variable mutate and it ends up out of its range. This is shown in <code>summary(cars$normalized_losses)</code>, where the new (incorrect) range is from 2 to 52.</p>
+</div>
+</div>
+<div id="data-import-and-cleaning-correct-way" class="section level3">
+<h3>6.1) Data import and cleaning (correct way)</h3>
+<p>In this section I implement a solution to the problem described above. It can be solved by specifying the argument <code>na.strings = &quot;?&quot;</code> inside the <code>read.csv()</code> function.</p>
+<pre class="r"><code># Data import (incorrect)   
+# https://archive.ics.uci.edu/ml/datasets/Automobile
+cars &lt;- read.csv(&quot;https://bit.ly/2AG1IlJ&quot;, header = FALSE, na.strings = &quot;?&quot;)
+names(cars) &lt;- c(&quot;symboling&quot;, &quot;normalized_losses&quot;, &quot;make&quot;,
+                 &quot;fuel_type&quot;, &quot;aspiration&quot;, &quot;num_of_doors&quot;,
+                 &quot;body_style&quot;, &quot;drive_wheels&quot;, &quot;engine_location&quot;,
+                 &quot;wheel_base&quot;, &quot;length&quot;, &quot;width&quot;, 
+                 &quot;height&quot;, &quot;curb_weight&quot;, &quot;engine_type&quot;,
+                 &quot;num_of_cylinders&quot;, &quot;engine_size&quot;, &quot;fuel_system&quot;,
+                 &quot;bore&quot;, &quot;stroke&quot;, &quot;compression_ratio&quot;,
+                 &quot;horsepower&quot;, &quot;peak_rpm&quot;, &quot;city_mpg&quot;,
+                 &quot;highway_mpg&quot;, &quot;price&quot;)
+
+# Structure of the data
+str(cars)</code></pre>
+<pre><code>## 'data.frame':    205 obs. of  26 variables:
+##  $ symboling        : int  3 3 1 2 2 2 1 1 1 0 ...
+##  $ normalized_losses: int  NA NA NA 164 164 NA 158 NA 158 NA ...
 ##  $ make             : Factor w/ 22 levels &quot;alfa-romero&quot;,..: 1 1 1 2 2 2 2 2 2 2 ...
 ##  $ fuel_type        : Factor w/ 2 levels &quot;diesel&quot;,&quot;gas&quot;: 2 2 2 2 2 2 2 2 2 2 ...
 ##  $ aspiration       : Factor w/ 2 levels &quot;std&quot;,&quot;turbo&quot;: 1 1 1 1 1 1 1 1 2 2 ...
@@ -616,24 +660,58 @@ str(cars)</code></pre>
 ##  $ num_of_cylinders : Factor w/ 7 levels &quot;eight&quot;,&quot;five&quot;,..: 3 3 4 3 2 2 2 2 2 2 ...
 ##  $ engine_size      : int  130 130 152 109 136 136 136 136 131 131 ...
 ##  $ fuel_system      : Factor w/ 8 levels &quot;1bbl&quot;,&quot;2bbl&quot;,..: 6 6 6 6 6 6 6 6 6 6 ...
-##  $ bore             : num  25 25 3 15 15 15 15 15 12 12 ...
-##  $ stroke           : num  6 6 29 26 26 26 26 26 26 26 ...
+##  $ bore             : num  3.47 3.47 2.68 3.19 3.19 3.19 3.19 3.19 3.13 3.13 ...
+##  $ stroke           : num  2.68 2.68 3.47 3.4 3.4 3.4 3.4 3.4 3.4 3.4 ...
 ##  $ compression_ratio: num  9 9 9 10 8 8.5 8.5 8.5 8.3 7 ...
-##  $ horsepower       : num  7 7 22 4 10 6 6 6 17 25 ...
-##  $ peak_rpm         : num  12 12 12 18 18 18 18 18 18 18 ...
+##  $ horsepower       : int  111 111 154 102 115 110 110 110 140 160 ...
+##  $ peak_rpm         : int  5000 5000 5000 5500 5500 5500 5500 5500 5500 5500 ...
 ##  $ city_mpg         : int  21 21 19 24 18 19 19 19 17 16 ...
 ##  $ highway_mpg      : int  27 27 26 30 22 25 25 25 20 22 ...
-##  $ price            : num  33 52 52 38 63 43 65 73 83 NA ...</code></pre>
+##  $ price            : int  13495 16500 16500 13950 17450 15250 17710 18920 23875 NA ...</code></pre>
+<p>As we can see from <code>str()</code>, we cannot work the data as it is so far. Variable <strong>symboling</strong> was imported as integer and data dictionary tells us that it should be a factor.</p>
+<pre class="r"><code># Redefine variables type
+cars &lt;- cars %&gt;% 
+  mutate(symboling = as.factor(symboling))
+
+# Structure of the data
+str(cars)</code></pre>
+<pre><code>## 'data.frame':    205 obs. of  26 variables:
+##  $ symboling        : Factor w/ 6 levels &quot;-2&quot;,&quot;-1&quot;,&quot;0&quot;,..: 6 6 4 5 5 5 4 4 4 3 ...
+##  $ normalized_losses: int  NA NA NA 164 164 NA 158 NA 158 NA ...
+##  $ make             : Factor w/ 22 levels &quot;alfa-romero&quot;,..: 1 1 1 2 2 2 2 2 2 2 ...
+##  $ fuel_type        : Factor w/ 2 levels &quot;diesel&quot;,&quot;gas&quot;: 2 2 2 2 2 2 2 2 2 2 ...
+##  $ aspiration       : Factor w/ 2 levels &quot;std&quot;,&quot;turbo&quot;: 1 1 1 1 1 1 1 1 2 2 ...
+##  $ num_of_doors     : Factor w/ 2 levels &quot;four&quot;,&quot;two&quot;: 2 2 2 1 1 2 1 1 1 2 ...
+##  $ body_style       : Factor w/ 5 levels &quot;convertible&quot;,..: 1 1 3 4 4 4 4 5 4 3 ...
+##  $ drive_wheels     : Factor w/ 3 levels &quot;4wd&quot;,&quot;fwd&quot;,&quot;rwd&quot;: 3 3 3 2 1 2 2 2 2 1 ...
+##  $ engine_location  : Factor w/ 2 levels &quot;front&quot;,&quot;rear&quot;: 1 1 1 1 1 1 1 1 1 1 ...
+##  $ wheel_base       : num  88.6 88.6 94.5 99.8 99.4 ...
+##  $ length           : num  169 169 171 177 177 ...
+##  $ width            : num  64.1 64.1 65.5 66.2 66.4 66.3 71.4 71.4 71.4 67.9 ...
+##  $ height           : num  48.8 48.8 52.4 54.3 54.3 53.1 55.7 55.7 55.9 52 ...
+##  $ curb_weight      : int  2548 2548 2823 2337 2824 2507 2844 2954 3086 3053 ...
+##  $ engine_type      : Factor w/ 7 levels &quot;dohc&quot;,&quot;dohcv&quot;,..: 1 1 6 4 4 4 4 4 4 4 ...
+##  $ num_of_cylinders : Factor w/ 7 levels &quot;eight&quot;,&quot;five&quot;,..: 3 3 4 3 2 2 2 2 2 2 ...
+##  $ engine_size      : int  130 130 152 109 136 136 136 136 131 131 ...
+##  $ fuel_system      : Factor w/ 8 levels &quot;1bbl&quot;,&quot;2bbl&quot;,..: 6 6 6 6 6 6 6 6 6 6 ...
+##  $ bore             : num  3.47 3.47 2.68 3.19 3.19 3.19 3.19 3.19 3.13 3.13 ...
+##  $ stroke           : num  2.68 2.68 3.47 3.4 3.4 3.4 3.4 3.4 3.4 3.4 ...
+##  $ compression_ratio: num  9 9 9 10 8 8.5 8.5 8.5 8.3 7 ...
+##  $ horsepower       : int  111 111 154 102 115 110 110 110 140 160 ...
+##  $ peak_rpm         : int  5000 5000 5000 5500 5500 5500 5500 5500 5500 5500 ...
+##  $ city_mpg         : int  21 21 19 24 18 19 19 19 17 16 ...
+##  $ highway_mpg      : int  27 27 26 30 22 25 25 25 20 22 ...
+##  $ price            : int  13495 16500 16500 13950 17450 15250 17710 18920 23875 NA ...</code></pre>
 <p>Now that the variables are correctly defined, I called <code>summary()</code></p>
 <pre class="r"><code># To check that we still have missing values
 summary(cars)</code></pre>
 <pre><code>##  symboling normalized_losses         make      fuel_type   aspiration 
-##  -2: 3     Min.   : 2.00     toyota    : 32   diesel: 20   std  :168  
-##  -1:22     1st Qu.:15.00     nissan    : 18   gas   :185   turbo: 37  
-##  0 :67     Median :26.00     mazda     : 17                           
-##  1 :54     Mean   :26.57     honda     : 13                           
-##  2 :32     3rd Qu.:39.00     mitsubishi: 13                           
-##  3 :27     Max.   :52.00     subaru    : 12                           
+##  -2: 3     Min.   : 65       toyota    : 32   diesel: 20   std  :168  
+##  -1:22     1st Qu.: 94       nissan    : 18   gas   :185   turbo: 37  
+##  0 :67     Median :115       mazda     : 17                           
+##  1 :54     Mean   :122       honda     : 13                           
+##  2 :32     3rd Qu.:150       mitsubishi: 13                           
+##  3 :27     Max.   :256       subaru    : 12                           
 ##            NA's   :41        (Other)   :100                           
 ##  num_of_doors       body_style drive_wheels engine_location
 ##  four:114     convertible: 6   4wd:  9      front:202      
@@ -659,72 +737,71 @@ summary(cars)</code></pre>
 ##  3rd Qu.:2935   ohcf : 15   three :  1       3rd Qu.:141.0   spdi   : 9  
 ##  Max.   :4066   ohcv : 13   twelve:  1       Max.   :326.0   4bbl   : 3  
 ##                 rotor:  4   two   :  4                       (Other): 2  
-##       bore           stroke      compression_ratio   horsepower   
-##  Min.   : 2.00   Min.   : 2.00   Min.   : 7.00     Min.   : 2.00  
-##  1st Qu.:13.00   1st Qu.:15.00   1st Qu.: 8.60     1st Qu.:14.00  
-##  Median :18.00   Median :23.00   Median : 9.00     Median :41.00  
-##  Mean   :19.95   Mean   :21.22   Mean   :10.14     Mean   :33.46  
-##  3rd Qu.:29.00   3rd Qu.:27.00   3rd Qu.: 9.40     3rd Qu.:48.00  
-##  Max.   :39.00   Max.   :37.00   Max.   :23.00     Max.   :60.00  
-##  NA's   :4       NA's   :4                         NA's   :2      
-##     peak_rpm        city_mpg      highway_mpg        price       
-##  Min.   : 2.00   Min.   :13.00   Min.   :16.00   Min.   :  2.00  
-##  1st Qu.:10.00   1st Qu.:19.00   1st Qu.:25.00   1st Qu.: 51.00  
-##  Median :14.00   Median :24.00   Median :30.00   Median : 99.00  
-##  Mean   :13.49   Mean   :25.22   Mean   :30.75   Mean   : 96.87  
-##  3rd Qu.:18.00   3rd Qu.:30.00   3rd Qu.:34.00   3rd Qu.:144.00  
-##  Max.   :24.00   Max.   :49.00   Max.   :54.00   Max.   :187.00  
-##  NA's   :2                                       NA's   :4</code></pre>
-</div>
+##       bore          stroke      compression_ratio   horsepower   
+##  Min.   :2.54   Min.   :2.070   Min.   : 7.00     Min.   : 48.0  
+##  1st Qu.:3.15   1st Qu.:3.110   1st Qu.: 8.60     1st Qu.: 70.0  
+##  Median :3.31   Median :3.290   Median : 9.00     Median : 95.0  
+##  Mean   :3.33   Mean   :3.255   Mean   :10.14     Mean   :104.3  
+##  3rd Qu.:3.59   3rd Qu.:3.410   3rd Qu.: 9.40     3rd Qu.:116.0  
+##  Max.   :3.94   Max.   :4.170   Max.   :23.00     Max.   :288.0  
+##  NA's   :4      NA's   :4                         NA's   :2      
+##     peak_rpm       city_mpg      highway_mpg        price      
+##  Min.   :4150   Min.   :13.00   Min.   :16.00   Min.   : 5118  
+##  1st Qu.:4800   1st Qu.:19.00   1st Qu.:25.00   1st Qu.: 7775  
+##  Median :5200   Median :24.00   Median :30.00   Median :10295  
+##  Mean   :5125   Mean   :25.22   Mean   :30.75   Mean   :13207  
+##  3rd Qu.:5500   3rd Qu.:30.00   3rd Qu.:34.00   3rd Qu.:16500  
+##  Max.   :6600   Max.   :49.00   Max.   :54.00   Max.   :45400  
+##  NA's   :2                                      NA's   :4</code></pre>
 <div id="imputation-for-missing-values-1" class="section level4">
 <h4>6.2) Imputation for missing values</h4>
 <p>There are several variables with NA values. I will impute values using the function <code>mice()</code> in <strong>mice</strong> package.</p>
 <pre class="r"><code># Imputation with mice
-temp_data6 &lt;- mice(cars, m = 5, maxit = 5, meth = 'pmm', seed = 1234)</code></pre>
+temp_data6 &lt;- mice(cars, m = 5, maxit = 5, meth = &quot;pmm&quot;, seed = 1234)</code></pre>
 <pre><code>## 
 ##  iter imp variable
-##   1   1  normalized_losses*  num_of_doors*  bore  stroke*  horsepower*  peak_rpm*  price*
+##   1   1  normalized_losses*  num_of_doors*  bore*  stroke*  horsepower*  peak_rpm*  price*
 ##   1   2  normalized_losses*  num_of_doors*  bore*  stroke*  horsepower*  peak_rpm*  price*
-##   1   3  normalized_losses*  num_of_doors*  bore*  stroke*  horsepower*  peak_rpm*  price*
+##   1   3  normalized_losses*  num_of_doors*  bore  stroke*  horsepower*  peak_rpm*  price*
 ##   1   4  normalized_losses*  num_of_doors*  bore*  stroke  horsepower*  peak_rpm*  price*
-##   1   5  normalized_losses*  num_of_doors*  bore  stroke*  horsepower*  peak_rpm*  price*
-##   2   1  normalized_losses*  num_of_doors*  bore  stroke*  horsepower*  peak_rpm*  price*
-##   2   2  normalized_losses*  num_of_doors*  bore*  stroke*  horsepower*  peak_rpm*  price*
-##   2   3  normalized_losses*  num_of_doors*  bore*  stroke  horsepower*  peak_rpm*  price*
-##   2   4  normalized_losses*  num_of_doors*  bore  stroke*  horsepower*  peak_rpm*  price*
-##   2   5  normalized_losses*  num_of_doors*  bore*  stroke*  horsepower*  peak_rpm*  price*
-##   3   1  normalized_losses*  num_of_doors*  bore*  stroke  horsepower*  peak_rpm*  price
+##   1   5  normalized_losses*  num_of_doors*  bore*  stroke  horsepower*  peak_rpm*  price*
+##   2   1  normalized_losses*  num_of_doors*  bore*  stroke  horsepower*  peak_rpm*  price*
+##   2   2  normalized_losses*  num_of_doors*  bore  stroke*  horsepower*  peak_rpm*  price*
+##   2   3  normalized_losses*  num_of_doors*  bore*  stroke*  horsepower*  peak_rpm*  price*
+##   2   4  normalized_losses*  num_of_doors*  bore*  stroke*  horsepower*  peak_rpm*  price*
+##   2   5  normalized_losses*  num_of_doors*  bore*  stroke*  horsepower  peak_rpm*  price*
+##   3   1  normalized_losses*  num_of_doors*  bore*  stroke*  horsepower*  peak_rpm*  price*
 ##   3   2  normalized_losses*  num_of_doors*  bore*  stroke*  horsepower*  peak_rpm*  price*
-##   3   3  normalized_losses*  num_of_doors*  bore*  stroke  horsepower  peak_rpm*  price*
+##   3   3  normalized_losses*  num_of_doors*  bore  stroke*  horsepower*  peak_rpm*  price*
 ##   3   4  normalized_losses*  num_of_doors*  bore*  stroke*  horsepower*  peak_rpm*  price*
 ##   3   5  normalized_losses*  num_of_doors*  bore*  stroke*  horsepower*  peak_rpm*  price*
-##   4   1  normalized_losses*  num_of_doors*  bore  stroke*  horsepower*  peak_rpm*  price*
-##   4   2  normalized_losses*  num_of_doors*  bore*  stroke*  horsepower*  peak_rpm*  price*
-##   4   3  normalized_losses*  num_of_doors*  bore*  stroke*  horsepower*  peak_rpm*  price*
-##   4   4  normalized_losses*  num_of_doors*  bore*  stroke*  horsepower*  peak_rpm*  price*
+##   4   1  normalized_losses*  num_of_doors*  bore*  stroke*  horsepower*  peak_rpm*  price*
+##   4   2  normalized_losses*  num_of_doors*  bore*  stroke  horsepower*  peak_rpm*  price*
+##   4   3  normalized_losses*  num_of_doors*  bore*  stroke  horsepower*  peak_rpm*  price*
+##   4   4  normalized_losses*  num_of_doors*  bore  stroke*  horsepower*  peak_rpm*  price*
 ##   4   5  normalized_losses*  num_of_doors*  bore*  stroke*  horsepower*  peak_rpm*  price*
 ##   5   1  normalized_losses*  num_of_doors*  bore*  stroke*  horsepower*  peak_rpm*  price*
-##   5   2  normalized_losses*  num_of_doors*  bore*  stroke*  horsepower*  peak_rpm*  price*
+##   5   2  normalized_losses*  num_of_doors*  bore  stroke*  horsepower*  peak_rpm*  price*
 ##   5   3  normalized_losses*  num_of_doors*  bore*  stroke*  horsepower*  peak_rpm*  price*
-##   5   4  normalized_losses*  num_of_doors*  bore*  stroke*  horsepower*  peak_rpm*  price*
-##   5   5  normalized_losses*  num_of_doors*  bore*  stroke*  horsepower*  peak_rpm*  price*
+##   5   4  normalized_losses*  num_of_doors*  bore*  stroke  horsepower*  peak_rpm*  price*
+##   5   5  normalized_losses*  num_of_doors*  bore*  stroke  horsepower*  peak_rpm*  price*
 ##  * Please inspect the loggedEvents</code></pre>
-<pre><code>## Warning: Number of logged events: 339</code></pre>
+<pre><code>## Warning: Number of logged events: 337</code></pre>
 <pre class="r"><code>cars &lt;- complete(temp_data6, 1)
 
 # To check that we don't have missing values anymore
 summary(cars)</code></pre>
 <pre><code>##  symboling normalized_losses         make      fuel_type   aspiration 
-##  -2: 3     Min.   : 2.00     toyota    : 32   diesel: 20   std  :168  
-##  -1:22     1st Qu.: 9.00     nissan    : 18   gas   :185   turbo: 37  
-##  0 :67     Median :20.00     mazda     : 17                           
-##  1 :54     Mean   :23.28     honda     : 13                           
-##  2 :32     3rd Qu.:36.00     mitsubishi: 13                           
-##  3 :27     Max.   :52.00     subaru    : 12                           
+##  -2: 3     Min.   : 65.0     toyota    : 32   diesel: 20   std  :168  
+##  -1:22     1st Qu.: 81.0     nissan    : 18   gas   :185   turbo: 37  
+##  0 :67     Median :103.0     mazda     : 17                           
+##  1 :54     Mean   :112.4     honda     : 13                           
+##  2 :32     3rd Qu.:137.0     mitsubishi: 13                           
+##  3 :27     Max.   :256.0     subaru    : 12                           
 ##                              (Other)   :100                           
 ##  num_of_doors       body_style drive_wheels engine_location
-##  four:116     convertible: 6   4wd:  9      front:202      
-##  two : 89     hardtop    : 8   fwd:120      rear :  3      
+##  four:114     convertible: 6   4wd:  9      front:202      
+##  two : 91     hardtop    : 8   fwd:120      rear :  3      
 ##               hatchback  :70   rwd: 76                     
 ##               sedan      :96                               
 ##               wagon      :25                               
@@ -746,22 +823,23 @@ summary(cars)</code></pre>
 ##  3rd Qu.:2935   ohcf : 15   three :  1       3rd Qu.:141.0   spdi   : 9  
 ##  Max.   :4066   ohcv : 13   twelve:  1       Max.   :326.0   4bbl   : 3  
 ##                 rotor:  4   two   :  4                       (Other): 2  
-##       bore           stroke      compression_ratio   horsepower   
-##  Min.   : 2.00   Min.   : 2.00   Min.   : 7.00     Min.   : 2.00  
-##  1st Qu.:12.00   1st Qu.:15.00   1st Qu.: 8.60     1st Qu.:14.00  
-##  Median :18.00   Median :23.00   Median : 9.00     Median :42.00  
-##  Mean   :19.62   Mean   :21.53   Mean   :10.14     Mean   :33.71  
-##  3rd Qu.:28.00   3rd Qu.:27.00   3rd Qu.: 9.40     3rd Qu.:49.00  
-##  Max.   :39.00   Max.   :37.00   Max.   :23.00     Max.   :60.00  
-##                                                                   
-##     peak_rpm        city_mpg      highway_mpg        price       
-##  Min.   : 2.00   Min.   :13.00   Min.   :16.00   Min.   :  2.00  
-##  1st Qu.:10.00   1st Qu.:19.00   1st Qu.:25.00   1st Qu.: 52.00  
-##  Median :14.00   Median :24.00   Median :30.00   Median :101.00  
-##  Mean   :13.56   Mean   :25.22   Mean   :30.75   Mean   : 98.22  
-##  3rd Qu.:18.00   3rd Qu.:30.00   3rd Qu.:34.00   3rd Qu.:146.00  
-##  Max.   :24.00   Max.   :49.00   Max.   :54.00   Max.   :187.00  
+##       bore          stroke      compression_ratio   horsepower   
+##  Min.   :2.54   Min.   :2.070   Min.   : 7.00     Min.   : 48.0  
+##  1st Qu.:3.13   1st Qu.:3.100   1st Qu.: 8.60     1st Qu.: 70.0  
+##  Median :3.31   Median :3.290   Median : 9.00     Median : 95.0  
+##  Mean   :3.32   Mean   :3.243   Mean   :10.14     Mean   :103.8  
+##  3rd Qu.:3.58   3rd Qu.:3.410   3rd Qu.: 9.40     3rd Qu.:116.0  
+##  Max.   :3.94   Max.   :4.170   Max.   :23.00     Max.   :288.0  
+##                                                                  
+##     peak_rpm       city_mpg      highway_mpg        price      
+##  Min.   :4150   Min.   :13.00   Min.   :16.00   Min.   : 5118  
+##  1st Qu.:4800   1st Qu.:19.00   1st Qu.:25.00   1st Qu.: 7788  
+##  Median :5200   Median :24.00   Median :30.00   Median :10595  
+##  Mean   :5116   Mean   :25.22   Mean   :30.75   Mean   :13668  
+##  3rd Qu.:5500   3rd Qu.:30.00   3rd Qu.:34.00   3rd Qu.:16558  
+##  Max.   :6600   Max.   :49.00   Max.   :54.00   Max.   :45400  
 ## </code></pre>
+<p>From the last call to <code>summary()</code> we see that there are no missing values anymore and that all the numeric variables are in their corresponding range (according to UCI data dictionary) after the imputation.</p>
 </div>
 <div id="train-and-test-sets-1" class="section level4">
 <h4>6.3) Train and test sets</h4>
@@ -781,13 +859,19 @@ y_test &lt;- cars[-idx, 26]</code></pre>
 </div>
 <div id="lasso-regression" class="section level4">
 <h4>6.4) LASSO Regression</h4>
-<p>To select the variables for the model, I used LASSO with the function <code>cv.glmnet()</code> from package <strong>glmnet</strong>. It is important to note that the argument x should be obtained using the function <code>data.matrix()</code>, otherwise <code>cv.glmnet()</code> returns an error. Also, to fit the regression model, we have to specify <code>type.measure = mse</code> and <code>family = &quot;gaussian&quot;</code>.<br />
+<p>To select the variables for the model, I used LASSO with the function <code>cv.glmnet()</code> from package <strong>glmnet</strong>. It is important to note that the arguments x and y should be obtained using the function <code>data.matrix()</code>, otherwise <code>cv.glmnet()</code> returns an error. Also, to fit the regression model, we have to specify <code>type.measure = &quot;mse&quot;</code> and <code>family = &quot;gaussian&quot;</code>.<br />
 Next, I fitted the model <strong>p6_lasso</strong> using <strong>lambda.1se</strong> because in, a statistical sense, is indistinguishable from <strong>lambda.min</strong> but results in a model with fewer parameters.</p>
-<pre class="r"><code># CV to select the value of lambda
+<pre class="r"><code># Set seed   
+set.seed(1234)   
+
+# CV to select the value of lambda
 p6_lasso_cv &lt;- cv.glmnet(x = data.matrix(x_train), y = data.matrix(y_train), 
                          type.measure = &quot;mse&quot;, alpha = 1, family = &quot;gaussian&quot;)
 
-# Fit the LASSO model
+# Plot of MSE vs. log(lambda)   
+plot(p6_lasso_cv)    </code></pre>
+<p><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAABUAAAAPACAMAAADDuCPrAAAA5FBMVEUAAAAAADoAAGYAOjoAOmYAOpAAZmYAZrY6AAA6OgA6Ojo6OmY6ZmY6ZpA6ZrY6kJA6kLY6kNtmAABmOgBmOjpmZjpmZmZmZpBmkJBmkLZmkNtmtrZmtttmtv+QOgCQOjqQZgCQZjqQZmaQZpCQkDqQkGaQkJCQkLaQtraQttuQ29uQ2/+pqam2ZgC2Zjq2kDq2kGa2tpC2tra2ttu227a229u22/+2///bkDrbkGbbtmbbtpDbtrbb25Db27bb29vb2//b/7bb/9vb////AAD/tmb/25D/27b/29v//7b//9v///+x6/A3AAAACXBIWXMAAB2HAAAdhwGP5fFlAAAgAElEQVR4nO3dDXvTSLqgYbkJB0Mm7ELo9DIHOAt7ZhaWTjqEhU4HJuEsCQn2//8/q5IlS7Ilq+pVSaqP576umQ4RVuxK+UG2PpwsAQAiydR3AAB8RUABQIiAAoAQAQUAIQIKAEIEFACECCgACBFQABAioAAgREABQIiAAoAQAQUAIQIKAEIEFACECCgACBFQABAioAAgREABQIiAAoAQAQUAIQIKAEIEFACECCgACBFQABAioAAgREABQIiAAoAQAQUAIQIKAEIEFACECCgACBFQABAioAAgREABQIiAAoAQAQUAIQIKAEIEFACECCgACBFQABAioAAgREABQIiAAoAQAQUAIQIKAEIEFACECCgACBFQABAioAAgREABQIiAAoAQAQUAIQIKAEIEFACECCgACBFQABAioAAgREABQIiAAoAQAQUAIQIKAEIEFACECCgACBFQABAioAAgREABQIiAAoAQAQUAIQIKAEIEFACECCgACBFQABAioAAgREABQIiAAoAQAQUAIQIKAEIEFACECCgACBFQABAioAAgREABQIiAAoAQAQUAIQIKAEIEFACECCgACBFQABDyNqCL00dJktw7+Lz+xqtk7SWr2rmq5fLLM/Wd59+N1lP4+fSXP+2sqr6my9fzJJlV7+Ykd2pjVc3f6WL+WBYX6rf06IX+fTa9hXgG/ZgbzjijW8h+V+a/kkH4GtCLeTETHuff+flUODsiXNX6mTQzfF4Uty7nbrmq933XdFLczSf27lTvx9fyna5VmD+WH8VvaU/3JxnfQjqD1O3MBtLg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e22NPxRoQEAxps7jQNdHdO44DrRMnjpuvjugeaxvksYftb22DMeBQgMBxZiazkQq3ocszh/qPhPpePWXs1tn9esIaHLwbeOkp0+VH7W1tvxncCYSOhFQjEl6LnxF+vdr3+gO6Ppc+I0flV+3ZGtty/qPB1oRUIxJejWmekCXJ0Xunq/e0ezYC58fp1T8qIvVH9dXY9pcW/4zeQsUnQgoxrR9PdD1ovx6oOu937XrgW4EdJndWF3hc3Uie9dhTCrXteuBzmvXA91Ym3LM9UChgYDCLeXhQ8cTvojmivTQQkDhgvLA0OP1a+f1ZyJNgAvSQwsBhQvUXnn1av7upHYk0VSboGyAQg8BhQuqp6Ov05VmbKJNUD4XHnoIKJxwMd/qp8rqNC+kf8w5BhRaCCjccHf6MNsV/q36zfNJzkdfvOIkJOghoAAgREABQIiAAoAQAQUAIQIKAEIEFACECCgACBFQABAioAAgREABQIiAAoAQAQUAIQIKAEIEFACECCgACBFQABAioAAgREABQIiAAoAQAQUAIQIKAEIEFACECCgACBFQABAioAAgREABQIiAAoAQAQUAIQIKAEIEFACECCgACBFQABAioAAgREABQIiAAoAQAQUAIQIKAEIEFACECCgACBFQABAioAAgREABQIiA8k2m+wAAAAlJREFUAoDQ/wc6XXZCO58zfAAAAABJRU5ErkJggg==" width="672" /></p>
+<pre class="r"><code># Fit the LASSO model
 p6_lasso &lt;- glmnet(x = data.matrix(x_train), y = data.matrix(y_train), 
                    alpha = 1, family = &quot;gaussian&quot;, lambda = p6_lasso_cv$lambda.1se)
 
@@ -795,49 +879,50 @@ p6_lasso &lt;- glmnet(x = data.matrix(x_train), y = data.matrix(y_train),
 coef(p6_lasso)</code></pre>
 <pre><code>## 26 x 1 sparse Matrix of class &quot;dgCMatrix&quot;
 ##                              s0
-## (Intercept)        1.200754e+02
-## symboling          .           
-## normalized_losses  .           
-## make               .           
-## fuel_type          .           
-## aspiration         .           
-## num_of_doors       .           
-## body_style         .           
-## drive_wheels      -9.937101e+00
-## engine_location    .           
-## wheel_base         .           
-## length             .           
-## width              .           
-## height             .           
-## curb_weight       -1.636522e-04
-## engine_type        .           
-## num_of_cylinders   .           
-## engine_size        .           
-## fuel_system        .           
-## bore               .           
-## stroke             .           
-## compression_ratio  .           
-## horsepower         .           
-## peak_rpm           .           
-## city_mpg           .           
-## highway_mpg        .</code></pre>
-<p>The resulting model is <code>price ~ drive_wheels + curb_weight</code>, all other predictors’ coefficients were shrunken to zero. Following are the predictions on the test set using the resulting model and the corresponding test MSE.</p>
+## (Intercept)       -41251.436318
+## symboling              .       
+## normalized_losses      .       
+## make                 -62.433976
+## fuel_type              .       
+## aspiration             .       
+## num_of_doors           .       
+## body_style             .       
+## drive_wheels           .       
+## engine_location     3057.137105
+## wheel_base             .       
+## length                 .       
+## width                549.155503
+## height                 .       
+## curb_weight            1.468725
+## engine_type            .       
+## num_of_cylinders       .       
+## engine_size           53.920240
+## fuel_system            .       
+## bore                   .       
+## stroke                 .       
+## compression_ratio      .       
+## horsepower            56.989237
+## peak_rpm               .       
+## city_mpg               .       
+## highway_mpg            .</code></pre>
+<p>The resulting model is <code>price ~ make + engine_location + width + curb_weight + engine_size + horsepower</code>, all other predictors’ coefficients were shrunken to zero.<br />
+Following are the predictions on the test set using the resulting model and the corresponding test MSE.</p>
 <pre class="r"><code># Make predictions
 p6_lasso_pred &lt;- predict(p6_lasso, newx = data.matrix(x_test), s = p6_lasso_cv$lambda.1se)
 
 # Compute test MSE
 p6_MSEP &lt;- mean((y_test - p6_lasso_pred)^2)
 p6_MSEP</code></pre>
-<pre><code>## [1] 3035.552</code></pre>
+<pre><code>## [1] 21670879</code></pre>
 </div>
 </div>
 <div id="points-repeat-the-previous-question-but-instead-of-using-lasso-use-a-generalized-additive-model-gam." class="section level3">
 <h3>7)(15 points) Repeat the previous question but instead of using LASSO use a generalized additive model (GAM).</h3>
-<p>For this problem I used the function <code>gam()</code> in package <strong>mgcv</strong>. I started fitting a GAM model with the two predictors selected in problem 6) by LASSO. This are: <strong>drive_wheels</strong> and <strong>curb_weight</strong>. Then, I fitted different GAM models and computed the test MSE with 5 fold cross validation.</p>
+<p>For this problem I used the function <code>gam()</code> in package <strong>mgcv</strong>. I started fitting a GAM model with the predictors selected in problem 6) by LASSO. This are: make, engine_location, width, curb_weight, engine_size, and horsepower. Then, I fitted different GAM models and computed the test MSE with 10 fold cross validation.</p>
 <p>Finally, I choosed the GAM model with smallest test MSE.</p>
 <div id="gam-1" class="section level4">
 <h4>7.1) GAM 1</h4>
-<p>In this model I used a smoother for variable and <strong>curb_weight</strong> and included <strong>drive_wheels</strong> as a linear term. When we include a linear term with a categorical variable (like in this case), the GAM function fits a model with a fixed effect for each level of the category.</p>
+<p>In this model I used a smoother for variables <strong>width</strong>, <strong>curb_weight</strong>, <strong>engine_size</strong>, <strong>horsepower</strong> and included <strong>drive_wheels</strong> and <strong>engine_location</strong> as a linear terms. When we include a linear term with a categorical variable (like in this case), the GAM function fits a model with a fixed effect for each level of the category.</p>
 <pre class="r"><code># GAM model with 10 fold CV
 set.seed(1234)
 df7 &lt;- cars
@@ -845,9 +930,10 @@ df7 &lt;- cars
 df7$fold &lt;- sample(1:10, 205, replace = TRUE)
 p7_MSEP &lt;- list()
 
-# price ~ curb_weight + drive_wheels
+# price ~ drive_wheels + engine_location + length + curb_weight + engine_size + highway_mpg
 for (i in 1:10){
-  gam_temp &lt;- gam(price ~ s(curb_weight) + drive_wheels, 
+  gam_temp &lt;- gam(price ~ drive_wheels + engine_location + s(width)
+                  + s(curb_weight) + s(engine_size) + s(horsepower),
                   data = df7[!(df7$fold == i), ], method = &quot;REML&quot;, select = TRUE)
   # Predictions model gam_temp
   gam_temp_pred &lt;- predict.gam(gam_temp, newdata = df7[(df7$fold == i), ])
@@ -857,25 +943,26 @@ for (i in 1:10){
 
 # MSEP for different folds
 unlist(p7_MSEP) </code></pre>
-<pre><code>##  [1] 1973.5322  707.5448  840.8662 2863.8282 2179.1946 2604.9596 2462.1981
-##  [8] 2011.7977 2301.7482 2155.1615</code></pre>
+<pre><code>##  [1]  7559961  6763730 24519172 39526409  6169915 50907957  6139796
+##  [8] 11395538  5628761  5500033</code></pre>
 <pre class="r"><code># Mean MSEP
 mean(unlist(p7_MSEP))</code></pre>
-<pre><code>## [1] 2010.083</code></pre>
+<pre><code>## [1] 16411127</code></pre>
 </div>
 <div id="gam-2" class="section level4">
 <h4>7.2) GAM 2</h4>
-<p>This GAM model is similar to the previous but now I am specifying <code>s(curb_weight, by = drive_wheels)</code> to fit different smooths for each level of the categorical variable. This is called “smooth factor interaction”.</p>
-<pre class="r"><code># GAM model with 5 fold CV
+<p>This GAM model is similar to the previous but now I am specifying <code>s(horsepower, by = engine_location)</code> to fit different smooths for each level of the categorical variable. This is called “smooth factor interaction”.</p>
+<pre class="r"><code># GAM model with 10 fold CV
 set.seed(1234)
 df7 &lt;- cars
 
 df7$fold &lt;- sample(1:10, 205, replace = TRUE)
 p7_MSEP &lt;- list()
 
-# price ~ curb_weight + drive_wheels
+# price ~ drive_wheels + length + curb_weight + engine_size + highway_mpg
 for (i in 1:10){
-  gam_temp &lt;- gam(price ~ s(curb_weight, by = drive_wheels), 
+  gam_temp &lt;- gam(price ~ drive_wheels + s(width)
+                  + s(curb_weight) + s(engine_size) + s(horsepower, by = engine_location),
                   data = df7[!(df7$fold == i), ], method = &quot;REML&quot;, select = TRUE)
   # Predictions model gam_temp
   gam_temp_pred &lt;- predict.gam(gam_temp, newdata = df7[(df7$fold == i), ])
@@ -885,25 +972,26 @@ for (i in 1:10){
 
 # MSEP for different folds
 unlist(p7_MSEP) </code></pre>
-<pre><code>##  [1] 2134.2229  707.9221  761.6373 2938.0927 2196.5833 2536.8566 2513.4676
-##  [8] 1937.5317 2023.3265 1861.8313</code></pre>
+<pre><code>##  [1]  7509187  6780296 24186456 39510425  6529835 51048495  6144899
+##  [8] 11311768  5605478  5510205</code></pre>
 <pre class="r"><code># Mean MSEP
 mean(unlist(p7_MSEP))</code></pre>
-<pre><code>## [1] 1961.147</code></pre>
+<pre><code>## [1] 16413704</code></pre>
 </div>
 <div id="gam-3" class="section level4">
 <h4>7.2) GAM 3</h4>
-<p>This model is combination of the previous two models. Here I am model a smooth-factor interaction with <code>s(curb_weight, by = drive_wheels)</code> and also including a varying intercept in case the different categories are different in overall means in addition to the shape of the smooths.</p>
-<pre class="r"><code># GAM model with 5 fold CV
+<p>This model is a combination of the previous two models. Here I am modeling a smooth-factor interaction with <code>s(horsepower, by = engine_location)</code> and also including a varying intercept (the linear <strong>engine_location</strong>). This will result in an improvement in case the different categories are different in overall means in addition to the shape of the smooths.</p>
+<pre class="r"><code># GAM model with 10 fold CV
 set.seed(1234)
 df7 &lt;- cars
 
 df7$fold &lt;- sample(1:10, 205, replace = TRUE)
 p7_MSEP &lt;- list()
 
-# price ~ curb_weight + drive_wheels
+# price ~ drive_wheels + engine_location + length + curb_weight + engine_size + highway_mpg
 for (i in 1:10){
-  gam_temp &lt;- gam(price ~ s(curb_weight, by = drive_wheels) + drive_wheels, 
+  gam_temp &lt;- gam(price ~ drive_wheels + engine_location + s(width)
+                  + s(curb_weight) + s(engine_size) + s(horsepower, by = engine_location),
                   data = df7[!(df7$fold == i), ], method = &quot;REML&quot;, select = TRUE)
   # Predictions model gam_temp
   gam_temp_pred &lt;- predict.gam(gam_temp, newdata = df7[(df7$fold == i), ])
@@ -913,25 +1001,25 @@ for (i in 1:10){
 
 # MSEP for different folds
 unlist(p7_MSEP) </code></pre>
-<pre><code>##  [1] 2188.1155  705.9113  768.1485 2956.7279 2192.8590 2245.3175 2488.8341
-##  [8] 1983.2362 2024.1830 1875.5779</code></pre>
+<pre><code>##  [1]  7561750  6764076 24519143 39526587  6170054 50908202  6139432
+##  [8] 11394694  5629081  5499898</code></pre>
 <pre class="r"><code># Mean MSEP
 mean(unlist(p7_MSEP))</code></pre>
-<pre><code>## [1] 1942.891</code></pre>
+<pre><code>## [1] 16411292</code></pre>
 </div>
 <div id="gam-4" class="section level4">
 <h4>7.2) GAM 4</h4>
-<p>Finally, I fitted a last GAM models without <strong>drive_wheels</strong> and only considering a smooth for the predictor <strong>curb_weight</strong>.</p>
-<pre class="r"><code># GAM model with 5 fold CV
+<p>Finally, I fitted a last GAM model without linear terms; only considering smooths for the continuos predictors.</p>
+<pre class="r"><code># GAM model with 10 fold CV
 set.seed(1234)
 df7 &lt;- cars
 
 df7$fold &lt;- sample(1:10, 205, replace = TRUE)
 p7_MSEP &lt;- list()
 
-# price ~ curb_weight
+# price ~ drive_wheels + engine_location + length + curb_weight + engine_size + highway_mpg
 for (i in 1:10){
-  gam_temp &lt;- gam(price ~ s(curb_weight), 
+  gam_temp &lt;- gam(price ~ s(width) + s(curb_weight) + s(engine_size) + s(horsepower),
                   data = df7[!(df7$fold == i), ], method = &quot;REML&quot;, select = TRUE)
   # Predictions model gam_temp
   gam_temp_pred &lt;- predict.gam(gam_temp, newdata = df7[(df7$fold == i), ])
@@ -941,33 +1029,33 @@ for (i in 1:10){
 
 # MSEP for different folds
 unlist(p7_MSEP) </code></pre>
-<pre><code>##  [1] 1922.7018  748.7312  782.8389 2903.4584 2191.4727 2695.2607 2119.4842
-##  [8] 1977.3766 2133.2765 2261.6005</code></pre>
+<pre><code>##  [1]  9406306  9906989 22583957 52967969 11918524 51985440  5755281
+##  [8] 17740862  4320213  3490733</code></pre>
 <pre class="r"><code># Mean MSEP
 mean(unlist(p7_MSEP))</code></pre>
-<pre><code>## [1] 1973.62</code></pre>
-<p>The GAM model with smallest test MSE is GAM 3, namely: <code>price ~ s(curb_weight, by = drive_wheels) + drive_wheels</code></p>
+<pre><code>## [1] 19007627</code></pre>
+<p>The GAM model with smallest test MSE is GAM 1, namely: <code>price ~ drive_wheels + engine_location + s(width) + s(curb_weight) + s(engine_size) + s(horsepower)</code></p>
 </div>
 </div>
 <div id="points-if-you-have-to-choose-between-using-the-lasso-or-a-gam-model-which-one-would-you-choose" class="section level3">
 <h3>8) (5 points) If you have to choose between using the LASSO or a GAM model, which one would you choose?</h3>
-<p>Using the <strong>cars</strong> data set the test MSE for the LASSO model was 3035.55, while for the best GAM model was 1942.89. Taking this into account, I prefer the GAM model for this data set.</p>
+<p>Using the <strong>cars</strong> data set the test MSE for the LASSO model was 21670879, while for the best GAM model was 16411127. Taking this into account, I prefer the GAM model for this data set.</p>
 </div>
 <div id="points-read-the-following-dataset-into-r-using-the-code-below.-use-it-to-predict-the-variable-violentcrimesperpop-by-using-any-model-that-we-have-covered-so-far-note-though-dont-use-trees-yet.-thats-not-on-this-exam." class="section level3">
 <h3>9) (30 points) Read the following dataset into R using the code below. Use it to predict the variable “ViolentCrimesPerPop” by using any model that we have covered so far (Note though: Don’t use trees yet. That’s not on this exam.)</h3>
-<div id="data-import-and-cleaning-2" class="section level4">
+<div id="data-import-and-cleaning-1" class="section level4">
 <h4>9.1) Data import and cleaning</h4>
 <p>The first step is to import the data.</p>
 <pre class="r"><code># Data import
 # https://archive.ics.uci.edu/ml/datasets/Communities+and+Crime
-crimes &lt;- read.csv(&quot;https://bit.ly/2CJ7Wko&quot;, header = FALSE)
+crimes &lt;- read.csv(&quot;https://bit.ly/2CJ7Wko&quot;, header = FALSE, na.strings = &quot;?&quot;)
 
 # Structure of data
 str(crimes, list.len = ncol(crimes))</code></pre>
 <pre><code>## 'data.frame':    1994 obs. of  128 variables:
 ##  $ V1  : int  8 53 24 34 42 6 44 6 21 29 ...
-##  $ V2  : Factor w/ 109 levels &quot;?&quot;,&quot;1&quot;,&quot;101&quot;,..: 1 1 1 58 107 1 79 1 1 1 ...
-##  $ V3  : Factor w/ 800 levels &quot;?&quot;,&quot;100&quot;,&quot;1000&quot;,..: 1 1 1 727 519 1 283 1 1 1 ...
+##  $ V2  : int  NA NA NA 5 95 NA 7 NA NA NA ...
+##  $ V3  : int  NA NA NA 81440 6096 NA 41500 NA NA NA ...
 ##  $ V4  : Factor w/ 1828 levels &quot;Aberdeencity&quot;,..: 796 1626 2 1788 142 1520 840 1462 669 288 ...
 ##  $ V5  : int  1 1 1 1 1 1 1 1 1 1 ...
 ##  $ V6  : num  0.19 0 0 0.04 0.01 0.02 0.01 0.01 0.03 0.01 ...
@@ -995,7 +1083,7 @@ str(crimes, list.len = ncol(crimes))</code></pre>
 ##  $ V28 : num  0.32 0.33 0.27 0.39 0.28 0.77 0.4 0.08 0.19 0.11 ...
 ##  $ V29 : num  0.27 0.16 0.07 0.16 0 0.28 0.24 0.17 0.1 0.09 ...
 ##  $ V30 : num  0.27 0.3 0.29 0.25 0.74 0.52 0.86 0.27 0.26 0.33 ...
-##  $ V31 : Factor w/ 98 levels &quot;?&quot;,&quot;0&quot;,&quot;0.01&quot;,..: 38 24 30 38 53 50 26 20 31 19 ...
+##  $ V31 : num  0.36 0.22 0.28 0.36 0.51 0.48 0.24 0.18 0.29 0.17 ...
 ##  $ V32 : num  0.41 0.35 0.39 0.44 0.48 0.6 0.36 0.21 0.22 0.8 ...
 ##  $ V33 : num  0.08 0.01 0.01 0.01 0 0.01 0.01 0.03 0.04 0 ...
 ##  $ V34 : num  0.19 0.24 0.27 0.1 0.06 0.12 0.11 0.64 0.45 0.11 ...
@@ -1066,38 +1154,35 @@ str(crimes, list.len = ncol(crimes))</code></pre>
 ##  $ V99 : num  0.5 0.34 0.54 0.73 0.64 0.49 0.77 0.52 0.48 0.34 ...
 ##  $ V100: num  0.51 0.6 0.67 0.64 0.61 0.73 0.91 0.79 0.79 0.23 ...
 ##  $ V101: num  0.64 0.52 0.56 0.65 0.53 0.64 0.84 0.78 0.75 0.09 ...
-##  $ V102: Factor w/ 39 levels &quot;?&quot;,&quot;0&quot;,&quot;0.01&quot;,..: 5 1 1 1 1 1 1 1 1 1 ...
-##  $ V103: Factor w/ 53 levels &quot;?&quot;,&quot;0&quot;,&quot;0.02&quot;,..: 14 1 1 1 1 1 1 1 1 1 ...
-##  $ V104: Factor w/ 35 levels &quot;?&quot;,&quot;0&quot;,&quot;0.37&quot;,..: 31 1 1 1 1 1 1 1 1 1 ...
-##  $ V105: Factor w/ 56 levels &quot;?&quot;,&quot;0&quot;,&quot;0.01&quot;,..: 15 1 1 1 1 1 1 1 1 1 ...
-##  $ V106: Factor w/ 45 levels &quot;?&quot;,&quot;0&quot;,&quot;0.01&quot;,..: 8 1 1 1 1 1 1 1 1 1 ...
-##  $ V107: Factor w/ 60 levels &quot;?&quot;,&quot;0&quot;,&quot;0.02&quot;,..: 19 1 1 1 1 1 1 1 1 1 ...
-##  $ V108: Factor w/ 76 levels &quot;?&quot;,&quot;0&quot;,&quot;0.02&quot;,..: 43 1 1 1 1 1 1 1 1 1 ...
-##  $ V109: Factor w/ 53 levels &quot;?&quot;,&quot;0&quot;,&quot;0.02&quot;,..: 14 1 1 1 1 1 1 1 1 1 ...
-##  $ V110: Factor w/ 77 levels &quot;?&quot;,&quot;0&quot;,&quot;0.09&quot;,..: 71 1 1 1 1 1 1 1 1 1 ...
-##  $ V111: Factor w/ 75 levels &quot;?&quot;,&quot;0&quot;,&quot;0.06&quot;,..: 68 1 1 1 1 1 1 1 1 1 ...
-##  $ V112: Factor w/ 74 levels &quot;?&quot;,&quot;0&quot;,&quot;0.01&quot;,..: 5 1 1 1 1 1 1 1 1 1 ...
-##  $ V113: Factor w/ 55 levels &quot;?&quot;,&quot;0&quot;,&quot;0.01&quot;,..: 9 1 1 1 1 1 1 1 1 1 ...
-##  $ V114: Factor w/ 51 levels &quot;?&quot;,&quot;0&quot;,&quot;0.01&quot;,..: 11 1 1 1 1 1 1 1 1 1 ...
-##  $ V115: Factor w/ 73 levels &quot;?&quot;,&quot;0&quot;,&quot;0.01&quot;,..: 9 1 1 1 1 1 1 1 1 1 ...
-##  $ V116: Factor w/ 31 levels &quot;?&quot;,&quot;0&quot;,&quot;0.01&quot;,..: 4 1 1 1 1 1 1 1 1 1 ...
-##  $ V117: Factor w/ 16 levels &quot;?&quot;,&quot;0&quot;,&quot;0.07&quot;,..: 10 1 1 1 1 1 1 1 1 1 ...
-##  $ V118: Factor w/ 78 levels &quot;?&quot;,&quot;0&quot;,&quot;0.01&quot;,..: 31 1 1 1 1 1 1 1 1 1 ...
+##  $ V102: num  0.03 NA NA NA NA NA NA NA NA NA ...
+##  $ V103: num  0.13 NA NA NA NA NA NA NA NA NA ...
+##  $ V104: num  0.96 NA NA NA NA NA NA NA NA NA ...
+##  $ V105: num  0.17 NA NA NA NA NA NA NA NA NA ...
+##  $ V106: num  0.06 NA NA NA NA NA NA NA NA NA ...
+##  $ V107: num  0.18 NA NA NA NA NA NA NA NA NA ...
+##  $ V108: num  0.44 NA NA NA NA NA NA NA NA NA ...
+##  $ V109: num  0.13 NA NA NA NA NA NA NA NA NA ...
+##  $ V110: num  0.94 NA NA NA NA NA NA NA NA NA ...
+##  $ V111: num  0.93 NA NA NA NA NA NA NA NA NA ...
+##  $ V112: num  0.03 NA NA NA NA NA NA NA NA NA ...
+##  $ V113: num  0.07 NA NA NA NA NA NA NA NA NA ...
+##  $ V114: num  0.1 NA NA NA NA NA NA NA NA NA ...
+##  $ V115: num  0.07 NA NA NA NA NA NA NA NA NA ...
+##  $ V116: num  0.02 NA NA NA NA NA NA NA NA NA ...
+##  $ V117: num  0.57 NA NA NA NA NA NA NA NA NA ...
+##  $ V118: num  0.29 NA NA NA NA NA NA NA NA NA ...
 ##  $ V119: num  0.12 0.02 0.01 0.02 0.04 0.01 0.05 0.01 0.04 0 ...
 ##  $ V120: num  0.26 0.12 0.21 0.39 0.09 0.58 0.08 0.33 0.17 0.47 ...
 ##  $ V121: num  0.2 0.45 0.02 0.28 0.02 0.1 0.06 0 0.04 0.11 ...
-##  $ V122: Factor w/ 64 levels &quot;?&quot;,&quot;0&quot;,&quot;0.01&quot;,..: 8 1 1 1 1 1 1 1 1 1 ...
-##  $ V123: Factor w/ 39 levels &quot;?&quot;,&quot;0&quot;,&quot;0.01&quot;,..: 6 1 1 1 1 1 1 1 1 1 ...
-##  $ V124: Factor w/ 73 levels &quot;?&quot;,&quot;0&quot;,&quot;0.01&quot;,..: 64 1 1 1 1 1 1 1 1 1 ...
-##  $ V125: Factor w/ 4 levels &quot;?&quot;,&quot;0&quot;,&quot;0.5&quot;,..: 3 1 1 1 1 1 1 1 1 1 ...
+##  $ V122: num  0.06 NA NA NA NA NA NA NA NA NA ...
+##  $ V123: num  0.04 NA NA NA NA NA NA NA NA NA ...
+##  $ V124: num  0.9 NA NA NA NA NA NA NA NA NA ...
+##  $ V125: num  0.5 NA NA NA NA NA NA NA NA NA ...
 ##  $ V126: num  0.32 0 0 0 0 0 0 0 0 0 ...
-##  $ V127: Factor w/ 52 levels &quot;?&quot;,&quot;0&quot;,&quot;0.01&quot;,..: 16 1 1 1 1 1 1 1 1 1 ...
+##  $ V127: num  0.14 NA NA NA NA NA NA NA NA NA ...
 ##  $ V128: num  0.2 0.67 0.43 0.12 0.03 0.14 0.03 0.55 0.53 0.15 ...</code></pre>
-<p>We can see that the data is imported as an object of class “data.frame”. The <code>str()</code> function displays the structure of the data and here we can see that some variables have “?” values. These should be NA instead, so I am going to replace all the “?” for NA.</p>
-<pre class="r"><code># Replace ? by NA
-crimes &lt;-  replace(crimes, crimes == &quot;?&quot;, NA)</code></pre>
-<p>The next step is to read the data dictionary in the UCI Machine Learning Repository to check if the variables were imported correctly.</p>
-<p>The data dictionary also tells that the some variables are not predictive:</p>
+<p>We can see that the data is imported as an object of class “data.frame”. The <code>str()</code> function displays the structure of the data and we can see that there are missing values.</p>
+<p>The next step is to read the data dictionary in the UCI Machine Learning Repository to check if the variables were imported correctly. The data dictionary also tells that the some variables are not predictive:</p>
 <ul>
 <li>V1 is state number. Not predictive.<br />
 </li>
@@ -1109,63 +1194,44 @@ crimes &lt;-  replace(crimes, crimes == &quot;?&quot;, NA)</code></pre>
 </li>
 <li>V5 is fold number for non-random 10 fold cross validation. Not predictive</li>
 </ul>
-<p>Hence, I removed these variables from the data set. (I also removed V125, which is a factor that has a lot of missing values and makes impossible to use glmnet for variable selection).</p>
+<p>Hence, I removed these variables from the data set.</p>
 <pre class="r"><code># Remove not predictive variables
 crimes &lt;- crimes %&gt;% 
-  select(-c(V1, V2, V3, V4, V5, V125))</code></pre>
-<p>Furthermore, the output from <code>str()</code> function also shows that some variables have been imported as factors, while others as numeric. The next code is to convert from factor to numeric some variables.</p>
-<pre class="r"><code># Using data dictionary in UCI, define variables correctly
-crimes &lt;- crimes %&gt;% 
-  mutate(V31 = as.numeric(as.character(V31))) %&gt;%
-  mutate(V102 = as.numeric(as.character(V102))) %&gt;%
-  mutate(V103 = as.numeric(as.character(V103))) %&gt;%
-  mutate(V104 = as.numeric(as.character(V104))) %&gt;%
-  mutate(V105 = as.numeric(as.character(V105))) %&gt;%
-  mutate(V106 = as.numeric(as.character(V106))) %&gt;%
-  mutate(V107 = as.numeric(as.character(V107))) %&gt;%
-  mutate(V108 = as.numeric(as.character(V108))) %&gt;%
-  mutate(V109 = as.numeric(as.character(V109))) %&gt;%
-  mutate(V110 = as.numeric(as.character(V110))) %&gt;%
-  mutate(V111 = as.numeric(as.character(V111))) %&gt;%
-  mutate(V112 = as.numeric(as.character(V112))) %&gt;%
-  mutate(V113 = as.numeric(as.character(V113))) %&gt;%
-  mutate(V114 = as.numeric(as.character(V114))) %&gt;%
-  mutate(V115 = as.numeric(as.character(V115))) %&gt;%
-  mutate(V116 = as.numeric(as.character(V116))) %&gt;%
-  mutate(V117 = as.numeric(as.character(V117))) %&gt;%
-  mutate(V118 = as.numeric(as.character(V118))) %&gt;% 
-  mutate(V122 = as.numeric(as.character(V122))) %&gt;% 
-  mutate(V123 = as.numeric(as.character(V123))) %&gt;%
-  mutate(V124 = as.numeric(as.character(V124))) %&gt;%
-  mutate(V127 = as.numeric(as.character(V127)))</code></pre>
+  select(-c(V1, V2, V3, V4, V5))</code></pre>
 </div>
 <div id="imputation-for-missing-values-2" class="section level4">
 <h4>9.2) Imputation for missing values</h4>
-<p>here are several variables with NA values. I used function <code>mice()</code> in package <strong>mice</strong> to impute values for these variables.</p>
+<p>As mentioned before, there are several variables with NA values. I used function <code>mice()</code> in package <strong>mice</strong> to impute values for these variables.</p>
 <pre class="r"><code># Imputation
-temp_data &lt;- mice(crimes, m = 3, maxit = 5, meth = 'pmm', seed = 1234)</code></pre>
+temp_data &lt;- mice(crimes, m = 3, maxit = 5, meth = &quot;pmm&quot;, seed = 1234)</code></pre>
 <pre><code>## 
 ##  iter imp variable
-##   1   1  V31  V102  V103  V104  V105  V106  V107  V108  V110  V111  V112  V113  V114  V115  V116  V117  V118  V122  V123  V124  V127
-##   1   2  V31  V102  V103  V104  V105  V106  V107  V108  V110  V111  V112  V113  V114  V115  V116  V117  V118  V122  V123  V124  V127
-##   1   3  V31  V102  V103  V104  V105  V106  V107  V108  V110  V111  V112  V113  V114  V115  V116  V117  V118  V122  V123  V124  V127
-##   2   1  V31  V102  V103  V104  V105  V106  V107  V108  V110  V111  V112  V113  V114  V115  V116  V117  V118  V122  V123  V124  V127
-##   2   2  V31  V102  V103  V104  V105  V106  V107  V108  V110  V111  V112  V113  V114  V115  V116  V117  V118  V122  V123  V124  V127
-##   2   3  V31  V102  V103  V104  V105  V106  V107  V108  V110  V111  V112  V113  V114  V115  V116  V117  V118  V122  V123  V124  V127
-##   3   1  V31  V102  V103  V104  V105  V106  V107  V108  V110  V111  V112  V113  V114  V115  V116  V117  V118  V122  V123  V124  V127
-##   3   2  V31  V102  V103  V104  V105  V106  V107  V108  V110  V111  V112  V113  V114  V115  V116  V117  V118  V122  V123  V124  V127
-##   3   3  V31  V102  V103  V104  V105  V106  V107  V108  V110  V111  V112  V113  V114  V115  V116  V117  V118  V122  V123  V124  V127
-##   4   1  V31  V102  V103  V104  V105  V106  V107  V108  V110  V111  V112  V113  V114  V115  V116  V117  V118  V122  V123  V124  V127
-##   4   2  V31  V102  V103  V104  V105  V106  V107  V108  V110  V111  V112  V113  V114  V115  V116  V117  V118  V122  V123  V124  V127
-##   4   3  V31  V102  V103  V104  V105  V106  V107  V108  V110  V111  V112  V113  V114  V115  V116  V117  V118  V122  V123  V124  V127
-##   5   1  V31  V102  V103  V104  V105  V106  V107  V108  V110  V111  V112  V113  V114  V115  V116  V117  V118  V122  V123  V124  V127
-##   5   2  V31  V102  V103  V104  V105  V106  V107  V108  V110  V111  V112  V113  V114  V115  V116  V117  V118  V122  V123  V124  V127
-##   5   3  V31  V102  V103  V104  V105  V106  V107  V108  V110  V111  V112  V113  V114  V115  V116  V117  V118  V122  V123  V124  V127</code></pre>
-<pre><code>## Warning: Number of logged events: 316</code></pre>
+##   1   1  V31  V102  V103  V104  V105  V106  V107  V108  V110  V111  V112  V113  V114  V115  V116  V117  V118  V122  V123  V124  V125  V127
+##   1   2  V31  V102  V103  V104  V105  V106  V107  V108  V110  V111  V112  V113  V114  V115  V116  V117  V118  V122  V123  V124  V125  V127
+##   1   3  V31  V102  V103  V104  V105  V106  V107  V108  V110  V111  V112  V113  V114  V115  V116  V117  V118  V122  V123  V124  V125  V127
+##   2   1  V31  V102  V103  V104  V105  V106  V107  V108  V110  V111  V112  V113  V114  V115  V116  V117  V118  V122  V123  V124  V125  V127
+##   2   2  V31  V102  V103  V104  V105  V106  V107  V108  V110  V111  V112  V113  V114  V115  V116  V117  V118  V122  V123  V124  V125  V127
+##   2   3  V31  V102  V103  V104  V105  V106  V107  V108  V110  V111  V112  V113  V114  V115  V116  V117  V118  V122  V123  V124  V125  V127
+##   3   1  V31  V102  V103  V104  V105  V106  V107  V108  V110  V111  V112  V113  V114  V115  V116  V117  V118  V122  V123  V124  V125  V127
+##   3   2  V31  V102  V103  V104  V105  V106  V107  V108  V110  V111  V112  V113  V114  V115  V116  V117  V118  V122  V123  V124  V125  V127
+##   3   3  V31  V102  V103  V104  V105  V106  V107  V108  V110  V111  V112  V113  V114  V115  V116  V117  V118  V122  V123  V124  V125  V127
+##   4   1  V31  V102  V103  V104  V105  V106  V107  V108  V110  V111  V112  V113  V114  V115  V116  V117  V118  V122  V123  V124  V125  V127
+##   4   2  V31  V102  V103  V104  V105  V106  V107  V108  V110  V111  V112  V113  V114  V115  V116  V117  V118  V122  V123  V124  V125  V127
+##   4   3  V31  V102  V103  V104  V105  V106  V107  V108  V110  V111  V112  V113  V114  V115  V116  V117  V118  V122  V123  V124  V125  V127
+##   5   1  V31  V102  V103  V104  V105  V106  V107  V108  V110  V111  V112  V113  V114  V115  V116  V117  V118  V122  V123  V124  V125  V127
+##   5   2  V31  V102  V103  V104  V105  V106  V107  V108  V110  V111  V112  V113  V114  V115  V116  V117  V118  V122  V123  V124  V125  V127
+##   5   3  V31  V102  V103  V104  V105  V106  V107  V108  V110  V111  V112  V113  V114  V115  V116  V117  V118  V122  V123  V124  V125  V127</code></pre>
+<pre><code>## Warning: Number of logged events: 331</code></pre>
+<p>Next I used the function <code>complete()</code>, also from <strong>mice</strong> package, to complete the data and stored the data in a new data frame called <strong>df9</strong>.</p>
 <pre class="r"><code># Complete data
 df9 &lt;- complete(temp_data, 1)
 
-# For some reason mice doesn't impute in V109, so I did it manually
+# Problem with V109
+summary(df9$V109)</code></pre>
+<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max.    NA's 
+##  0.0000  0.1300  0.1800  0.2175  0.2500  1.0000    1675</code></pre>
+<p>For some reason mice doesn’t impute in V109, so I did it manually. I imputed the median.</p>
+<pre class="r"><code># Manually impute for V109
 imp_V109 &lt;- median(df9$V109, na.rm = TRUE)
 df9$V109[which(is.na(df9$V109))] &lt;- imp_V109 </code></pre>
 </div>
@@ -1190,45 +1256,195 @@ y_test &lt;- df9[-idx, 122]</code></pre>
 <p>Finally, I fitted several elastic net models with different values of alpha and computed test MSEP for each of them.</p>
 <p>I started by creating a list where I am going to store the different elastic net models. This list is called <strong>enet_models</strong>. Then I did a for loop to get different values of alpha and passed these values to <code>cv.glmnet()</code>. The output of <code>cv.glmnet()</code> is stored in <strong>enet_models</strong> and is used in the next for loop, where the <code>predict()</code> function is used.</p>
 <p>In the second for loop, predictions are made for each value of alpha and they are stored in the object <strong>enet_pred</strong>. With those values, test MSEP is computed and stored in <strong>enet_MSEP</strong>. Finally, for every cycle of the loop <strong>alpha</strong>, <strong>enet_MSEP</strong>, and <strong>enet_name</strong> are stored in <strong>temp</strong> data set, which later is row binded to <strong>results</strong> data set.</p>
-<pre class="r"><code># Elastic net models
+<pre class="r"><code># Set seed
+set.seed(1234)
+
+# List to store elastic net models with different alphas
 enet_models &lt;- list()   
 
 for (i in 0:10){
+  # Model name
   enet_name &lt;- paste0(&quot;alpha&quot;, i/10)
-  
+  # CV to select lambda for each value of alpha
   enet_models[[enet_name]] &lt;- cv.glmnet(x = data.matrix(x_train), y = data.matrix(y_train), 
                                         type.measure = &quot;mse&quot;, alpha = i/10, family = &quot;gaussian&quot;)
 }
 
+# Data frame to store results
 results &lt;- data.frame()
 
 for (i in 0:10){
+  # Model name
   enet_name &lt;- paste0(&quot;alpha&quot;, i/10)
-  
+  # Predictions
   enet_pred &lt;- predict(enet_models[[enet_name]], 
                        s = enet_models[[enet_name]]$lambda.1se, newx = data.matrix(x_test))
-  
+  # Compute test MSEP
   enet_MSEP &lt;- mean((y_test - enet_pred)^2)
-  
+  # Store alpha, MSEP, and model name in temp data frame
   temp &lt;- data.frame(alpha = i/10, enet_MSEP = enet_MSEP, enet_name = enet_name)
-
+  # Row bind temp to results data frame
   results &lt;- rbind(results, temp)
 }
 
+# Show results
 results</code></pre>
-<pre><code>##    alpha  enet_MSEP enet_name
-## 1    0.0 0.01986555    alpha0
-## 2    0.1 0.02004721  alpha0.1
-## 3    0.2 0.01990889  alpha0.2
-## 4    0.3 0.02014104  alpha0.3
-## 5    0.4 0.02045005  alpha0.4
-## 6    0.5 0.02006727  alpha0.5
-## 7    0.6 0.02007425  alpha0.6
-## 8    0.7 0.02035230  alpha0.7
-## 9    0.8 0.01987504  alpha0.8
-## 10   0.9 0.02002301  alpha0.9
-## 11   1.0 0.02001862    alpha1</code></pre>
-<p>From <strong>results</strong>, we observe that the smallest test MSEP is obtained using <span class="math inline">\(\alpha = 0\)</span>, which corresponds to Ridge regression.</p>
+<pre><code>##    alpha   enet_MSEP enet_name
+## 1    0.0 0.006667070    alpha0
+## 2    0.1 0.004982013  alpha0.1
+## 3    0.2 0.004806970  alpha0.2
+## 4    0.3 0.004834450  alpha0.3
+## 5    0.4 0.004899841  alpha0.4
+## 6    0.5 0.004775144  alpha0.5
+## 7    0.6 0.004822186  alpha0.6
+## 8    0.7 0.004956150  alpha0.7
+## 9    0.8 0.004862721  alpha0.8
+## 10   0.9 0.004890681  alpha0.9
+## 11   1.0 0.005124086    alpha1</code></pre>
+<p>From <strong>results</strong>, we observe that the smallest test MSEP is obtained using <span class="math inline">\(\alpha = 0.5\)</span>.</p>
+</div>
+<div id="final-elastic-net-model" class="section level4">
+<h4>9.5) Final elastic net model</h4>
+<p>To conclude, I fit the elastic net model with alpha = 0.5 and show its coefficients. We can see that some of them have been shrunken to zero and others to really small values.</p>
+<pre class="r"><code># Set seed
+set.seed(1234)
+
+# CV to select the value of lambda
+enet_final_cv &lt;- cv.glmnet(x = data.matrix(x_train), y = data.matrix(y_train), 
+                           type.measure = &quot;mse&quot;, alpha = 0.5, family = &quot;gaussian&quot;)
+
+# Plot of MSE vs. log(lambda)   
+plot(enet_final_cv)    </code></pre>
+<p><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAABUAAAAPACAMAAADDuCPrAAAA7VBMVEUAAAAAADoAAGYAOjoAOmYAOpAAZmYAZrY6AAA6OgA6Ojo6OmY6OpA6ZmY6ZpA6ZrY6kJA6kLY6kNtmAABmOgBmOjpmZjpmZmZmZpBmkJBmkLZmkNtmtrZmtttmtv+QOgCQOjqQZgCQZjqQZmaQZpCQkDqQkGaQkJCQkLaQtraQttuQtv+Q29uQ2/+pqam2ZgC2Zjq2kDq2kGa2kLa2tpC2tra2ttu227a229u22/+2///bkDrbkGbbtmbbtpDbtrbb25Db27bb29vb2//b/7bb/9vb////AAD/tmb/25D/27b/29v//7b//9v////yzQfzAAAACXBIWXMAAB2HAAAdhwGP5fFlAAAgAElEQVR4nO3dC5vTyH6gcZlpFtPkwC4040mfAAmzSRZ2B3M6mG3GpyHdZOkb9vf/OKuSZal0s1T/0q1K7+95ktNjbLVdxi+6loMtAEAkGPoJAICrCCgACBFQABAioAAgREABQIiAAoAQAQUAIQIKAEIEFACECCgACBFQABAioAAgREABQIiAAoAQAQUAIQIKAEIEFACECCgACBFQABAioAAgREABQIiAAoAQAQUAIQIKAEIEFACECCgACBFQABAioAAgREABQIiAAoAQAQUAIQIKAEIEFACECCgACBFQABAioAAgREABQIiAAoAQAQUAIQIKAEIEFACECCgACBFQABAioAAgREABQIiAAoAQAQUAIQIKAEIEFACECCgACBFQABAioAAgREABQIiAAoAQAQUAIQIKAEIEFACECCgACBFQABAioAAgREABQIiAAoAQAQUAIQIKAEIEFACECCgACBFQABAioAAgREABQIiAAoAQAQUAIQIKAEIEFACECCgACBFQABAioAAgREABQIiAAoAQAQUAIQIKAEIEFACECCgACBFQABAioAAgREABQIiAAoAQAQUAIQIKAEJOBvTniwd/Vt2yDjKet7DI7XbzJl3i61aepnL3dh4Es6dfmi3t68vwl/9y+uPQLY1cZn6tcLxKHiddUmhzcRw+4vhV9qUUx6+Z27n2JpUvulZbo705U7/+F/1NNnvb7X79NjcaHT7G9EGCF1QymINzMaBhznKfLO0W2cf44CLVR1kQ0Jplbi/muwXO/tpsYfG9/6i8pdmz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" width="672" /></p>
+<pre class="r"><code># Fit the elastic net model
+enet_final &lt;- glmnet(x = data.matrix(x_train), y = data.matrix(y_train), 
+                     alpha = 0.5, family = &quot;gaussian&quot;, lambda = enet_final_cv$lambda.1se)
+# Coefficients
+coef(enet_final)</code></pre>
+<pre><code>## 122 x 1 sparse Matrix of class &quot;dgCMatrix&quot;
+##                        s0
+## (Intercept)  0.8141653697
+## V6           .           
+## V7           0.0330382474
+## V8          -0.0075820692
+## V9           0.0114380959
+## V10         -0.0299804066
+## V11          .           
+## V12          0.0006534571
+## V13         -0.1028892814
+## V14         -0.0259960410
+## V15          .           
+## V16          .           
+## V17         -0.0789971992
+## V18         -0.0508585112
+## V19         -0.1057517101
+## V20         -0.0129870582
+## V21          0.0791538535
+## V22         -0.2928632621
+## V23          0.0338010267
+## V24         -0.0157624002
+## V25          0.0138503690
+## V26          .           
+## V27         -0.0127860069
+## V28          0.0565525227
+## V29          0.0376076388
+## V30         -0.0350711902
+## V31          0.0479656215
+## V32         -0.0578237561
+## V33         -0.0089708109
+## V34          0.1331489492
+## V35          0.1116073208
+## V36         -0.2478165665
+## V37         -0.2377867830
+## V38         -0.1080590520
+## V39         -0.2784794322
+## V40          0.1545775258
+## V41          .           
+## V42         -0.0313782439
+## V43          0.1462542675
+## V44         -0.1386543156
+## V45         -0.1024025528
+## V46          .           
+## V47          .           
+## V48          0.0044462099
+## V49         -0.0939670935
+## V50         -0.1832024355
+## V51          0.2732906519
+## V52          0.0122564705
+## V53          0.0634836218
+## V54          0.0297050520
+## V55          0.1138081240
+## V56          .           
+## V57         -0.1817845520
+## V58         -0.2187270673
+## V59          0.1515294223
+## V60          .           
+## V61          0.1511782354
+## V62          .           
+## V63          .           
+## V64          .           
+## V65         -0.0954286018
+## V66          0.0059720858
+## V67         -0.0624960597
+## V68          0.0750087910
+## V69          .           
+## V70          .           
+## V71         -0.0519289917
+## V72         -0.2004792813
+## V73         -0.0746416412
+## V74          0.1334838645
+## V75          .           
+## V76          0.0009247091
+## V77          0.0001367667
+## V78          0.1104608401
+## V79          .           
+## V80          0.0237334842
+## V81          0.0491419879
+## V82         -0.0354619936
+## V83          .           
+## V84         -0.0824981675
+## V85          0.0086405301
+## V86         -0.0885778575
+## V87          .           
+## V88          0.0830537148
+## V89          0.0728738963
+## V90          .           
+## V91          .           
+## V92         -0.0494731626
+## V93          0.0667032995
+## V94         -0.0785663872
+## V95          0.0610509958
+## V96          .           
+## V97          0.1468123794
+## V98         -0.0294297451
+## V99          0.0091647185
+## V100         0.0072653867
+## V101        -0.0558800323
+## V102        -1.5482567069
+## V103         0.5173826840
+## V104        -0.3085014287
+## V105         0.4112105890
+## V106         0.0986388772
+## V107         0.0838994683
+## V108        -0.0142401745
+## V109         0.0313844299
+## V110         .           
+## V111        -0.0276188243
+## V112         .           
+## V113         0.0846552709
+## V114         0.0084125436
+## V115        -0.0668021810
+## V116        -0.1817067067
+## V117         .           
+## V118         0.0064450323
+## V119         0.0448022873
+## V120         .           
+## V121        -0.0091008230
+## V122         0.0198524874
+## V123         1.1848998489
+## V124        -0.0673155901
+## V125        -0.0016069745
+## V126         0.0488002643</code></pre>
 </div>
 </div>
 

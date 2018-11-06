@@ -3,7 +3,7 @@ title: When does the F-test reduce to a t-test?
 author: Juan M. Canovas
 date: '2018-10-29'
 slug: when-does-the-f-test-reduce-to-t-test
-categories: []
+categories: [mathematical-statistics]
 tags: [regression, doe, design_of_experiments]
 ---
 

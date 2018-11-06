@@ -10,7 +10,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 Here are links to some of my projects, homework, exams, etc. I have also included some keywords with the concepts covered in each document. As time permits I will start editing some of them in order to be true blog posts, but for the moment they are not.       
 
-[Predictive Analytics exam](/portfolio/STAT_488_Exam_1_Juan_M_Canovas.html)     
+[Predictive Analytics exam](/portfolio/Predictive_Exam_1_Juan_M_Canovas.html)     
 Regression, Ridge, LASSO, elastic net, prediction MSE, logistic regression, log loss, cross validation, missing data    
 
 [Forecasting with ARIMA model in R](/portfolio/arima_forecast_in_R.html)    
