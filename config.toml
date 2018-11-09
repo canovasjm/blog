@@ -16,6 +16,9 @@ ignoreFiles = ["\\.Rmd$", "\\.Rmarkdown$", "_files$", "_cache$"]
     name = "Contact"
     url = "/contact/"
 [[menu.main]]
+    name = "Cross Validated"
+    url = "https://stats.stackexchange.com/users/218995/juan-manuel"
+[[menu.main]]
     name = "GitHub"
     url = "https://github.com/jmcanovas"
 [[menu.main]]
