@@ -147,7 +147,7 @@ $$n_1 \big[ \frac{N \bar{y}_{1.}}{N} - (\frac{n_1 \bar{y}_{1.} + n_2 \bar{y}_{2.
 
 
 
-N is common denominator   
+$N$ is common denominator   
 
 $$n_1 \big[\frac{N \bar{y}_{1.} - n_1 \bar{y}_{1.} - n_2 \bar{y}_{2.}}{N} \big]^2$$    
 
@@ -194,7 +194,7 @@ $$n_2 \big[ \frac{N \bar{y}_{2.}}{N} - (\frac{n_1 \bar{y}_{1.} + n_2 \bar{y}_{2.
 
 
 
-N is common denominator   
+$N$ is common denominator   
 
 $$n_2 \big[\frac{N \bar{y}_{2.} - n_1 \bar{y}_{1.} - n_2 \bar{y}_{2.}}{N} \big]^2$$    
 
