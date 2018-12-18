@@ -8,4 +8,13 @@ output: html_document
 Hi! I am Juan Manuel. Proudly made in San Juan, Argentina.    
 I am also a proud [Fulbrighter](https://eca.state.gov/fulbright), currently pursuing a M.Sc. in Applied Statistics at Loyola University Chicago.   
 
-There is more information about me here: https://www.linkedin.com/in/jmcanovas/
+There is more information about me in my LinkedIn: https://www.linkedin.com/in/jmcanovas/   
+
+
+## This blog   
+
+All opinions:    
+
+* are my own,   
+* do not represent any institution or employer that I've been related to,  
+* are subject to change at any time without notice.   
