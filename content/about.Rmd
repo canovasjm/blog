@@ -9,7 +9,7 @@ Hi! I am Juan Manuel. Proudly made in San Juan, Argentina.
 
 I am also a proud [Fulbrighter](https://eca.state.gov/fulbright). I came to the US through the Fulbright Program and received a M.Sc. in Applied Statistics from Loyola University Chicago. Previously in Argentina, I received a B.Sc. in Industrial Engineering from Universidad Nacional de San Juan.    
 
-I am interested in Statistics in general, but I feel a special attraction to time series. On these days, I am in the transition from Windows to Linux.   
+I am interested in Statistics in general, but I feel a special attraction to time series. These days, I am in the transition from Windows to Linux.   
 
 There is more information about me in my LinkedIn: https://www.linkedin.com/in/jmcanovas/   
 
