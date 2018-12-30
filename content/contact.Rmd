@@ -3,6 +3,10 @@ title: "Contact"
 output: html_document
 ---
 
+
+
+![](../static/img/email.jpeg)
+
 ```{r, echo = FALSE, eval = FALSE, message = FALSE, warning = FALSE}
 library(knitr)    # For knitting document and include_graphics function
 library(jpeg)     # For grabbing the dimensions of jpeg files
@@ -15,4 +19,3 @@ email <- "C:/Users/Juan Manuel/Documents/blog/static/img/email.jpeg"
 include_graphics(email)
 ```
 
-![](../static/img/email.jpeg)
