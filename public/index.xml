@@ -6,17 +6,17 @@
     <description>Recent content on jmcanovas</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sat, 10 Nov 2018 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Mon, 31 Dec 2018 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>ARIMA from scratch</title>
-      <link>/2018/11/10/arima-from-scratch/</link>
-      <pubDate>Sat, 10 Nov 2018 00:00:00 +0000</pubDate>
+      <link>/2018/12/31/arima-from-scratch/</link>
+      <pubDate>Mon, 31 Dec 2018 00:00:00 +0000</pubDate>
       
-      <guid>/2018/11/10/arima-from-scratch/</guid>
+      <guid>/2018/12/31/arima-from-scratch/</guid>
       <description>Hi there! This post is a modification of the final project I did for my Time Series class and the idea is simple: fit an ARIMA model and make a forecast. To do so in R we can use auto.arima() function from forecast package, or we can decide what model are we going to fit and why. We will choose the latter path :)
 Here we are going to explore how the number of domestic air passengers in Argentina has evolved in the last years, fit a model to the data, and forecast the number of domestic passengers for the next twelve months.</description>
     </item>
