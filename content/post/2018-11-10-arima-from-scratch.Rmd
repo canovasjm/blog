@@ -8,7 +8,7 @@ tags: []
 ---
 
 
-Hi there! This post is a modification of the final project I did for my Time Series class and the idea is simple: fit an ARIMA model and make a forecast. To do so in R we can use `auto.arima()` from **forecast** package, or we can decide what model are we going to fit and why. We will choose the latter path :)     
+Hi there! This post is a modification of the final project I did for my Time Series class and the idea is simple: fit an ARIMA model and make a forecast. To do so in R we can use `auto.arima()` function from **forecast** package, or we can decide what model are we going to fit and why. We will choose the latter path :)     
 
 Here we are going to explore how the number of domestic air passengers in Argentina has evolved in the last years, fit a model to the data, and forecast the number of domestic passengers for the next twelve months. 
 
@@ -18,7 +18,6 @@ We will start by loading all the libraries needed:
 # Required libraries  
 library(astsa)
 library(dplyr)
-library(ggplot2)
 library(knitr)
 ```
 
@@ -26,9 +25,11 @@ library(knitr)
 
 The data was taken from **"Tablas de Movimientos y Pasajeros EANA 2014 - 2018"**, a report from Empresa Argentina de Navegacion Aerea. It can be accessed via the following link: https://www.eana.com.ar/estadisticas#informes   
   
-The data set contains a lot of information about airline passengers and flights in Argentina for the period 2014 - 2018. We will concentrate in the number of domestic airline passengers for the 54 months between January 2014 and June 2018.   
+**NOTE:** *The curious reader will note that the data file available now in EANA's website is different to the one I will work with. When I started this project, the data file available was [this](https://drive.google.com/open?id=1fm7KckXnKaHfu_RZ7FMVVC0hNJs6QD_q). At some point between August 2018 and December 2018 they changed the file including more years and modifying the some numbers.*
+
+The data set I used for my project contains a lot of information about airline passengers and flights in Argentina for the period 2014 - 2018. We will concentrate in the number of domestic airline passengers for the 54 months between January 2014 and June 2018.   
    
-The data is presented as an xlsx file and it is displayed in a way that it is hard to import in R. Hence, before importing it, I pre-cleaned it using Microsoft Excel. You can access the pre-cleaned version here.   
+The data is presented as an xlsx file and it is displayed in a way that it is hard to import in R. Hence, before importing it, I pre-cleaned it using Microsoft Excel. You can access the pre-cleaned version [here](https://drive.google.com/open?id=1ZV8cLn3RglLMw79KNUUj75mZ68axwhBY).   
 
 
 ```{r, echo = TRUE}
@@ -161,19 +162,19 @@ abline(h = 0, lwd = 1.5)
 
 ## Model fitting and cross-validation     
 
-Now that we have analyzed our data, and decided which transformations we are going to apply, we are going to select the model with cross-validation (CV). However, the cross validation procedure that we are going to apply with time series data is a little bit different to what we usually do with independent data.   
-If you want to read about CV for time series I recommend [here](https://stats.stackexchange.com/a/326247/218995), [here](https://robjhyndman.com/publications/cv-time-series/), and [here](https://robjhyndman.com/hyndsight/tscv/)     
+Now that we have analyzed our data, and decided which transformations we are going to apply, we are going to select the model with cross-validation (CV). However, the cross validation procedure that we are going to apply with time series data is a little bit different to what we usually do with independent data. If you want to read about CV for time series I recommend [here](https://stats.stackexchange.com/a/326247/218995), [here](https://robjhyndman.com/publications/cv-time-series/), and [here](https://robjhyndman.com/hyndsight/tscv/)     
 
 *Why do we need cross-validation?*. The answer is that we don't want to test our models with the same data used to train them; that would be an over optimistic scenario. Instead, we want to test our model on unseen data.   
+A graphic representation of this process is shown in Rob J Hyndman's blog post and he also provides the code to make it [here](https://gist.github.com/robjhyndman/9fa152c585442bb076eb42a30a020091)    
 
 Starting with 36 of our 54 months we are going to:
 
-1) Fit a model on train data (blue dots), 
+1) Fit a model on a train set (blue dots), 
 2) Make a prediction for the test set (red dot), 
 3) Compute the error and square it, 
 4) Increase training data by one and repeat the process.
 
-Finally, we are going to average all the squared errors getting what is known as *Mean Squareed Error (MSE)*. A graphic representation of this process is shown in Rob J Hyndman's blog post and he also provides the code to make it [here](https://gist.github.com/robjhyndman/9fa152c585442bb076eb42a30a020091)    
+(If we try to start with less than 36 months, the `arima()` function returns an error). Finally, we are going to average all the squared errors getting what is known as *Mean Squared Error (MSE)*.
 
 ```{r, echo = FALSE}
 par(mar = c(0, 0, 0, 0))
@@ -196,11 +197,7 @@ for(j in 1:20)
 text(28, 0.95, "time")
 ```
 
-
-
-Using the analysis of the previous sections, here we will fit two models to the log transformed data using the function `sarima()` from package **astsa**. This function is a wraper of `arima()`, but it returns an object called **ttable** that has the results of t-tests performed on each of the coefficients. The ttable is also printed in the summary of the model.     
-
-The objective of fitting two models is to identify whether or not a moving average component is needed. This is not really clear in the ACF/PACF and time plots analysis we made before, so we will fit one model with q = 1 and one with q = 0 and then compare AIC and BIC values.   
+Using the analysis of the previous sections and the CV validation procedure explained above, here we will fit two models to the log transformed data using the function `arima()`. The objective of fitting two models is to identify whether or not a moving average component is needed. This is not really clear in the ACF/PACF and time plots analysis we made before, so we will fit one model with q = 1 and one with q = 0 and then compare the MSE values from CV.   
 
 The models we are going to fit are:
 
@@ -208,170 +205,192 @@ The models we are going to fit are:
 **model_2**: ARIMA(p = 1, d = 1, q = 0, P = 1, D = 1, Q = 0, S = 12)
 
 
-### 8.1) Model 1    
+```{r}
+################################################################################
+# CV for model 1
+################################################################################
+i <- 36
+MSE1 <- c()
 
-Using `sarima()` from astsa package:   
+while(i < 50){
+  # Train the model with i observations
+  m1 <- arima(log_dat[1:i], 
+              order = c(1, 1, 1), 
+              seasonal = list(order = c(1, 1, 0), period = 12),
+              method = "ML")
+  # Predict observation i + 1
+  y_hat <- predict(m1, n.ahead = 1)
+  # Prediction MSE
+  MSE1 <- c(MSE1, (log_dat[i + 1] - y_hat$pred)^2)
+  # Increase i 
+  i <- i + 1
+}
 
-```{r, eval = FALSE, echo = TRUE}
-# model_1 fitting
-model_1 <- sarima(train[-1], 
-                  p = 1, d = 1, q = 1, 
-                  P = 1, D = 1, Q = 0, S = 12, 
-                  details = FALSE)
-model_1
+# Untransform data. Back to the original scale
+exp(mean(MSE1))
 ```
 
-Alternatively, we could fit the model using `arima()` from stats package, but then we would have to separately test the coefficients. Here is how to fit the model using `arima()`:     
+```{r}
+################################################################################
+# CV for model 2
+################################################################################
+i <- 36
+MSE2 <- c()
 
-```{r, eval = F, echo = TRUE}
-# model_1 fitting
-m1 <- arima(train[-1], 
-            order = c(1, 1, 1), 
-            seasonal = list(order = c(1, 1, 0), period = 12))
-m1
+while(i < 50){
+  # Train the model with i observations
+  m2 <- arima(log_dat[1:i], 
+              order = c(1, 1, 0), 
+              seasonal = list(order = c(1, 1, 0), period = 12),
+              method = "ML")
+              #optim.control = list(maxit = 1000))
+  # Predict observation i + 1
+  y_hat <- predict(m2, n.ahead = 1)
+  # Prediction MSE
+  MSE2 <- c(MSE2, (log_dat[i + 1] - y_hat$pred)^2)
+  # Increase i
+  i <- i + 1
+}
+
+# Untransform data. Back to the original scale
+exp(mean(MSE2))
+```
+
+The MSE obtained with CV is slightly better for model 1.   
+
+Now we are going to use the function `sarima()` from package **astsa**. This function is basically a wraper of `arima()`, but additionally it returns an object called **ttable** that has the results of t-tests performed on each of the coefficients. The ttable is also printed in the summary of the model. Using `sarima()` from astsa package:   
+
+**Model 1**    
+
+```{r, eval = TRUE, echo = TRUE}
+# Model_1 fitting
+m11 <- sarima(log_dat, 
+              p = 1, d = 1, q = 1, 
+              P = 1, D = 1, Q = 0, S = 12, 
+              details = FALSE)
+m11
 ```
 
 
-### 8.2) Model 2    
+**Model 2**
 
-Now we fit model 2 using `sarima()`:   
-
-```{r, eval=F,  echo = TRUE}
-# model_2 fitting
-model_2 <- sarima(train[-1], 
-                  p = 1, d = 1, q = 0, 
-                  P = 1, D = 1, Q = 0, S = 12,
-                  details = FALSE)
-model_2
+```{r, eval=TRUE, echo = TRUE}
+# Model_2 fitting
+m22 <- sarima(log_dat, 
+              p = 1, d = 1, q = 0, 
+              P = 1, D = 1, Q = 0, S = 12,
+              details = FALSE)
+m22
 ```
 
-Using `arima()`:  
 
-```{r, eval = F, echo = TRUE}
-# model_2 fitting
-m2 <- arima(train[-1], 
-            order = c(1, 1, 1), 
-            seasonal = list(order = c(1, 1, 1), period = 12))
-m2
-```   
+## Model selection   
 
-
-### 8.3) Model selection   
-
-From the tables above, we can see that the estimates of the coefficients for model 1 are all significantly different from zero; while this is not the case for model 2. In the latter, the p-value for the non seasonal autoregressive coefficient estimate is 0.59 meaning that we fail to reject the null the hypothesis that the coefficient's estimate is equal to zero.   
+From the tables above, we can see that the estimates of the coefficients for model 1 are all significantly different from zero; while this is not the case for model 2. In the latter, the p-value for the non seasonal autoregressive coefficient estimate is 0.57 meaning that we fail to reject the null the hypothesis that the coefficient's estimate is equal to zero.   
 
 Additionally, AICc and BIC values are smaller for model 1, which leads us to prefer model 1 over model 2.
 There is one step left to conclude if the model is adequate or not: residual analysis. For this analysis I used the following plots:
 
-```{r, eval = F, echo = TRUE}
-# Residual plot for model_1
-plot.ts(model_1$fit$residuals,
+```{r, eval = TRUE, echo = TRUE}
+# Residual plot for model 1
+plot.ts(m1$residuals,
         ylab = "log thousand passengers",
         main = "Model 1 residuals")
 abline(h = 0, lwd = 1.5)
 ```
 
-```{r, eval = F, echo = FALSE}
-# ACF/PACF for model_1 residuals
-res_acf <- acf2(model_1$fit$residuals,
+```{r, eval = TRUE, echo = TRUE}
+# ACF/PACF for model 1 residuals
+res_acf <- acf2(m1$residuals,
                 max.lag = 30,
                 main = "ACF for model 1 residuals")
 ```  
 
-In the time plot of the residuals for model 1, they seem to be independent. Furthermore, the ACF/PACF values are not significantly different from zero; except for the PACF values corresponding to lag three and lag twelve. This result suggests the possibility that there is still some slight seasonal regularity in the residuals, but the addition of another seasonal autoregressive component does not improve the results.      
+In the time plot of the residuals for model 1, they seem to be uncorrelated. Furthermore, the ACF/PACF values are not significantly different from zero; except for the PACF values corresponding to lag three and lag twelve. This result suggests the possibility that there is still some slight seasonal regularity in the residuals, but the addition of another seasonal autoregressive component does not improve the results.      
 
 To wrap up, selected model is model 1:   
 
-```{r, eval = F, echo = TRUE}
+```{r, eval = TRUE, echo = TRUE}
 # Coefficients estimates
 m1$coef
 
 # Coefficients' standard error
 sqrt(diag(m1$var.coef))
-sqrt(diag(model_1$fit$var.coef))
 ```  
 
 
-## 9) Forecast    
+## Forecast    
 
 For the forescast we can use `sarima.for()` from package astsa, but it automatically prints a plot of the forecasted values.   
-I wanted to show you how to do the plots instead, so we are going to use the `predict()` function to get the forecast. However, the **model_1** object we fitted with `sarima()` function is not going to work here, so in order to use the `predict()` function we are going to use the **m1** model that we created with `arima()` function.    
+I wanted to show how to do the plots instead, so we are going to use the `predict()` function to get the forecast. However, the **m11** object we fitted with `sarima()` function is not going to work here, so in order to use the `predict()` function we are going to use the **m1** model that we created with `arima()` function.    
 
-Note that the arguments of `predict()` are the name of the model and the number of time periods ahead. Since our data is monthly, we set n.ahead = 12.   
+Note that the arguments of `predict()` are the name of the model and the forecast scope. Since our data is monthly, we will set `n.ahead = 12` to predict a whole year.   
 
-```{r, eval=FALSE}
+```{r}
+m1 <- arima(log_dat, 
+              order = c(1, 1, 1), 
+              seasonal = list(order = c(1, 1, 0), period = 12),
+              method = "ML")
+```
+
+
+```{r, eval=TRUE}
 # Forecast
 m1_for <- predict(m1, n.ahead = 12)
-m2_for <- predict(m2, n.ahead = 12)
-```
-
-```{r, eval=F}
-yhat1 <- exp(m1_for$pred)
-yhat2 <- exp(m2_for$pred)
-```
-
-```{r, eval=F}
-m1_MSEP <- mean((yhat1 - dat[43:54, 3])^2) 
-m1_MSEP
-
-
-m2_MSEP <- mean((yhat2 - dat[43:54, 3])^2) 
-m2_MSEP
+head(m1_for)
 ```
 
 
-## 10) More plots: Original data + forecast
+## More plots: Original data + forecast
 
 Finally, we are going to plot the original data and our forecast. To do so we start by creating a data frame with the values of interest.   
 
-```{r, eval=F}
+```{r, echo = TRUE, eval=TRUE}
+################################################################################
 # Final values
+################################################################################
 f_values <- data.frame("Year" = c(rep(2017, 6), rep(2018, 6)), 
                        "Month" = c("Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
                                    "Jan", "Feb", "Mar", "Apr", "May", "Jun"),
-                       "Forecasted_Passengers" = round(exp(m1_for$pred), 2),
-                       "Actual_Passengers" = df[43:54, 3])
-
+                       "Forecasted_Passengers" = round(exp(m1_for$pred), 2))
 
 ################################################################################
 # Forecast plots 
 ################################################################################
 # Past data
-t <- 1:54
+t <- 1:66
 
-plot(t, rep(NA, 54), 
-     ylim = c(600, 1400),
+plot(t, rep(NA, 66), 
+     ylim = c(600, 1500),
      xlab = "t [months]",
      ylab = "thousand passengers",
-     main = "Train, test, and forecaseted passengers")
+     main = "Train data and forecaseted passengers")
 
 grid(lty = 1, col = gray(0.9))
 
 lines(t, 
-      c(df[1:42, 3], rep(NA, 12)),
+      c(df[1:54, 3], rep(NA, 12)),
       lwd = 2,
       type = "l")
 
-# Add forecasts
-lines(t, c(rep(NA, 41), df[42, 3], f_values$Forecasted_Passengers),
-      lwd = 2,
-      col = "blue")
-
-# Add actual
-lines(t, c(rep(NA, 41), df[42, 3], f_values$Actual_Passengers), 
+# Add forecasted values
+lines(t, c(rep(NA, 53), df[54, 3], f_values$Forecasted_Passengers),
       lwd = 2,
       col = "red")
 
 # Legend
 legend(x = "bottomright", 
-       legend = c("Train", "Forecast", "Test"),
-       col = c(1, 4, 2), 
-       pch = c(16, 16, 16),
+       legend = c("Train", "Forecast"),
+       col = c(1, 2), 
+       pch = c(16, 16),
        bty = "n")
 ```  
 
+Since the data taken to run the forecast was the log transformed data, it is required to untransform the data to present the results. Such values are displayed in the next table:
 
-```{r, echo = FALSE, eval=F}
+*Note: The unit of passengers in the original data set is thousands, so the number 1000 in the table corresponds to 1000000 passengers.*     
+
+```{r, echo = TRUE, eval=TRUE}
 ################################################################################
 # Forecast untransformed
 ################################################################################
@@ -383,12 +402,3 @@ f_values <- data.frame("Year" = c(rep(2018, 6), rep(2019, 6)),
 
 kable(f_values, align = "l", digits = 2)
 ```
-
-
-
-
-
-
-
-
-

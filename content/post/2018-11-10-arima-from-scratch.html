@@ -9,19 +9,19 @@ tags: []
 
 
 
-<p>Hi there! This post is a modification of the final project I did for my Time Series class and the idea is simple: fit an ARIMA model and make a forecast. To do so in R we can use <code>auto.arima()</code> from <strong>forecast</strong> package, or we can decide what model are we going to fit and why. We will choose the latter path :)</p>
+<p>Hi there! This post is a modification of the final project I did for my Time Series class and the idea is simple: fit an ARIMA model and make a forecast. To do so in R we can use <code>auto.arima()</code> function from <strong>forecast</strong> package, or we can decide what model are we going to fit and why. We will choose the latter path :)</p>
 <p>Here we are going to explore how the number of domestic air passengers in Argentina has evolved in the last years, fit a model to the data, and forecast the number of domestic passengers for the next twelve months.</p>
 <p>We will start by loading all the libraries needed:</p>
 <pre class="r"><code># Required libraries  
 library(astsa)
 library(dplyr)
-library(ggplot2)
 library(knitr)</code></pre>
 <div id="the-data" class="section level2">
 <h2>The data</h2>
 <p>The data was taken from <strong>“Tablas de Movimientos y Pasajeros EANA 2014 - 2018”</strong>, a report from Empresa Argentina de Navegacion Aerea. It can be accessed via the following link: <a href="https://www.eana.com.ar/estadisticas#informes" class="uri">https://www.eana.com.ar/estadisticas#informes</a></p>
-<p>The data set contains a lot of information about airline passengers and flights in Argentina for the period 2014 - 2018. We will concentrate in the number of domestic airline passengers for the 54 months between January 2014 and June 2018.</p>
-<p>The data is presented as an xlsx file and it is displayed in a way that it is hard to import in R. Hence, before importing it, I pre-cleaned it using Microsoft Excel. You can access the pre-cleaned version here.</p>
+<p><strong>NOTE:</strong> <em>The curious reader will note that the data file available now in EANA’s website is different to the one I will work with. When I started this project, the data file available was <a href="https://drive.google.com/open?id=1fm7KckXnKaHfu_RZ7FMVVC0hNJs6QD_q">this</a>. At some point between August 2018 and December 2018 they changed the file including more years and modifying the some numbers.</em></p>
+<p>The data set I used for my project contains a lot of information about airline passengers and flights in Argentina for the period 2014 - 2018. We will concentrate in the number of domestic airline passengers for the 54 months between January 2014 and June 2018.</p>
+<p>The data is presented as an xlsx file and it is displayed in a way that it is hard to import in R. Hence, before importing it, I pre-cleaned it using Microsoft Excel. You can access the pre-cleaned version <a href="https://drive.google.com/open?id=1ZV8cLn3RglLMw79KNUUj75mZ68axwhBY">here</a>.</p>
 <pre class="r"><code># Data import
 # Import csv file
 df &lt;- read.csv(&quot;C:/Users/Juan Manuel/Documents/STAT 498/Project/EANA/passengers_ts.csv&quot;, 
@@ -116,135 +116,337 @@ abline(h = 0, lwd = 1.5)</code></pre>
 </div>
 <div id="model-fitting-and-cross-validation" class="section level2">
 <h2>Model fitting and cross-validation</h2>
-<p>Now that we have analyzed our data, and decided which transformations we are going to apply, we are going to select the model with cross-validation (CV). However, the cross validation procedure that we are going to apply with time series data is a little bit different to what we usually do with independent data.<br />
-If you want to read about CV for time series I recommend <a href="https://stats.stackexchange.com/a/326247/218995">here</a>, <a href="https://robjhyndman.com/publications/cv-time-series/">here</a>, and <a href="https://robjhyndman.com/hyndsight/tscv/">here</a></p>
-<p><em>Why do we need cross-validation?</em>. The answer is that we don’t want to test our models with the same data used to train them; that would be an over optimistic scenario. Instead, we want to test our model on unseen data.</p>
+<p>Now that we have analyzed our data, and decided which transformations we are going to apply, we are going to select the model with cross-validation (CV). However, the cross validation procedure that we are going to apply with time series data is a little bit different to what we usually do with independent data. If you want to read about CV for time series I recommend <a href="https://stats.stackexchange.com/a/326247/218995">here</a>, <a href="https://robjhyndman.com/publications/cv-time-series/">here</a>, and <a href="https://robjhyndman.com/hyndsight/tscv/">here</a></p>
+<p><em>Why do we need cross-validation?</em>. The answer is that we don’t want to test our models with the same data used to train them; that would be an over optimistic scenario. Instead, we want to test our model on unseen data.<br />
+A graphic representation of this process is shown in Rob J Hyndman’s blog post and he also provides the code to make it <a href="https://gist.github.com/robjhyndman/9fa152c585442bb076eb42a30a020091">here</a></p>
 <p>Starting with 36 of our 54 months we are going to:</p>
 <ol style="list-style-type: decimal">
-<li>Fit a model on train data (blue dots),</li>
+<li>Fit a model on a train set (blue dots),</li>
 <li>Make a prediction for the test set (red dot),</li>
 <li>Compute the error and square it,</li>
 <li>Increase training data by one and repeat the process.</li>
 </ol>
-<p>Finally, we are going to average all the squared errors getting what is known as <em>Mean Squareed Error (MSE)</em>. A graphic representation of this process is shown in Rob J Hyndman’s blog post and he also provides the code to make it <a href="https://gist.github.com/robjhyndman/9fa152c585442bb076eb42a30a020091">here</a></p>
+<p>(If we try to start with less than 36 months, the <code>arima()</code> function returns an error). Finally, we are going to average all the squared errors getting what is known as <em>Mean Squared Error (MSE)</em>.</p>
 <p><img src="/post/2018-11-10-arima-from-scratch_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
-<p>Using the analysis of the previous sections, here we will fit two models to the log transformed data using the function <code>sarima()</code> from package <strong>astsa</strong>. This function is a wraper of <code>arima()</code>, but it returns an object called <strong>ttable</strong> that has the results of t-tests performed on each of the coefficients. The ttable is also printed in the summary of the model.</p>
-<p>The objective of fitting two models is to identify whether or not a moving average component is needed. This is not really clear in the ACF/PACF and time plots analysis we made before, so we will fit one model with q = 1 and one with q = 0 and then compare AIC and BIC values.</p>
+<p>Using the analysis of the previous sections and the CV validation procedure explained above, here we will fit two models to the log transformed data using the function <code>arima()</code>. The objective of fitting two models is to identify whether or not a moving average component is needed. This is not really clear in the ACF/PACF and time plots analysis we made before, so we will fit one model with q = 1 and one with q = 0 and then compare the MSE values from CV.</p>
 <p>The models we are going to fit are:</p>
 <p><strong>model_1</strong>: ARIMA(p = 1, d = 1, q = 1, P = 1, D = 1, Q = 0, S = 12)<br />
 <strong>model_2</strong>: ARIMA(p = 1, d = 1, q = 0, P = 1, D = 1, Q = 0, S = 12)</p>
-<div id="model-1" class="section level3">
-<h3>8.1) Model 1</h3>
-<p>Using <code>sarima()</code> from astsa package:</p>
-<pre class="r"><code># model_1 fitting
-model_1 &lt;- sarima(train[-1], 
-                  p = 1, d = 1, q = 1, 
-                  P = 1, D = 1, Q = 0, S = 12, 
-                  details = FALSE)
-model_1</code></pre>
-<p>Alternatively, we could fit the model using <code>arima()</code> from stats package, but then we would have to separately test the coefficients. Here is how to fit the model using <code>arima()</code>:</p>
-<pre class="r"><code># model_1 fitting
-m1 &lt;- arima(train[-1], 
-            order = c(1, 1, 1), 
-            seasonal = list(order = c(1, 1, 0), period = 12))
-m1</code></pre>
+<pre class="r"><code>################################################################################
+# CV for model 1
+################################################################################
+i &lt;- 36
+MSE1 &lt;- c()
+
+while(i &lt; 50){
+  # Train the model with i observations
+  m1 &lt;- arima(log_dat[1:i], 
+              order = c(1, 1, 1), 
+              seasonal = list(order = c(1, 1, 0), period = 12),
+              method = &quot;ML&quot;)
+  # Predict observation i + 1
+  y_hat &lt;- predict(m1, n.ahead = 1)
+  # Prediction MSE
+  MSE1 &lt;- c(MSE1, (log_dat[i + 1] - y_hat$pred)^2)
+  # Increase i 
+  i &lt;- i + 1
+}
+
+# Untransform data. Back to the original scale
+exp(mean(MSE1))</code></pre>
+<pre><code>## [1] 1.001412</code></pre>
+<pre class="r"><code>################################################################################
+# CV for model 2
+################################################################################
+i &lt;- 36
+MSE2 &lt;- c()
+
+while(i &lt; 50){
+  # Train the model with i observations
+  m2 &lt;- arima(log_dat[1:i], 
+              order = c(1, 1, 0), 
+              seasonal = list(order = c(1, 1, 0), period = 12),
+              method = &quot;ML&quot;)
+              #optim.control = list(maxit = 1000))
+  # Predict observation i + 1
+  y_hat &lt;- predict(m2, n.ahead = 1)
+  # Prediction MSE
+  MSE2 &lt;- c(MSE2, (log_dat[i + 1] - y_hat$pred)^2)
+  # Increase i
+  i &lt;- i + 1
+}
+
+# Untransform data. Back to the original scale
+exp(mean(MSE2))</code></pre>
+<pre><code>## [1] 1.001414</code></pre>
+<p>The MSE obtained with CV is slightly better for model 1.</p>
+<p>Now we are going to use the function <code>sarima()</code> from package <strong>astsa</strong>. This function is basically a wraper of <code>arima()</code>, but additionally it returns an object called <strong>ttable</strong> that has the results of t-tests performed on each of the coefficients. The ttable is also printed in the summary of the model. Using <code>sarima()</code> from astsa package:</p>
+<p><strong>Model 1</strong></p>
+<pre class="r"><code># Model_1 fitting
+m11 &lt;- sarima(log_dat, 
+              p = 1, d = 1, q = 1, 
+              P = 1, D = 1, Q = 0, S = 12, 
+              details = FALSE)
+m11</code></pre>
+<pre><code>## $fit
+## 
+## Call:
+## stats::arima(x = xdata, order = c(p, d, q), seasonal = list(order = c(P, D, 
+##     Q), period = S), include.mean = !no.constant, optim.control = list(trace = trc, 
+##     REPORT = 1, reltol = tol))
+## 
+## Coefficients:
+##          ar1      ma1     sar1
+##       0.7151  -1.0000  -0.3902
+## s.e.  0.1192   0.0872   0.1470
+## 
+## sigma^2 estimated as 0.001388:  log likelihood = 74.45,  aic = -140.91
+## 
+## $degrees_of_freedom
+## [1] 38
+## 
+## $ttable
+##      Estimate     SE  t.value p.value
+## ar1    0.7151 0.1192   6.0006  0.0000
+## ma1   -1.0000 0.0872 -11.4716  0.0000
+## sar1  -0.3902 0.1470  -2.6545  0.0115
+## 
+## $AIC
+## [1] -5.469097
+## 
+## $AICc
+## [1] -5.416943
+## 
+## $BIC
+## [1] -6.358598</code></pre>
+<p><strong>Model 2</strong></p>
+<pre class="r"><code># Model_2 fitting
+m22 &lt;- sarima(log_dat, 
+              p = 1, d = 1, q = 0, 
+              P = 1, D = 1, Q = 0, S = 12,
+              details = FALSE)
+m22</code></pre>
+<pre><code>## $fit
+## 
+## Call:
+## stats::arima(x = xdata, order = c(p, d, q), seasonal = list(order = c(P, D, 
+##     Q), period = S), include.mean = !no.constant, optim.control = list(trace = trc, 
+##     REPORT = 1, reltol = tol))
+## 
+## Coefficients:
+##          ar1     sar1
+##       0.0898  -0.4209
+## s.e.  0.1583   0.1548
+## 
+## sigma^2 estimated as 0.001608:  log likelihood = 72.53,  aic = -139.05
+## 
+## $degrees_of_freedom
+## [1] 39
+## 
+## $ttable
+##      Estimate     SE t.value p.value
+## ar1    0.0898 0.1583  0.5671  0.5739
+## sar1  -0.4209 0.1548 -2.7194  0.0097
+## 
+## $AIC
+## [1] -5.35898
+## 
+## $AICc
+## [1] -5.313054
+## 
+## $BIC
+## [1] -6.285314</code></pre>
 </div>
-<div id="model-2" class="section level3">
-<h3>8.2) Model 2</h3>
-<p>Now we fit model 2 using <code>sarima()</code>:</p>
-<pre class="r"><code># model_2 fitting
-model_2 &lt;- sarima(train[-1], 
-                  p = 1, d = 1, q = 0, 
-                  P = 1, D = 1, Q = 0, S = 12,
-                  details = FALSE)
-model_2</code></pre>
-<p>Using <code>arima()</code>:</p>
-<pre class="r"><code># model_2 fitting
-m2 &lt;- arima(train[-1], 
-            order = c(1, 1, 1), 
-            seasonal = list(order = c(1, 1, 1), period = 12))
-m2</code></pre>
-</div>
-<div id="model-selection" class="section level3">
-<h3>8.3) Model selection</h3>
-<p>From the tables above, we can see that the estimates of the coefficients for model 1 are all significantly different from zero; while this is not the case for model 2. In the latter, the p-value for the non seasonal autoregressive coefficient estimate is 0.59 meaning that we fail to reject the null the hypothesis that the coefficient’s estimate is equal to zero.</p>
+<div id="model-selection" class="section level2">
+<h2>Model selection</h2>
+<p>From the tables above, we can see that the estimates of the coefficients for model 1 are all significantly different from zero; while this is not the case for model 2. In the latter, the p-value for the non seasonal autoregressive coefficient estimate is 0.57 meaning that we fail to reject the null the hypothesis that the coefficient’s estimate is equal to zero.</p>
 <p>Additionally, AICc and BIC values are smaller for model 1, which leads us to prefer model 1 over model 2. There is one step left to conclude if the model is adequate or not: residual analysis. For this analysis I used the following plots:</p>
-<pre class="r"><code># Residual plot for model_1
-plot.ts(model_1$fit$residuals,
+<pre class="r"><code># Residual plot for model 1
+plot.ts(m1$residuals,
         ylab = &quot;log thousand passengers&quot;,
         main = &quot;Model 1 residuals&quot;)
 abline(h = 0, lwd = 1.5)</code></pre>
-<p>In the time plot of the residuals for model 1, they seem to be independent. Furthermore, the ACF/PACF values are not significantly different from zero; except for the PACF values corresponding to lag three and lag twelve. This result suggests the possibility that there is still some slight seasonal regularity in the residuals, but the addition of another seasonal autoregressive component does not improve the results.</p>
+<p><img src="/post/2018-11-10-arima-from-scratch_files/figure-html/unnamed-chunk-15-1.png" width="672" /></p>
+<pre class="r"><code># ACF/PACF for model 1 residuals
+res_acf &lt;- acf2(m1$residuals,
+                max.lag = 30,
+                main = &quot;ACF for model 1 residuals&quot;)</code></pre>
+<p><img src="/post/2018-11-10-arima-from-scratch_files/figure-html/unnamed-chunk-16-1.png" width="672" /></p>
+<p>In the time plot of the residuals for model 1, they seem to be uncorrelated. Furthermore, the ACF/PACF values are not significantly different from zero; except for the PACF values corresponding to lag three and lag twelve. This result suggests the possibility that there is still some slight seasonal regularity in the residuals, but the addition of another seasonal autoregressive component does not improve the results.</p>
 <p>To wrap up, selected model is model 1:</p>
 <pre class="r"><code># Coefficients estimates
-m1$coef
-
-# Coefficients&#39; standard error
-sqrt(diag(m1$var.coef))
-sqrt(diag(model_1$fit$var.coef))</code></pre>
-</div>
+m1$coef</code></pre>
+<pre><code>##        ar1        ma1       sar1 
+## -0.7914485  0.9999730 -0.4880439</code></pre>
+<pre class="r"><code># Coefficients&#39; standard error
+sqrt(diag(m1$var.coef))</code></pre>
+<pre><code>##        ar1        ma1       sar1 
+## 0.12768890 0.09386269 0.16409083</code></pre>
 </div>
 <div id="forecast" class="section level2">
-<h2>9) Forecast</h2>
+<h2>Forecast</h2>
 <p>For the forescast we can use <code>sarima.for()</code> from package astsa, but it automatically prints a plot of the forecasted values.<br />
-I wanted to show you how to do the plots instead, so we are going to use the <code>predict()</code> function to get the forecast. However, the <strong>model_1</strong> object we fitted with <code>sarima()</code> function is not going to work here, so in order to use the <code>predict()</code> function we are going to use the <strong>m1</strong> model that we created with <code>arima()</code> function.</p>
-<p>Note that the arguments of <code>predict()</code> are the name of the model and the number of time periods ahead. Since our data is monthly, we set n.ahead = 12.</p>
+I wanted to show how to do the plots instead, so we are going to use the <code>predict()</code> function to get the forecast. However, the <strong>m11</strong> object we fitted with <code>sarima()</code> function is not going to work here, so in order to use the <code>predict()</code> function we are going to use the <strong>m1</strong> model that we created with <code>arima()</code> function.</p>
+<p>Note that the arguments of <code>predict()</code> are the name of the model and the forecast scope. Since our data is monthly, we will set <code>n.ahead = 12</code> to predict a whole year.</p>
+<pre class="r"><code>m1 &lt;- arima(log_dat, 
+              order = c(1, 1, 1), 
+              seasonal = list(order = c(1, 1, 0), period = 12),
+              method = &quot;ML&quot;)</code></pre>
 <pre class="r"><code># Forecast
 m1_for &lt;- predict(m1, n.ahead = 12)
-m2_for &lt;- predict(m2, n.ahead = 12)</code></pre>
-<pre class="r"><code>yhat1 &lt;- exp(m1_for$pred)
-yhat2 &lt;- exp(m2_for$pred)</code></pre>
-<pre class="r"><code>m1_MSEP &lt;- mean((yhat1 - dat[43:54, 3])^2) 
-m1_MSEP
-
-
-m2_MSEP &lt;- mean((yhat2 - dat[43:54, 3])^2) 
-m2_MSEP</code></pre>
+head(m1_for)</code></pre>
+<pre><code>## $pred
+##           Jan      Feb      Mar      Apr      May      Jun      Jul
+## 2018                                                       7.189867
+## 2019 7.251103 7.146179 7.200180 7.088041 7.060514 7.014251         
+##           Aug      Sep      Oct      Nov      Dec
+## 2018 7.175559 7.157165 7.200940 7.199472 7.184826
+## 2019                                             
+## 
+## $se
+##             Jan        Feb        Mar        Apr        May        Jun
+## 2018                                                                  
+## 2019 0.11511108 0.12323499 0.13085551 0.13805602 0.14489916 0.15143338
+##             Jul        Aug        Sep        Oct        Nov        Dec
+## 2018 0.03995488 0.05977566 0.07419496 0.08626533 0.09683982 0.10636851
+## 2019</code></pre>
 </div>
 <div id="more-plots-original-data-forecast" class="section level2">
-<h2>10) More plots: Original data + forecast</h2>
+<h2>More plots: Original data + forecast</h2>
 <p>Finally, we are going to plot the original data and our forecast. To do so we start by creating a data frame with the values of interest.</p>
-<pre class="r"><code># Final values
+<pre class="r"><code>################################################################################
+# Final values
+################################################################################
 f_values &lt;- data.frame(&quot;Year&quot; = c(rep(2017, 6), rep(2018, 6)), 
                        &quot;Month&quot; = c(&quot;Jul&quot;, &quot;Aug&quot;, &quot;Sep&quot;, &quot;Oct&quot;, &quot;Nov&quot;, &quot;Dec&quot;,
                                    &quot;Jan&quot;, &quot;Feb&quot;, &quot;Mar&quot;, &quot;Apr&quot;, &quot;May&quot;, &quot;Jun&quot;),
-                       &quot;Forecasted_Passengers&quot; = round(exp(m1_for$pred), 2),
-                       &quot;Actual_Passengers&quot; = df[43:54, 3])
-
+                       &quot;Forecasted_Passengers&quot; = round(exp(m1_for$pred), 2))
 
 ################################################################################
 # Forecast plots 
 ################################################################################
 # Past data
-t &lt;- 1:54
+t &lt;- 1:66
 
-plot(t, rep(NA, 54), 
-     ylim = c(600, 1400),
+plot(t, rep(NA, 66), 
+     ylim = c(600, 1500),
      xlab = &quot;t [months]&quot;,
      ylab = &quot;thousand passengers&quot;,
-     main = &quot;Train, test, and forecaseted passengers&quot;)
+     main = &quot;Train data and forecaseted passengers&quot;)
 
 grid(lty = 1, col = gray(0.9))
 
 lines(t, 
-      c(df[1:42, 3], rep(NA, 12)),
+      c(df[1:54, 3], rep(NA, 12)),
       lwd = 2,
       type = &quot;l&quot;)
 
-# Add forecasts
-lines(t, c(rep(NA, 41), df[42, 3], f_values$Forecasted_Passengers),
-      lwd = 2,
-      col = &quot;blue&quot;)
-
-# Add actual
-lines(t, c(rep(NA, 41), df[42, 3], f_values$Actual_Passengers), 
+# Add forecasted values
+lines(t, c(rep(NA, 53), df[54, 3], f_values$Forecasted_Passengers),
       lwd = 2,
       col = &quot;red&quot;)
 
 # Legend
 legend(x = &quot;bottomright&quot;, 
-       legend = c(&quot;Train&quot;, &quot;Forecast&quot;, &quot;Test&quot;),
-       col = c(1, 4, 2), 
-       pch = c(16, 16, 16),
+       legend = c(&quot;Train&quot;, &quot;Forecast&quot;),
+       col = c(1, 2), 
+       pch = c(16, 16),
        bty = &quot;n&quot;)</code></pre>
+<p><img src="/post/2018-11-10-arima-from-scratch_files/figure-html/unnamed-chunk-20-1.png" width="672" /></p>
+<p>Since the data taken to run the forecast was the log transformed data, it is required to untransform the data to present the results. Such values are displayed in the next table:</p>
+<p><em>Note: The unit of passengers in the original data set is thousands, so the number 1000 in the table corresponds to 1000000 passengers.</em></p>
+<pre class="r"><code>################################################################################
+# Forecast untransformed
+################################################################################
+f_values &lt;- data.frame(&quot;Year&quot; = c(rep(2018, 6), rep(2019, 6)), 
+                       &quot;Month&quot; = c(&quot;Jul&quot;, &quot;Aug&quot;, &quot;Sep&quot;, &quot;Oct&quot;, &quot;Nov&quot;, &quot;Dec&quot;,
+                                   &quot;Jan&quot;, &quot;Feb&quot;, &quot;Mar&quot;, &quot;Apr&quot;, &quot;May&quot;, &quot;Jun&quot;),
+                       &quot;log_Air_Passengers&quot; = round(m1_for$pred, 2),
+                       &quot;Air_Passengers&quot; = round(exp(m1_for$pred), 2))
+
+kable(f_values, align = &quot;l&quot;, digits = 2)</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">Year</th>
+<th align="left">Month</th>
+<th align="left">log_Air_Passengers</th>
+<th align="left">Air_Passengers</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">2018</td>
+<td align="left">Jul</td>
+<td align="left">7.19</td>
+<td align="left">1325.93</td>
+</tr>
+<tr class="even">
+<td align="left">2018</td>
+<td align="left">Aug</td>
+<td align="left">7.18</td>
+<td align="left">1307.09</td>
+</tr>
+<tr class="odd">
+<td align="left">2018</td>
+<td align="left">Sep</td>
+<td align="left">7.16</td>
+<td align="left">1283.27</td>
+</tr>
+<tr class="even">
+<td align="left">2018</td>
+<td align="left">Oct</td>
+<td align="left">7.20</td>
+<td align="left">1340.69</td>
+</tr>
+<tr class="odd">
+<td align="left">2018</td>
+<td align="left">Nov</td>
+<td align="left">7.20</td>
+<td align="left">1338.72</td>
+</tr>
+<tr class="even">
+<td align="left">2018</td>
+<td align="left">Dec</td>
+<td align="left">7.18</td>
+<td align="left">1319.26</td>
+</tr>
+<tr class="odd">
+<td align="left">2019</td>
+<td align="left">Jan</td>
+<td align="left">7.25</td>
+<td align="left">1409.66</td>
+</tr>
+<tr class="even">
+<td align="left">2019</td>
+<td align="left">Feb</td>
+<td align="left">7.15</td>
+<td align="left">1269.25</td>
+</tr>
+<tr class="odd">
+<td align="left">2019</td>
+<td align="left">Mar</td>
+<td align="left">7.20</td>
+<td align="left">1339.67</td>
+</tr>
+<tr class="even">
+<td align="left">2019</td>
+<td align="left">Apr</td>
+<td align="left">7.09</td>
+<td align="left">1197.56</td>
+</tr>
+<tr class="odd">
+<td align="left">2019</td>
+<td align="left">May</td>
+<td align="left">7.06</td>
+<td align="left">1165.04</td>
+</tr>
+<tr class="even">
+<td align="left">2019</td>
+<td align="left">Jun</td>
+<td align="left">7.01</td>
+<td align="left">1112.37</td>
+</tr>
+</tbody>
+</table>
 </div>
