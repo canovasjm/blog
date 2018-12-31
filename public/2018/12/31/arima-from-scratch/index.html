@@ -80,10 +80,11 @@
 library(astsa)
 library(dplyr)
 library(knitr)</code></pre>
+<hr />
 <div id="the-data" class="section level2">
 <h2>The data</h2>
 <p>The data was taken from <strong>“Tablas de Movimientos y Pasajeros EANA 2014 - 2018”</strong>, a report from Empresa Argentina de Navegacion Aerea. It can be accessed via the following link: <a href="https://www.eana.com.ar/estadisticas#informes" class="uri">https://www.eana.com.ar/estadisticas#informes</a></p>
-<p><strong>NOTE:</strong> <em>The curious reader will note that the data file available now in EANA’s website is different to the one I will work with. When I started this project, the data file available was <a href="https://drive.google.com/open?id=1fm7KckXnKaHfu_RZ7FMVVC0hNJs6QD_q">this</a>. At some point between August 2018 and December 2018 they changed the file including more years and modifying the some numbers.</em></p>
+<p><strong>NOTE: The curious reader will note that the data file available now in EANA’s website is different to the one I will work with. When I started this project, the data file available was <a href="https://drive.google.com/open?id=1fm7KckXnKaHfu_RZ7FMVVC0hNJs6QD_q">this</a>. At some point between August 2018 and December 2018 they changed the file including more years and modifying the numbers.</strong></p>
 <p>The data set I used for my project contains a lot of information about airline passengers and flights in Argentina for the period 2014 - 2018. We will concentrate in the number of domestic airline passengers for the 54 months between January 2014 and June 2018.</p>
 <p>The data is presented as an xlsx file and it is displayed in a way that it is hard to import in R. Hence, before importing it, I pre-cleaned it using Microsoft Excel. You can access the pre-cleaned version <a href="https://drive.google.com/open?id=1ZV8cLn3RglLMw79KNUUj75mZ68axwhBY">here</a>.</p>
 <pre class="r"><code># Data import

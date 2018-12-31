@@ -21,11 +21,13 @@ library(dplyr)
 library(knitr)
 ```
 
+---       
+
 ## The data   
 
 The data was taken from **"Tablas de Movimientos y Pasajeros EANA 2014 - 2018"**, a report from Empresa Argentina de Navegacion Aerea. It can be accessed via the following link: https://www.eana.com.ar/estadisticas#informes   
   
-**NOTE:** *The curious reader will note that the data file available now in EANA's website is different to the one I will work with. When I started this project, the data file available was [this](https://drive.google.com/open?id=1fm7KckXnKaHfu_RZ7FMVVC0hNJs6QD_q). At some point between August 2018 and December 2018 they changed the file including more years and modifying the some numbers.*
+**NOTE: The curious reader will note that the data file available now in EANA's website is different to the one I will work with. When I started this project, the data file available was [this](https://drive.google.com/open?id=1fm7KckXnKaHfu_RZ7FMVVC0hNJs6QD_q). At some point between August 2018 and December 2018 they changed the file including more years and modifying the numbers.**
 
 The data set I used for my project contains a lot of information about airline passengers and flights in Argentina for the period 2014 - 2018. We will concentrate in the number of domestic airline passengers for the 54 months between January 2014 and June 2018.   
    
@@ -66,7 +68,6 @@ Before fitting a model we will need to do some work on this data: i) variance st
 
 
 ## Variance stabilization transformation    
-
 
 *Why do we want to stabilize the variance?*, you may be wondering. Well, the problem with non-constant variance (a.k.a *heteroscedasticity*) is that, as time grows, small percent changes becomes large absolute changes. And we don't want that in our model.    
   
