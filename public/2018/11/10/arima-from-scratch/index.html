@@ -63,7 +63,7 @@
 
   <article class="article">
     
-    <span class="article-duration">14 min read</span>
+    <span class="article-duration">13 min read</span>
     
 
     <h1 class="article-title">ARIMA from scratch</h1>
@@ -357,23 +357,7 @@ I wanted to show how to do the plots instead, so we are going to use the <code>p
               seasonal = list(order = c(1, 1, 0), period = 12),
               method = &quot;ML&quot;)</code></pre>
 <pre class="r"><code># Forecast
-m1_for &lt;- predict(m1, n.ahead = 12)
-head(m1_for)</code></pre>
-<pre><code>## $pred
-##           Jan      Feb      Mar      Apr      May      Jun      Jul
-## 2018                                                       7.189867
-## 2019 7.251103 7.146179 7.200180 7.088041 7.060514 7.014251         
-##           Aug      Sep      Oct      Nov      Dec
-## 2018 7.175559 7.157165 7.200940 7.199472 7.184826
-## 2019                                             
-## 
-## $se
-##             Jan        Feb        Mar        Apr        May        Jun
-## 2018                                                                  
-## 2019 0.11511108 0.12323499 0.13085551 0.13805602 0.14489916 0.15143338
-##             Jul        Aug        Sep        Oct        Nov        Dec
-## 2018 0.03995488 0.05977566 0.07419496 0.08626533 0.09683982 0.10636851
-## 2019</code></pre>
+m1_for &lt;- predict(m1, n.ahead = 12)</code></pre>
 </div>
 <div id="more-plots-original-data-forecast" class="section level2">
 <h2>More plots: Original data + forecast</h2>

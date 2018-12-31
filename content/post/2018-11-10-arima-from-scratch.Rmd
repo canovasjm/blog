@@ -337,7 +337,6 @@ m1 <- arima(log_dat,
 ```{r, eval=TRUE}
 # Forecast
 m1_for <- predict(m1, n.ahead = 12)
-head(m1_for)
 ```
 
 
@@ -401,4 +400,6 @@ f_values <- data.frame("Year" = c(rep(2018, 6), rep(2019, 6)),
                        "Air_Passengers" = round(exp(m1_for$pred), 2))
 
 kable(f_values, align = "l", digits = 2)
-```
+```  
+
+
