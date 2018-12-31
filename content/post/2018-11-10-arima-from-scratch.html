@@ -339,17 +339,6 @@ legend(x = &quot;bottomright&quot;,
        bty = &quot;n&quot;)</code></pre>
 <p><img src="/post/2018-11-10-arima-from-scratch_files/figure-html/unnamed-chunk-20-1.png" width="672" /></p>
 <p>Since the data taken to run the forecast was the log transformed data, it is required to untransform the data to present the results. Such values are displayed in the next table:</p>
-<p><em>Note: The unit of passengers in the original data set is thousands, so the number 1000 in the table corresponds to 1000000 passengers.</em></p>
-<pre class="r"><code>################################################################################
-# Forecast untransformed
-################################################################################
-f_values &lt;- data.frame(&quot;Year&quot; = c(rep(2018, 6), rep(2019, 6)), 
-                       &quot;Month&quot; = c(&quot;Jul&quot;, &quot;Aug&quot;, &quot;Sep&quot;, &quot;Oct&quot;, &quot;Nov&quot;, &quot;Dec&quot;,
-                                   &quot;Jan&quot;, &quot;Feb&quot;, &quot;Mar&quot;, &quot;Apr&quot;, &quot;May&quot;, &quot;Jun&quot;),
-                       &quot;log_Air_Passengers&quot; = round(m1_for$pred, 2),
-                       &quot;Air_Passengers&quot; = round(exp(m1_for$pred), 2))
-
-kable(f_values, align = &quot;l&quot;, digits = 2)</code></pre>
 <table>
 <thead>
 <tr class="header">
@@ -434,4 +423,5 @@ kable(f_values, align = &quot;l&quot;, digits = 2)</code></pre>
 </tr>
 </tbody>
 </table>
+<p><em>Note: The unit of passengers in the original data set is thousands, so the number 1000 in the table corresponds to 1000000 passengers.</em></p>
 </div>

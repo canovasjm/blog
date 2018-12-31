@@ -388,9 +388,8 @@ legend(x = "bottomright",
 
 Since the data taken to run the forecast was the log transformed data, it is required to untransform the data to present the results. Such values are displayed in the next table:
 
-*Note: The unit of passengers in the original data set is thousands, so the number 1000 in the table corresponds to 1000000 passengers.*     
 
-```{r, echo = TRUE, eval=TRUE}
+```{r, echo = FALSE, eval=TRUE}
 ################################################################################
 # Forecast untransformed
 ################################################################################
@@ -403,4 +402,6 @@ f_values <- data.frame("Year" = c(rep(2018, 6), rep(2019, 6)),
 kable(f_values, align = "l", digits = 2)
 ```  
 
+
+*Note: The unit of passengers in the original data set is thousands, so the number 1000 in the table corresponds to 1000000 passengers.*     
 
