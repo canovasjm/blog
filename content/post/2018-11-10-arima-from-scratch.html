@@ -139,7 +139,7 @@ A graphic representation of this process is shown in Rob J Hyndman’s blog post
 i &lt;- 36
 MSE1 &lt;- c()
 
-while(i &lt; 50){
+while(i &lt; length(log_dat)){
   # Train the model with i observations
   m1 &lt;- arima(log_dat[1:i], 
               order = c(1, 1, 1), 
@@ -155,14 +155,14 @@ while(i &lt; 50){
 
 # Untransform data. Back to the original scale
 exp(mean(MSE1))</code></pre>
-<pre><code>## [1] 1.001412</code></pre>
+<pre><code>## [1] 1.001494</code></pre>
 <pre class="r"><code>################################################################################
 # CV for model 2
 ################################################################################
 i &lt;- 36
 MSE2 &lt;- c()
 
-while(i &lt; 50){
+while(i &lt; length(log_dat)){
   # Train the model with i observations
   m2 &lt;- arima(log_dat[1:i], 
               order = c(1, 1, 0), 
@@ -179,8 +179,8 @@ while(i &lt; 50){
 
 # Untransform data. Back to the original scale
 exp(mean(MSE2))</code></pre>
-<pre><code>## [1] 1.001414</code></pre>
-<p>The MSE obtained with CV is slightly better for model 1.</p>
+<pre><code>## [1] 1.001469</code></pre>
+<p>The MSE obtained with CV is slightly better for model 2.</p>
 <p>Now we are going to use the function <code>sarima()</code> from package <strong>astsa</strong>. This function is basically a wraper of <code>arima()</code>, but additionally it returns an object called <strong>ttable</strong> that has the results of t-tests performed on each of the coefficients. The ttable is also printed in the summary of the model. Using <code>sarima()</code> from astsa package:</p>
 <p><strong>Model 1</strong></p>
 <pre class="r"><code># Model_1 fitting
@@ -278,11 +278,11 @@ res_acf &lt;- acf2(m1$residuals,
 <pre class="r"><code># Coefficients estimates
 m1$coef</code></pre>
 <pre><code>##        ar1        ma1       sar1 
-## -0.7914485  0.9999730 -0.4880439</code></pre>
+## -0.1251406  0.2365604 -0.4286284</code></pre>
 <pre class="r"><code># Coefficients&#39; standard error
 sqrt(diag(m1$var.coef))</code></pre>
-<pre><code>##        ar1        ma1       sar1 
-## 0.12768890 0.09386269 0.16409083</code></pre>
+<pre><code>##       ar1       ma1      sar1 
+## 0.5888489 0.5596379 0.1568357</code></pre>
 </div>
 <div id="forecast" class="section level2">
 <h2>Forecast</h2>

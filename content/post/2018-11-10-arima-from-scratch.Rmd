@@ -213,7 +213,7 @@ The models we are going to fit are:
 i <- 36
 MSE1 <- c()
 
-while(i < 50){
+while(i < length(log_dat)){
   # Train the model with i observations
   m1 <- arima(log_dat[1:i], 
               order = c(1, 1, 1), 
@@ -238,7 +238,7 @@ exp(mean(MSE1))
 i <- 36
 MSE2 <- c()
 
-while(i < 50){
+while(i < length(log_dat)){
   # Train the model with i observations
   m2 <- arima(log_dat[1:i], 
               order = c(1, 1, 0), 
@@ -257,7 +257,7 @@ while(i < 50){
 exp(mean(MSE2))
 ```
 
-The MSE obtained with CV is slightly better for model 1.   
+The MSE obtained with CV is slightly better for model 2.   
 
 Now we are going to use the function `sarima()` from package **astsa**. This function is basically a wraper of `arima()`, but additionally it returns an object called **ttable** that has the results of t-tests performed on each of the coefficients. The ttable is also printed in the summary of the model. Using `sarima()` from astsa package:   
 
