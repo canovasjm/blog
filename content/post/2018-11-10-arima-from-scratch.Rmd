@@ -16,8 +16,8 @@ We will start by loading all the libraries needed:
 
 ```{r, echo = TRUE, message = FALSE, warning = FALSE}
 # Required libraries  
-library(astsa)
 library(dplyr)
+library(astsa)
 library(knitr)
 ```
 
@@ -35,7 +35,6 @@ The data is presented as an xlsx file and it is displayed in a way that it is ha
 
 
 ```{r, echo = TRUE}
-# Data import
 # Import csv file
 df <- read.csv("C:/Users/Juan Manuel/Documents/STAT 498/Project/EANA/passengers_ts.csv", 
                header = TRUE)
@@ -55,7 +54,6 @@ dat <- dat %>%
 The first step in the analysis is to make a plot of the original data, where the number of domestic passengers is taken as the response variable and the time (months) as the explanatory variable. To do the plot we just use the function `plot.ts()`     
 
 ```{r, echo = TRUE}
-# Analysis: Time plot
 # Original data time plot
 plot.ts(dat[ , 1],
         ylab = "thousand passengers",
@@ -132,11 +130,10 @@ abline(h = 0, lwd = 1.5)
 
 ### Seasonal differentiation    
 
-Now we will remove the seasonal correlation. To do this we use again the function `diff()`. Note that this time `lag = 12`: we are telling R to difference observations that are 12 months apart. This will perform January 2018 - January 2017, February 2018 - February 2017, etc...   
+Now we will remove the seasonal correlation. To do this we use again the function `diff()`. Note that this time `lag = 12`: we are telling R to difference observations that are 12 months apart. This will perform January 2018 - January 2017, February 2018 - February 2017, March 2018 - March 2017, etc.   
 
 Once we took seasonal differentiation, the ACF values lie between the blue dashed lines; meaning that the autocorelation function is not significantly different from zero.  
      
-
 ```{r, echo = TRUE}
 # Seasonal and non seasonal differenced log data - ACF/PACF
 ddlog_dat <- diff(dlog_dat, lag = 12)
@@ -144,6 +141,7 @@ ddlog_acf <- acf2(ddlog_dat,
                    max.lag = 35,
                    main = "(Seasonal and non seasonal) differenced log thousand passengers")
 ``` 
+
 
 ## Stationary data      
 
@@ -166,7 +164,8 @@ abline(h = 0, lwd = 1.5)
 Now that we have analyzed our data, and decided which transformations we are going to apply, we are going to select the model with cross-validation (CV). However, the cross validation procedure that we are going to apply with time series data is a little bit different to what we usually do with independent data. If you want to read about CV for time series I recommend [here](https://stats.stackexchange.com/a/326247/218995), [here](https://robjhyndman.com/publications/cv-time-series/), and [here](https://robjhyndman.com/hyndsight/tscv/)     
 
 *Why do we need cross-validation?*. The answer is that we don't want to test our models with the same data used to train them; that would be an over optimistic scenario. Instead, we want to test our model on unseen data.   
-A graphic representation of this process is shown in Rob J Hyndman's blog post and he also provides the code to make it [here](https://gist.github.com/robjhyndman/9fa152c585442bb076eb42a30a020091)    
+
+A graphic representation of this process is shown in Rob J Hyndman's blog post (I reproduced below) and he also provides the code to make it [here](https://gist.github.com/robjhyndman/9fa152c585442bb076eb42a30a020091)    
 
 Starting with 36 of our 54 months we are going to:
 
@@ -257,9 +256,9 @@ while(i < length(log_dat)){
 exp(mean(MSE2))
 ```
 
-The MSE obtained with CV is slightly better for model 2.   
+The MSE obtained with CV is slightly better for model 2. (We look for smaller values of MSE).    
 
-Now we are going to use the function `sarima()` from package **astsa**. This function is basically a wraper of `arima()`, but additionally it returns an object called **ttable** that has the results of t-tests performed on each of the coefficients. The ttable is also printed in the summary of the model. Using `sarima()` from astsa package:   
+Now we are going to use the function `sarima()` from package **astsa**. This function is basically a wraper of `arima()`, but additionally it returns an object called **ttable** that has the results of t-tests performed on each of the coefficients. The **ttable** is also printed in the summary of the model. Using `sarima()` from astsa package:   
 
 **Model 1**    
 
@@ -287,7 +286,7 @@ m22
 
 ## Model selection   
 
-From the tables above, we can see that the estimates of the coefficients for model 1 are all significantly different from zero; while this is not the case for model 2. In the latter, the p-value for the non seasonal autoregressive coefficient estimate is 0.57 meaning that we fail to reject the null the hypothesis that the coefficient's estimate is equal to zero.   
+From the tables above, we can see that the estimates of the coefficients for model 1 are all significantly different from zero; while this is not the case for model 2. In the latter, the p-value for the non seasonal autoregressive coefficient estimate is 0.57 meaning that we fail to reject the null the hypothesis that the coefficient is equal to zero.   
 
 Additionally, AICc and BIC values are smaller for model 1, which leads us to prefer model 1 over model 2.
 There is one step left to conclude if the model is adequate or not: residual analysis. For this analysis I used the following plots:
@@ -307,7 +306,8 @@ res_acf <- acf2(m1$residuals,
                 main = "ACF for model 1 residuals")
 ```  
 
-In the time plot of the residuals for model 1, they seem to be uncorrelated. Furthermore, the ACF/PACF values are not significantly different from zero; except for the PACF values corresponding to lag three and lag twelve. This result suggests the possibility that there is still some slight seasonal regularity in the residuals, but the addition of another seasonal autoregressive component does not improve the results.      
+
+In the time plot of the residuals for model 1, they seem to be uncorrelated. Furthermore, the ACF/PACF values are not significantly different from zero; except for the PACF values corresponding to lag three, nine, and twelve. This result suggests the possibility that there is still some slight seasonal regularity in the residuals, but the addition of another seasonal autoregressive component does not improve the results.      
 
 To wrap up, selected model is model 1:   
 
@@ -328,6 +328,7 @@ I wanted to show how to do the plots instead, so we are going to use the `predic
 Note that the arguments of `predict()` are the name of the model and the forecast scope. Since our data is monthly, we will set `n.ahead = 12` to predict a whole year.   
 
 ```{r}
+# Fit the m1 model with all the data point available
 m1 <- arima(log_dat, 
               order = c(1, 1, 1), 
               seasonal = list(order = c(1, 1, 0), period = 12),
@@ -346,17 +347,13 @@ m1_for <- predict(m1, n.ahead = 12)
 Finally, we are going to plot the original data and our forecast. To do so we start by creating a data frame with the values of interest.   
 
 ```{r, echo = TRUE, eval=TRUE}
-################################################################################
 # Final values
-################################################################################
 f_values <- data.frame("Year" = c(rep(2017, 6), rep(2018, 6)), 
                        "Month" = c("Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
                                    "Jan", "Feb", "Mar", "Apr", "May", "Jun"),
                        "Forecasted_Passengers" = round(exp(m1_for$pred), 2))
 
-################################################################################
-# Forecast plots 
-################################################################################
+## Forecast plots 
 # Past data
 t <- 1:66
 
@@ -390,9 +387,7 @@ Since the data taken to run the forecast was the log transformed data, it is req
 
 
 ```{r, echo = FALSE, eval=TRUE}
-################################################################################
 # Forecast untransformed
-################################################################################
 f_values <- data.frame("Year" = c(rep(2018, 6), rep(2019, 6)), 
                        "Month" = c("Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
                                    "Jan", "Feb", "Mar", "Apr", "May", "Jun"),

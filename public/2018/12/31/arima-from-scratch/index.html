@@ -77,8 +77,8 @@
 <p>Here we are going to explore how the number of domestic air passengers in Argentina has evolved in the last years, fit a model to the data, and forecast the number of domestic passengers for the next twelve months.</p>
 <p>We will start by loading all the libraries needed:</p>
 <pre class="r"><code># Required libraries  
-library(astsa)
 library(dplyr)
+library(astsa)
 library(knitr)</code></pre>
 <hr />
 <div id="the-data" class="section level2">
@@ -87,8 +87,7 @@ library(knitr)</code></pre>
 <p><strong>NOTE: The curious reader will note that the data file available now in EANA’s website is different to the one I will work with. When I started this project, the data file available was <a href="https://drive.google.com/open?id=1fm7KckXnKaHfu_RZ7FMVVC0hNJs6QD_q">this</a>. At some point between August 2018 and December 2018 they changed the file including more years and modifying the numbers.</strong></p>
 <p>The data set I used for my project contains a lot of information about airline passengers and flights in Argentina for the period 2014 - 2018. We will concentrate in the number of domestic airline passengers for the 54 months between January 2014 and June 2018.</p>
 <p>The data is presented as an xlsx file and it is displayed in a way that it is hard to import in R. Hence, before importing it, I pre-cleaned it using Microsoft Excel. You can access the pre-cleaned version <a href="https://drive.google.com/open?id=1ZV8cLn3RglLMw79KNUUj75mZ68axwhBY">here</a>.</p>
-<pre class="r"><code># Data import
-# Import csv file
+<pre class="r"><code># Import csv file
 df &lt;- read.csv(&quot;C:/Users/Juan Manuel/Documents/STAT 498/Project/EANA/passengers_ts.csv&quot;, 
                header = TRUE)
 
@@ -103,8 +102,7 @@ dat &lt;- dat %&gt;%
 <div id="first-analysis-time-plot" class="section level2">
 <h2>First analysis: time plot</h2>
 <p>The first step in the analysis is to make a plot of the original data, where the number of domestic passengers is taken as the response variable and the time (months) as the explanatory variable. To do the plot we just use the function <code>plot.ts()</code></p>
-<pre class="r"><code># Analysis: Time plot
-# Original data time plot
+<pre class="r"><code># Original data time plot
 plot.ts(dat[ , 1],
         ylab = &quot;thousand passengers&quot;,
         main = &quot;Domestic air passengers in Argentina 2014 - 2018&quot;)</code></pre>
@@ -157,7 +155,7 @@ abline(h = 0, lwd = 1.5)</code></pre>
 </div>
 <div id="seasonal-differentiation" class="section level3">
 <h3>Seasonal differentiation</h3>
-<p>Now we will remove the seasonal correlation. To do this we use again the function <code>diff()</code>. Note that this time <code>lag = 12</code>: we are telling R to difference observations that are 12 months apart. This will perform January 2018 - January 2017, February 2018 - February 2017, etc…</p>
+<p>Now we will remove the seasonal correlation. To do this we use again the function <code>diff()</code>. Note that this time <code>lag = 12</code>: we are telling R to difference observations that are 12 months apart. This will perform January 2018 - January 2017, February 2018 - February 2017, March 2018 - March 2017, etc.</p>
 <p>Once we took seasonal differentiation, the ACF values lie between the blue dashed lines; meaning that the autocorelation function is not significantly different from zero.</p>
 <pre class="r"><code># Seasonal and non seasonal differenced log data - ACF/PACF
 ddlog_dat &lt;- diff(dlog_dat, lag = 12)
@@ -182,8 +180,8 @@ abline(h = 0, lwd = 1.5)</code></pre>
 <div id="model-fitting-and-cross-validation" class="section level2">
 <h2>Model fitting and cross-validation</h2>
 <p>Now that we have analyzed our data, and decided which transformations we are going to apply, we are going to select the model with cross-validation (CV). However, the cross validation procedure that we are going to apply with time series data is a little bit different to what we usually do with independent data. If you want to read about CV for time series I recommend <a href="https://stats.stackexchange.com/a/326247/218995">here</a>, <a href="https://robjhyndman.com/publications/cv-time-series/">here</a>, and <a href="https://robjhyndman.com/hyndsight/tscv/">here</a></p>
-<p><em>Why do we need cross-validation?</em>. The answer is that we don’t want to test our models with the same data used to train them; that would be an over optimistic scenario. Instead, we want to test our model on unseen data.<br />
-A graphic representation of this process is shown in Rob J Hyndman’s blog post and he also provides the code to make it <a href="https://gist.github.com/robjhyndman/9fa152c585442bb076eb42a30a020091">here</a></p>
+<p><em>Why do we need cross-validation?</em>. The answer is that we don’t want to test our models with the same data used to train them; that would be an over optimistic scenario. Instead, we want to test our model on unseen data.</p>
+<p>A graphic representation of this process is shown in Rob J Hyndman’s blog post (I reproduced below) and he also provides the code to make it <a href="https://gist.github.com/robjhyndman/9fa152c585442bb076eb42a30a020091">here</a></p>
 <p>Starting with 36 of our 54 months we are going to:</p>
 <ol style="list-style-type: decimal">
 <li>Fit a model on a train set (blue dots),</li>
@@ -244,8 +242,8 @@ while(i &lt; length(log_dat)){
 # Untransform data. Back to the original scale
 exp(mean(MSE2))</code></pre>
 <pre><code>## [1] 1.001469</code></pre>
-<p>The MSE obtained with CV is slightly better for model 2.</p>
-<p>Now we are going to use the function <code>sarima()</code> from package <strong>astsa</strong>. This function is basically a wraper of <code>arima()</code>, but additionally it returns an object called <strong>ttable</strong> that has the results of t-tests performed on each of the coefficients. The ttable is also printed in the summary of the model. Using <code>sarima()</code> from astsa package:</p>
+<p>The MSE obtained with CV is slightly better for model 2. (We look for smaller values of MSE).</p>
+<p>Now we are going to use the function <code>sarima()</code> from package <strong>astsa</strong>. This function is basically a wraper of <code>arima()</code>, but additionally it returns an object called <strong>ttable</strong> that has the results of t-tests performed on each of the coefficients. The <strong>ttable</strong> is also printed in the summary of the model. Using <code>sarima()</code> from astsa package:</p>
 <p><strong>Model 1</strong></p>
 <pre class="r"><code># Model_1 fitting
 m11 &lt;- sarima(log_dat, 
@@ -324,7 +322,7 @@ m22</code></pre>
 </div>
 <div id="model-selection" class="section level2">
 <h2>Model selection</h2>
-<p>From the tables above, we can see that the estimates of the coefficients for model 1 are all significantly different from zero; while this is not the case for model 2. In the latter, the p-value for the non seasonal autoregressive coefficient estimate is 0.57 meaning that we fail to reject the null the hypothesis that the coefficient’s estimate is equal to zero.</p>
+<p>From the tables above, we can see that the estimates of the coefficients for model 1 are all significantly different from zero; while this is not the case for model 2. In the latter, the p-value for the non seasonal autoregressive coefficient estimate is 0.57 meaning that we fail to reject the null the hypothesis that the coefficient is equal to zero.</p>
 <p>Additionally, AICc and BIC values are smaller for model 1, which leads us to prefer model 1 over model 2. There is one step left to conclude if the model is adequate or not: residual analysis. For this analysis I used the following plots:</p>
 <pre class="r"><code># Residual plot for model 1
 plot.ts(m1$residuals,
@@ -337,7 +335,7 @@ res_acf &lt;- acf2(m1$residuals,
                 max.lag = 30,
                 main = &quot;ACF for model 1 residuals&quot;)</code></pre>
 <p><img src="/post/2018-11-10-arima-from-scratch_files/figure-html/unnamed-chunk-16-1.png" width="672" /></p>
-<p>In the time plot of the residuals for model 1, they seem to be uncorrelated. Furthermore, the ACF/PACF values are not significantly different from zero; except for the PACF values corresponding to lag three and lag twelve. This result suggests the possibility that there is still some slight seasonal regularity in the residuals, but the addition of another seasonal autoregressive component does not improve the results.</p>
+<p>In the time plot of the residuals for model 1, they seem to be uncorrelated. Furthermore, the ACF/PACF values are not significantly different from zero; except for the PACF values corresponding to lag three, nine, and twelve. This result suggests the possibility that there is still some slight seasonal regularity in the residuals, but the addition of another seasonal autoregressive component does not improve the results.</p>
 <p>To wrap up, selected model is model 1:</p>
 <pre class="r"><code># Coefficients estimates
 m1$coef</code></pre>
@@ -353,7 +351,8 @@ sqrt(diag(m1$var.coef))</code></pre>
 <p>For the forescast we can use <code>sarima.for()</code> from package astsa, but it automatically prints a plot of the forecasted values.<br />
 I wanted to show how to do the plots instead, so we are going to use the <code>predict()</code> function to get the forecast. However, the <strong>m11</strong> object we fitted with <code>sarima()</code> function is not going to work here, so in order to use the <code>predict()</code> function we are going to use the <strong>m1</strong> model that we created with <code>arima()</code> function.</p>
 <p>Note that the arguments of <code>predict()</code> are the name of the model and the forecast scope. Since our data is monthly, we will set <code>n.ahead = 12</code> to predict a whole year.</p>
-<pre class="r"><code>m1 &lt;- arima(log_dat, 
+<pre class="r"><code># Fit the m1 model with all the data point available
+m1 &lt;- arima(log_dat, 
               order = c(1, 1, 1), 
               seasonal = list(order = c(1, 1, 0), period = 12),
               method = &quot;ML&quot;)</code></pre>
@@ -363,17 +362,13 @@ m1_for &lt;- predict(m1, n.ahead = 12)</code></pre>
 <div id="more-plots-original-data-forecast" class="section level2">
 <h2>More plots: Original data + forecast</h2>
 <p>Finally, we are going to plot the original data and our forecast. To do so we start by creating a data frame with the values of interest.</p>
-<pre class="r"><code>################################################################################
-# Final values
-################################################################################
+<pre class="r"><code># Final values
 f_values &lt;- data.frame(&quot;Year&quot; = c(rep(2017, 6), rep(2018, 6)), 
                        &quot;Month&quot; = c(&quot;Jul&quot;, &quot;Aug&quot;, &quot;Sep&quot;, &quot;Oct&quot;, &quot;Nov&quot;, &quot;Dec&quot;,
                                    &quot;Jan&quot;, &quot;Feb&quot;, &quot;Mar&quot;, &quot;Apr&quot;, &quot;May&quot;, &quot;Jun&quot;),
                        &quot;Forecasted_Passengers&quot; = round(exp(m1_for$pred), 2))
 
-################################################################################
-# Forecast plots 
-################################################################################
+## Forecast plots 
 # Past data
 t &lt;- 1:66
 
