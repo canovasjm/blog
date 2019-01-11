@@ -24,6 +24,9 @@ ignoreFiles = ["\\.Rmd$", "\\.Rmarkdown$", "_files$", "_cache$"]
 [[menu.main]]
     name = "Portfolio"
     url = "/portfolio/"
+[[menu.main]]
+    name = "Posts"
+    url = "https://jmcanovas/netlify.com"
 
 
 [params]
