@@ -9,7 +9,7 @@ tags: []
 
 
 
-<p>Hi there! This post is a modification of the final project I did for my Time Series class and the idea is simple: fit an ARIMA model and make a forecast. To do so in R we can use <code>auto.arima()</code> function from <strong>forecast</strong> package, or we can decide what model are we going to fit and why. We will choose the latter path :)</p>
+<p>Hi there! This post is a modification of the final project I did for my Time Series class and the idea is simple: fit an ARIMA model and make a forecast. To do so in R we can use <code>auto.arima()</code> function from <strong>forecast</strong> package or we can decide what model are we going to fit and why. We will choose the latter path :)</p>
 <p>Here we are going to explore how the number of domestic air passengers in Argentina has evolved in the last years, fit a model to the data, and forecast the number of domestic passengers for the next twelve months.</p>
 <p>We will start by loading all the libraries needed:</p>
 <pre class="r"><code># Required libraries  
@@ -20,8 +20,8 @@ library(knitr)</code></pre>
 <div id="the-data" class="section level2">
 <h2>The data</h2>
 <p>The data was taken from <strong>“Tablas de Movimientos y Pasajeros EANA 2014 - 2018”</strong>, a report from Empresa Argentina de Navegacion Aerea. It can be accessed via the following link: <a href="https://www.eana.com.ar/estadisticas#informes" class="uri">https://www.eana.com.ar/estadisticas#informes</a></p>
-<p><strong>NOTE: The curious reader will note that the data file available now in EANA’s website is different to the one I will work with. When I started this project, the data file available was <a href="https://drive.google.com/open?id=1fm7KckXnKaHfu_RZ7FMVVC0hNJs6QD_q">this</a>. At some point between August 2018 and December 2018 they changed the file including more years and modifying the numbers.</strong></p>
-<p>The data set I used for my project contains a lot of information about airline passengers and flights in Argentina for the period 2014 - 2018. We will concentrate in the number of domestic airline passengers for the 54 months between January 2014 and June 2018.</p>
+<p><strong>NOTE: The curious reader will note that the data file available now on EANA’s website is different from the one I will work with. When I started this project, the data file available was <a href="https://drive.google.com/open?id=1fm7KckXnKaHfu_RZ7FMVVC0hNJs6QD_q">this</a>. At some point between August 2018, and December 2018 they changed the file including more years and modifying the numbers.</strong></p>
+<p>The data set I used for my project contains a lot of information about airline passengers and flights in Argentina for the period 2014 - 2018. We will concentrate on the number of domestic airline passengers for the 54 months between January 2014 and June 2018.</p>
 <p>The data is presented as an xlsx file and it is displayed in a way that it is hard to import in R. Hence, before importing it, I pre-cleaned it using Microsoft Excel. You can access the pre-cleaned version <a href="https://drive.google.com/open?id=1ZV8cLn3RglLMw79KNUUj75mZ68axwhBY">here</a>.</p>
 <pre class="r"><code># Import csv file
 df &lt;- read.csv(&quot;C:/Users/Juan Manuel/Documents/STAT 498/Project/EANA/passengers_ts.csv&quot;, 
@@ -43,25 +43,25 @@ plot.ts(dat[ , 1],
         ylab = &quot;thousand passengers&quot;,
         main = &quot;Domestic air passengers in Argentina 2014 - 2018&quot;)</code></pre>
 <p><img src="/post/2018-11-10-arima-from-scratch_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
-<p>The time plot above is showing that the data presents an upward trend and the variability is not constant over time. Because of this two facts, we can claim that the weak stationarity conditions are not met and, additionally, it seems that there is a seasonal behaviour of the underlying process.</p>
+<p>The time plot above is showing that the data presents an upward trend and the variability is not constant over time. Because of these two facts, we can claim that the weak stationarity conditions are not met and, additionally, it seems that there is a seasonal behaviour of the underlying process.</p>
 <p>Before fitting a model we will need to do some work on this data: i) variance stabilization transformation and ii) trend removal.</p>
 </div>
 <div id="variance-stabilization-transformation" class="section level2">
 <h2>Variance stabilization transformation</h2>
-<p><em>Why do we want to stabilize the variance?</em>, you may be wondering. Well, the problem with non-constant variance (a.k.a <em>heteroscedasticity</em>) is that, as time grows, small percent changes becomes large absolute changes. And we don’t want that in our model.</p>
-<p>So, in order to stabilize the variance, we took the natural logarithm of the original data and will store the transfomed data in <strong>log_dat</strong></p>
+<p><em>Why do we want to stabilize the variance?</em>, you may be wondering. Well, the problem with non-constant variance (a.k.a <em>heteroscedasticity</em>) is that, as time grows, small percent changes become large absolute changes. And we don’t want that in our model.</p>
+<p>So, in order to stabilize the variance, we took the natural logarithm of the original data and will store the transformed data in <strong>log_dat</strong></p>
 <pre class="r"><code># Log transformation
 log_dat&lt;- log(dat[ , 1])
 plot.ts(log_dat,
         ylab = &quot;log thousand passengers&quot;,
         main = &quot;Domestic air passengers in Argentina 2014 - 2018&quot;)</code></pre>
 <p><img src="/post/2018-11-10-arima-from-scratch_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
-<p>This plot looks like very similar to the first, but the range of the dependent variable is considerably smaller (pay attention to the values on the y-axis).</p>
+<p>This plot looks very similar to the first, but the range of the dependent variable is considerably smaller (pay attention to the values on the y-axis).</p>
 </div>
 <div id="trend-removal" class="section level2">
 <h2>Trend removal</h2>
-<p>On the first time plot we observed an upward trend that can be removed by differencing the data. Besides the time plot, one can use the ACF of to determine if differencing is needed before fitting a model.<br />
-In this section we will use the <code>acf2()</code> function from <strong>astsa</strong> package, which plots the ACF and PACF values for different lags.</p>
+<p>On the first time plot we observed an upward trend that can be removed by differencing the data. Besides the time plot, one can use the ACF to determine if differencing is needed before fitting a model.<br />
+In this section, we will use the <code>acf2()</code> function from <strong>astsa</strong> package, which plots the ACF and PACF values for different lags.</p>
 <p><em>Note: In the x-axis for the ACF and PACF plots below, the integer numbers represent years. In between two integers there are twelve marks in the x-axis, one for each month of the year.</em></p>
 <pre class="r"><code># Correlation structure
 log_acf &lt;- acf2(log_dat, 
@@ -79,8 +79,8 @@ dlog_acf &lt;- acf2(dlog_dat,
                   main = &quot;(Non seasonal) differenced log thousand passengers&quot;)</code></pre>
 <p><img src="/post/2018-11-10-arima-from-scratch_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
 <p>Beautiful, isn’t it? Be careful though, non-seasonal differencing removes only one part of the correlation. In the ACF plot above we still observe seasonal correlation for <span class="math inline">\(12 * k\)</span> for <span class="math inline">\(k = 1, 2, \ldots\)</span>.</p>
-<p>In plain English, this is telling us that the number of air passengers of a certain month is related to the number of passengers for the same month in previous years. That is, the number of passengers in January of 2018 is related to the number of passengers in January of 2017, and so on.</p>
-<p>Since the ACF tails off for <span class="math inline">\(12 * k\)</span> for <span class="math inline">\(k = 1, 2, \ldots\)</span> and PACF cuts off after lag 1, a sesonal autoregressive component of order one is needed.</p>
+<p>In plain English, this is telling us that the number of air passengers of a certain month is related to the number of passengers for the same month in previous years. That is, the number of passengers in January 2018 is related to the number of passengers in January 2017, and so on.</p>
+<p>Since the ACF tails off for <span class="math inline">\(12 * k\)</span> for <span class="math inline">\(k = 1, 2, \ldots\)</span> and PACF cuts off after lag 1, a seasonal autoregressive component of order one is needed.</p>
 <p>Additionally, the following time plot of the non-seasonal differenced log data also helps in the analysis: we observe how the peaks and valleys repeat every twelve months.</p>
 <pre class="r"><code># Time plot of non seasonal differenced data
 plot.ts(dlog_dat,
@@ -92,7 +92,7 @@ abline(h = 0, lwd = 1.5)</code></pre>
 <div id="seasonal-differentiation" class="section level3">
 <h3>Seasonal differentiation</h3>
 <p>Now we will remove the seasonal correlation. To do this we use again the function <code>diff()</code>. Note that this time <code>lag = 12</code>: we are telling R to difference observations that are 12 months apart. This will perform January 2018 - January 2017, February 2018 - February 2017, March 2018 - March 2017, etc.</p>
-<p>Once we took seasonal differentiation, the ACF values lie between the blue dashed lines; meaning that the autocorelation function is not significantly different from zero.</p>
+<p>Once we took seasonal differentiation, the ACF values lie between the blue dashed lines; meaning that the autocorrelation function is not significantly different from zero.</p>
 <pre class="r"><code># Seasonal and non seasonal differenced log data - ACF/PACF
 ddlog_dat &lt;- diff(dlog_dat, lag = 12)
 ddlog_acf &lt;- acf2(ddlog_dat,
@@ -115,8 +115,8 @@ abline(h = 0, lwd = 1.5)</code></pre>
 </div>
 <div id="model-fitting-and-cross-validation" class="section level2">
 <h2>Model fitting and cross-validation</h2>
-<p>Now that we have analyzed our data, and decided which transformations we are going to apply, we are going to select the model with cross-validation (CV). However, the cross validation procedure that we are going to apply with time series data is a little bit different to what we usually do with independent data. If you want to read about CV for time series I recommend <a href="https://stats.stackexchange.com/a/326247/218995">here</a>, <a href="https://robjhyndman.com/publications/cv-time-series/">here</a>, and <a href="https://robjhyndman.com/hyndsight/tscv/">here</a></p>
-<p><em>Why do we need cross-validation?</em>. The answer is that we don’t want to test our models with the same data used to train them; that would be an over optimistic scenario. Instead, we want to test our model on unseen data.</p>
+<p>Now that we have analyzed our data, and decided which transformations we are going to apply, we are going to select the model with cross-validation (CV). However, the cross-validation procedure that we are going to apply with time series data is a little bit different to what we usually do with independent data. If you want to read about CV for time series I recommend <a href="https://stats.stackexchange.com/a/326247/218995">here</a>, <a href="https://robjhyndman.com/publications/cv-time-series/">here</a>, and <a href="https://robjhyndman.com/hyndsight/tscv/">here</a></p>
+<p><em>Why do we need cross-validation?</em>. The answer is that we don’t want to test our models with the same data used to train them; that would be an overly optimistic scenario. Instead, we want to test our model on unseen data.</p>
 <p>A graphic representation of this process is shown in Rob J Hyndman’s blog post (I reproduced below) and he also provides the code to make it <a href="https://gist.github.com/robjhyndman/9fa152c585442bb076eb42a30a020091">here</a></p>
 <p>Starting with 36 of our 54 months we are going to:</p>
 <ol style="list-style-type: decimal">
@@ -127,7 +127,7 @@ abline(h = 0, lwd = 1.5)</code></pre>
 </ol>
 <p>(If we try to start with less than 36 months, the <code>arima()</code> function returns an error). Finally, we are going to average all the squared errors getting what is known as <em>Mean Squared Error (MSE)</em>.</p>
 <p><img src="/post/2018-11-10-arima-from-scratch_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
-<p>Using the analysis of the previous sections and the CV validation procedure explained above, here we will fit two models to the log transformed data using the function <code>arima()</code>. The objective of fitting two models is to identify whether or not a moving average component is needed. This is not really clear in the ACF/PACF and time plots analysis we made before, so we will fit one model with q = 1 and one with q = 0 and then compare the MSE values from CV.</p>
+<p>Using the analysis of the previous sections and the CV validation procedure explained above, here we will fit two models to the log-transformed data using the function <code>arima()</code>. The objective of fitting two models is to identify whether or not a moving average component is needed. This is not really clear in the ACF/PACF and time plots analysis we made before, so we will fit one model with q = 1 and one with q = 0 and then compare the MSE values from CV.</p>
 <p>The models we are going to fit are:</p>
 <p><strong>model_1</strong>: ARIMA(p = 1, d = 1, q = 1, P = 1, D = 1, Q = 0, S = 12)<br />
 <strong>model_2</strong>: ARIMA(p = 1, d = 1, q = 0, P = 1, D = 1, Q = 0, S = 12)</p>
@@ -179,7 +179,7 @@ while(i &lt; length(log_dat)){
 exp(mean(MSE2))</code></pre>
 <pre><code>## [1] 1.001469</code></pre>
 <p>The MSE obtained with CV is slightly better for model 2. (We look for smaller values of MSE).</p>
-<p>Now we are going to use the function <code>sarima()</code> from package <strong>astsa</strong>. This function is basically a wraper of <code>arima()</code>, but additionally it returns an object called <strong>ttable</strong> that has the results of t-tests performed on each of the coefficients. The <strong>ttable</strong> is also printed in the summary of the model. Using <code>sarima()</code> from astsa package:</p>
+<p>Now we are going to use the function <code>sarima()</code> from package <strong>astsa</strong>. This function is basically a wrapper of <code>arima()</code>, but additionally it returns an object called <strong>ttable</strong> that has the results of t-tests performed on each of the coefficients. The <strong>ttable</strong> is also printed in the summary of the model. Using <code>sarima()</code> from astsa package:</p>
 <p><strong>Model 1</strong></p>
 <pre class="r"><code># Model_1 fitting
 m11 &lt;- sarima(log_dat, 
@@ -272,7 +272,7 @@ res_acf &lt;- acf2(m1$residuals,
                 main = &quot;ACF for model 1 residuals&quot;)</code></pre>
 <p><img src="/post/2018-11-10-arima-from-scratch_files/figure-html/unnamed-chunk-16-1.png" width="672" /></p>
 <p>In the time plot of the residuals for model 1, they seem to be uncorrelated. Furthermore, the ACF/PACF values are not significantly different from zero; except for the PACF values corresponding to lag three, nine, and twelve. This result suggests the possibility that there is still some slight seasonal regularity in the residuals, but the addition of another seasonal autoregressive component does not improve the results.</p>
-<p>To wrap up, selected model is model 1:</p>
+<p>To wrap up, the selected model is model 1:</p>
 <pre class="r"><code># Coefficients estimates
 m1$coef</code></pre>
 <pre><code>##        ar1        ma1       sar1 
@@ -284,7 +284,7 @@ sqrt(diag(m1$var.coef))</code></pre>
 </div>
 <div id="forecast" class="section level2">
 <h2>Forecast</h2>
-<p>For the forescast we can use <code>sarima.for()</code> from package astsa, but it automatically prints a plot of the forecasted values.<br />
+<p>For the forecast we can use <code>sarima.for()</code> from package astsa, but it automatically prints a plot of the forecasted values.<br />
 I wanted to show how to do the plots instead, so we are going to use the <code>predict()</code> function to get the forecast. However, the <strong>m11</strong> object we fitted with <code>sarima()</code> function is not going to work here, so in order to use the <code>predict()</code> function we are going to use the <strong>m1</strong> model that we created with <code>arima()</code> function.</p>
 <p>Note that the arguments of <code>predict()</code> are the name of the model and the forecast scope. Since our data is monthly, we will set <code>n.ahead = 12</code> to predict a whole year.</p>
 <pre class="r"><code># Fit the m1 model with all the data point available
@@ -333,7 +333,7 @@ legend(x = &quot;bottomright&quot;,
        pch = c(16, 16),
        bty = &quot;n&quot;)</code></pre>
 <p><img src="/post/2018-11-10-arima-from-scratch_files/figure-html/unnamed-chunk-20-1.png" width="672" /></p>
-<p>Since the data taken to run the forecast was the log transformed data, it is required to untransform the data to present the results. Such values are displayed in the next table:</p>
+<p>Since the data taken to run the forecast was the log-transformed data, it is required to untransform the data to present the results. Such values are displayed in the next table:</p>
 <table>
 <thead>
 <tr class="header">

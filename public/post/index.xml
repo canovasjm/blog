@@ -17,7 +17,7 @@
       <pubDate>Mon, 31 Dec 2018 00:00:00 +0000</pubDate>
       
       <guid>/2018/12/31/arima-from-scratch/</guid>
-      <description>Hi there! This post is a modification of the final project I did for my Time Series class and the idea is simple: fit an ARIMA model and make a forecast. To do so in R we can use auto.arima() function from forecast package, or we can decide what model are we going to fit and why. We will choose the latter path :)
+      <description>Hi there! This post is a modification of the final project I did for my Time Series class and the idea is simple: fit an ARIMA model and make a forecast. To do so in R we can use auto.arima() function from forecast package or we can decide what model are we going to fit and why. We will choose the latter path :)
 Here we are going to explore how the number of domestic air passengers in Argentina has evolved in the last years, fit a model to the data, and forecast the number of domestic passengers for the next twelve months.</description>
     </item>
     
