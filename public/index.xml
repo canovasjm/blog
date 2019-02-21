@@ -6,10 +6,20 @@
     <description>Recent content on jmcanovas</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Mon, 31 Dec 2018 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Fri, 15 Feb 2019 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Linux on a Lenovo IdeaPad U410</title>
+      <link>/2019/02/15/linux-on-a-lenovo-ideapad-u410/</link>
+      <pubDate>Fri, 15 Feb 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/2019/02/15/linux-on-a-lenovo-ideapad-u410/</guid>
+      <description>Hi again! This is the first of a series of posts related to my recent journey from Windows to Linux. This first post will cover the reasons why I decided to migrate to Linux and further posts will explain the process. I also want to state beforehand that this post will be highly bias against Windows. Continue reading to see why. Let’s get started.
+Some history I bought this Lenovo IdeaPad U410 in January 2013 and spent US$729.</description>
+    </item>
     
     <item>
       <title>ARIMA from scratch</title>
@@ -37,9 +47,9 @@ Here we are going to explore how the number of domestic air passengers in Argent
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>/about/</guid>
-      <description>MeHi! I am Juan Manuel. Proudly made in San Juan, Argentina.
+      <description>Me Hi! I am Juan Manuel. Proudly made in San Juan, Argentina.
 I am also a proud Fulbrighter. I came to the US through the Fulbright Program and received a M.Sc. in Applied Statistics from Loyola University Chicago. Previously in Argentina, I received a B.Sc. in Industrial Engineering from Universidad Nacional de San Juan.
-I am interested in Statistics in general, but I feel a special attraction to time series. These days I am in the transition from Windows to Linux.</description>
+I am interested in Statistics in general, but I feel a special attraction to time series.</description>
     </item>
     
     <item>
@@ -48,7 +58,7 @@ I am interested in Statistics in general, but I feel a special attraction to tim
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>/contact/</guid>
-      <description></description>
+      <description>  </description>
     </item>
     
     <item>
