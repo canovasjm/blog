@@ -1,5 +1,5 @@
 ---
-title: Linux on a Lenovo IdeaPad U410
+title: Linux on a Lenovo IdeaPad U410 (1)
 author: Juan M Canovas
 date: '2019-02-15'
 slug: linux-on-a-lenovo-ideapad-u410
