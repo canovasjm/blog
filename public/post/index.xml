@@ -6,10 +6,25 @@
     <description>Recent content in Posts on jmcanovas</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Fri, 15 Feb 2019 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Mon, 01 Apr 2019 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="/post/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Linux on a Lenovo IdeaPad U410 (2)</title>
+      <link>/2019/04/01/linux-on-a-lenovo-ideapad-u410-2/</link>
+      <pubDate>Mon, 01 Apr 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/2019/04/01/linux-on-a-lenovo-ideapad-u410-2/</guid>
+      <description>This is part 2 of the migration from Windows to Linux. Here I will focus on the steps I followed to get Linux running on this Lenovo IdeaPad U410. Briefly speaking, the steps boil down to:
+1) Make (several) back up(s) of the data you wish to keep
+2) Update Windows
+3) Update BIOS version
+4) Disable UEFI
+5) Create a bootable USB stick with your favourite distro
+6) Install Linux</description>
+    </item>
     
     <item>
       <title>Linux on a Lenovo IdeaPad U410 (1)</title>
@@ -39,6 +54,15 @@ Here we are going to explore how the number of domestic air passengers in Argent
       <guid>/2018/10/29/when-does-the-f-test-reduce-to-t-test/</guid>
       <description>If you have taken a regression or design of experiments class (or both), you probably have come across the following problem (or a similar one):
 “Show that the sum-of-squares decomposition and F-statistic reduces to the usual equal-variance (pooled) two sample t-test in the case of \(a = 2\) treatments - with the realization that an \(F\) statistic with \(1\) (numerator) and \(k\) (denominator) degrees of freedom is equivalent to a \(t\) statistic with \(k\) degrees of freedom, viz, \(F_{1, k} = t_{k}^2\)”</description>
+    </item>
+    
+    <item>
+      <title></title>
+      <link>/1/01/01/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/1/01/01/</guid>
+      <description>Linux on a Lenovo IdeaPad U410 (2)       code{white-space: pre;} pre:not([class]) { background-color: white; }  if (window.hljs) { hljs.configure({languages: []}); hljs.initHighlightingOnLoad(); if (document.readyState &amp;&amp; document.readyState === &#34;complete&#34;) { window.setTimeout(function() { hljs.initHighlighting(); }, 0); } }  h1 { font-size: 34px; } h1.title { font-size: 38px; } h2 { font-size: 30px; } h3 { font-size: 24px; } h4 { font-size: 18px; } h5 { font-size: 16px; } h6 { font-size: 12px; } .</description>
     </item>
     
   </channel>

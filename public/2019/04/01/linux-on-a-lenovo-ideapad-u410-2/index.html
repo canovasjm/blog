@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="generator" content="Hugo 0.54.0" />
+
+
+<title>Linux on a Lenovo IdeaPad U410 (2) - jmcanovas</title>
+<meta property="og:title" content="Linux on a Lenovo IdeaPad U410 (2) - jmcanovas">
+
+
+
+  
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/css/fonts.css" media="all">
+<link rel="stylesheet" href="/css/main.css" media="all">
+
+
+
+  </head>
+  <body>
+    <div class="wrapper">
+      <header class="header">
+        <nav class="nav">
+  <a href="/" class="nav-logo">
+    <img src="/images/%3cnil%3e"
+         width=""
+         height=""
+         alt="">
+  </a>
+
+  <ul class="nav-links">
+    
+    <li><a href="/about/">About</a></li>
+    
+    <li><a href="/contact/">Contact</a></li>
+    
+    <li><a href="https://stats.stackexchange.com/users/218995/juan-manuel">Cross Validated</a></li>
+    
+    <li><a href="https://github.com/jmcanovas">GitHub</a></li>
+    
+    <li><a href="/portfolio/">Portfolio</a></li>
+    
+    <li><a href="https://jmcanovas.netlify.com">Posts</a></li>
+    
+  </ul>
+</nav>
+
+      </header>
+
+
+<main class="content" role="main">
+
+  <article class="article">
+    
+    <span class="article-duration">6 min read</span>
+    
+
+    <h1 class="article-title">Linux on a Lenovo IdeaPad U410 (2)</h1>
+
+    
+    <span class="article-date">2019/04/01</span>
+    
+
+    <div class="article-content">
+      
+
+<p>This is part 2 of the migration from Windows to Linux. Here I will focus on the steps I followed to get Linux running on this Lenovo IdeaPad U410. Briefly speaking, the steps boil down to:</p>
+
+<p>1) Make (several) back up(s) of the data you wish to keep<br />
+2) Update Windows<br />
+3) Update BIOS version<br />
+4) Disable UEFI<br />
+5) Create a bootable USB stick with your favourite distro<br />
+6) Install Linux</p>
+
+<p><strong>NOTE: We will not cover how to set up dual boot (keep Windows and Linux in the same computer and decide which OS you wish to boot into). Here we will format the hard drive and remove Windows completely.</strong></p>
+
+<hr />
+
+<h1 id="1-back-up-s">1) Back up(s)</h1>
+
+<p><strong>DO NOT use any backup program nor the built-in Windows backup utility</strong>. Any of these will backup your data into a format that can not be read in Linux, so your <em>&ldquo;back up&rdquo;</em> won&rsquo;t be so.</p>
+
+<p>Instead, you should copy and paste the data you wish to save to an external hard drive, a USB stick or burn it to CDs/DVDs. This way, your data will be saved into FAT32 or NTFS formats, that can be read by a Linux system. It is also OK to store backup data in a Zip file.</p>
+
+<p>This step can be time-consuming, but it&rsquo;s worth the pain: if things go wrong it&rsquo;s better to be safe than sorry.</p>
+
+<h1 id="2-update-windows">2) Update Windows</h1>
+
+<p>Nothing new here. Go to &ldquo;Start&rdquo; &gt; &ldquo;Settings&rdquo; &gt; &ldquo;Update &amp; Security&rdquo; &gt; &ldquo;Check for updates&rdquo;</p>
+
+<p>If there is an update available, it will download and install it. If your Internet connection is decent and the update is not too big, then all you can do here is <strong>WAIT</strong> (yes, bolded capital letters). Otherwise, all you can do is <strong>WAIT, WAIT &amp; WAIT</strong>.</p>
+
+<p>Still lost? More details with screenshots included <a href="https://www.wikihow.com/Update-Windows">here</a></p>
+
+<p><strong>NOTE: This step might not be strictly necessary, but since we are going to update the BIOS booting into Windows we don&rsquo;t want any interference. And Windows updates can certainly be an interference.</strong></p>
+
+<h1 id="3-update-the-bios-version">3) Update the BIOS version</h1>
+
+<p>The BIOS, short for Basic Input/Output System, is where we can choose where we wish to boot from. I am not going to delve into details, but if you want to know more about what it is and what it does check out the <a href="https://en.wikipedia.org/wiki/BIOS">Wikipedia page</a>.</p>
+
+<p>This Lenovo IdeaPad U410, and also the IdeaPad U310, came with a BIOS version which is <strong>65CN89WW</strong>. According to my Internet research when Windows <em>upgraded(?)</em> from 8 to 8.1 something made impossible to access the BIOS. In order to recover the access to the BIOS and select where we wish to boot from, we need to update it to the <strong>65CN99WW</strong> version. This new version is available on Lenovo&rsquo;s website and it should be the only place where you download the file.</p>
+
+<p>Also, you <strong>must</strong> watch this 2 min video by Lenovo: <a href="https://www.youtube.com/watch?v=9jMz7KV76VA&amp;list=PLq4roe1E45w8b5L18aQqnSo6Z7wFARVG4&amp;index=1">check it out here</a>. They explain all you need to know about the process.</p>
+
+<p><strong>NOTE: This is a delicate process. It can go wrong and screw things up to a no recovery point. DO NOT continue if you are not completely sure about what you are doing. Needless to say, I am not responsible if things go wrong.</strong></p>
+
+<p>I downloaded the file from Lenovo&rsquo;s webpage (see the 2 min video I linked above: they explain how to search and download the correct file from their website). It is a .exe file that I saved on the Windows desktop and then double-clicked.</p>
+
+<p>As soon as I double clicked, it started to install the new BIOS version and restarted the computer several times. Here you will see black screens with white console letters. The whole process took approximately 7 minutes for me, but it may be longer for you. <strong>Be patient</strong> and don&rsquo;t forget to do this with your battery charged AND your computer plugged in. Any power fluctuation can turn the process into a failure.</p>
+
+<h1 id="4-disable-uefi">4) Disable UEFI</h1>
+
+<p>AFTER updating the BIOS, you will be able to access it and disable UEFI. What UEFI is? That is out of the scope of this post but we will need to turn it off in order to boot from a USB stick and install Linux. The way to go is:</p>
+
+<h3 id="4-1-press-the-novo-button">4.1) Press the &ldquo;novo&rdquo; button</h3>
+
+<p>This is a tiny button located on the left side of your laptop (Lenovo calls it &ldquo;novo button&rdquo;). Press it once and wait.</p>
+
+<p><img src=/img/linux_lenovo/01.jpg width="500"  /></p>
+
+<h3 id="4-2-select-bios-setup">4.2) Select BIOS setup</h3>
+
+<p><img src=/img/linux_lenovo/02.png width="500"  /></p>
+
+<h3 id="4-3-navigate-tabs-and-select-the-boot-tab">4.3) Navigate tabs and select the &ldquo;Boot&rdquo; tab</h3>
+
+<p>To navigate between tabs using the arrows of your keyboard.</p>
+
+<p><img src=/img/linux_lenovo/03.jpg width="750"  /></p>
+
+<p>Inside the &ldquo;Boot&rdquo; tab, select &ldquo;Boot mode&rdquo; and hit enter. Once there, choose &ldquo;Legacy Support&rdquo; and hit enter again.</p>
+
+<p><img src=/img/linux_lenovo/04.jpg width="750"  /></p>
+
+<h3 id="4-4-save-changes-and-exit">4.4) Save changes and exit</h3>
+
+<p>Navigate to the &ldquo;Exit&rdquo; tab and select &ldquo;Exit Saving Changes&rdquo;. Then select &ldquo;Yes&rdquo; and your laptop will boot into Windows.</p>
+
+<p><img src=/img/linux_lenovo/05.jpg width="750"  /></p>
+
+<h1 id="5-create-a-bootable-usb-stick-with-your-favourite-distro">5) Create a bootable USB stick with your favourite distro</h1>
+
+<p>You will need a 4 GB (or larger) USB stick. This tutorial by the Ubuntu team is awesome: <a href="https://tutorials.ubuntu.com/tutorial/tutorial-create-a-usb-stick-on-windows#0">link</a>. Bear in mind that the USB will be formatted and all the data in it lost.</p>
+
+<p>When you get to tutorial&rsquo;s step #6 you don&rsquo;t need to select the Ubuntu ISO. I installed <a href="https://linuxmint.com/download.php">Linux Mint</a> with the Cinnamon desktop and it worked flawlessly. WiFi, video, audio, webcam, microphone, keyboard shortcuts: all of them work perfectly!</p>
+
+<h1 id="6-install-linux">6) Install Linux</h1>
+
+<p>Boot from the USB you created above. <strong>Before installing anything, try the &ldquo;live&rdquo; mode</strong>: this way you can check at no cost if the distro you wish to install supports the hardware you have. Using the &ldquo;live&rdquo; mode open YouTube and try watching a video: you&rsquo;ll check WiFi, video, and audio all at the same time.</p>
+
+<p>At this point, you may find that some hardware doesn&rsquo;t work with Linux. Some folks had to sacrifice the webcam or the keyboard shortcuts in order to install Linux. The final decision is up to you. As I mentioned above, all the Lenovo IdeaPad U410 hardware works perfectly with Linux Mint and the Cinnamon desktop.</p>
+
+<p>Once you have checked the hardware works, then restart your computer and install Linux. Before doing so, I recommend the videos in <a href="https://www.youtube.com/channel/UCTfabOKD7Yty6sDF4POBVqA">Joe Collins&rsquo; YouTube channel</a>, particularly <a href="https://www.youtube.com/watch?v=G0AFuhVSvEk&amp;list=PLq4roe1E45w8b5L18aQqnSo6Z7wFARVG4&amp;index=3&amp;t=0s">this one</a>.</p>
+
+<hr />
+
+<h1 id="conclusion">Conclusion</h1>
+
+<p>Getting rid of Windows brought this Lenovo IdeaPad U410 back to live <strong>at no cost</strong>. Now I have a fully capable laptop AND 730 dollars that otherwise would be in someone else&rsquo;s pocket. If you have any computer that turned out to be unusable due to <a href="https://en.wikipedia.org/wiki/Software_bloat">bloatware</a>, I encourage you to try Linux.</p>
+
+<p>Have you brought an old computer back to life? Do you have any questions? Please leave a comment and let us now!</p>
+
+    </div>
+  </article>
+
+  
+<section id="comments">
+  <div id="disqus_thread"></div>
+  <script>
+  var disqus_config = function () {
+  
+  };
+  (function() {
+    var inIFrame = function() {
+      var iframe = true;
+      try { iframe = window.self !== window.top; } catch (e) {}
+      return iframe;
+    };
+    if (inIFrame()) return;
+    var d = document, s = d.createElement('script');
+    s.src = '//jmcanovas.disqus.com/embed.js'; s.async = true;
+    s.setAttribute('data-timestamp', +new Date());
+    (d.head || d.body).appendChild(s);
+  })();
+  </script>
+  <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</section>
+
+
+
+</main>
+
+      <footer class="footer">
+        <ul class="footer-links">
+          <li>
+            <a href="/index.xml" type="application/rss+xml" target="_blank">RSS feed</a>
+          </li>
+          <li>
+            <a href="https://gohugo.io/" class="footer-links-kudos">Made with <img src="/images/hugo-logo.png" alt="Img link to Hugo website" width="22" height="22"></a>
+          </li>
+        </ul>
+      </footer>
+
+    </div>
+    
+
+    
+
+    
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+	(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+	m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+	ga('create', 'UA-121816467-2', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+
+  </body>
+</html>
+
