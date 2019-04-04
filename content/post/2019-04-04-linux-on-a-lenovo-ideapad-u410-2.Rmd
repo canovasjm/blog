@@ -1,7 +1,7 @@
 ---
 title: Linux on a Lenovo IdeaPad U410 (2)
-author: Juan M Canovas
-date: '2019-04-01'
+author: Juan Manuel Canovas
+date: '2019-04-04'
 slug: linux-on-a-lenovo-ideapad-u410-2
 categories: []
 tags: []
@@ -107,6 +107,7 @@ Once you have checked the hardware works, then restart your computer and install
 Getting rid of Windows brought this Lenovo IdeaPad U410 back to live **at no cost**. Now I have a fully capable laptop AND 730 dollars that otherwise would be in someone else's pocket. If you have any computer that turned out to be unusable due to [bloatware](https://en.wikipedia.org/wiki/Software_bloat), I encourage you to try Linux.  
 
 Have you brought an old computer back to life? Do you have any questions? Please leave a comment and let us now!
+
 
 
 
