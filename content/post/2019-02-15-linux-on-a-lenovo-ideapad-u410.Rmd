@@ -25,7 +25,7 @@ I bought this Lenovo IdeaPad U410 in January 2013 and spent US$729.95. Some of t
 
 - The laptop came with Windows 8 pre-installed, then upgraded to Windows 8.1, and finally upgraded to Windows 10.   
 
-It was a pretty powerful computer by that time, but after all those system _upgrades_ (?) you can imagine what happened: it started to "get old". By the beginning of 2017, I started to read about how to wipe out Windows from the hard drive and install Linux, but I faced a **tremendous** challenge (at least for me): I could not access the BIOS, disable UEFI, change the booting order, and install Linux.
+It was a pretty powerful computer by that time, but after all those system _upgrades_ (?) you can imagine what happened: it started "to get old". By the beginning of 2017, I started to read about how to wipe out Windows from the hard drive and install Linux, but I faced a **tremendous** challenge (at least for me): I could not access the BIOS, disable UEFI, change the booting order, and install Linux.
 
 **NOTE: If you don't know what the terms in the last sentence mean, don't panic. I will explain them later, but for the moment keep in mind that the installation process was not going to be straightforward.**   
 
@@ -38,7 +38,7 @@ On July 2017 I moved to the US to start my master's program and decided to postp
 
 I did what (I think) most people would have done: 1) ask friends whose computer expertise is higher than yours and 2) google your problem, ask in forums, etc.   
 
-Option 1) was really disappointing: *"Buy a new computer"* was all I got. I was not going to spend money because Micro$oft had flooded my computer with crap which was, clearly, draining my resources. See the following screenshot:   
+Option 1) was really disappointing: _"Buy a new computer"_ was all I got. I was not going to spend money because Micro$oft had flooded my computer with crap which was, clearly, draining my resources. See the following screenshot:   
 
 <img src=/img/windows_desktop.jpg width="750"  />
 
@@ -58,7 +58,7 @@ Imagine updating Windows with this connection:
 
 But don't let me be misunderstood: by no means I want an OS that doesn't update. All I want is to decide when the updates are going to be installed, just like in Linux :)   
 
-More details about this (and other reasons to stop using Windows) are in Chris Titus Tech channel; see [here](https://www.youtube.com/watch?v=QSykL1I-WIc) and [here](https://www.youtube.com/watch?v=SakjTLUuF-w).    
+More details about this (and other reasons to stop using Windows) are in [Chris Titus Tech YouTube channel](https://www.youtube.com/user/homergfunk); see [here](https://www.youtube.com/watch?v=QSykL1I-WIc) and [here](https://www.youtube.com/watch?v=SakjTLUuF-w).    
 
 
 # Conclusion   
