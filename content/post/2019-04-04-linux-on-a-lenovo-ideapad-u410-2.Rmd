@@ -93,7 +93,7 @@ When you get to tutorial's step #6 you don't need to select the Ubuntu ISO. I in
 
 # 6) Install Linux        
 
-Boot from the bootable USB stick you created above. To do so, press the "novo" again and select "Boot Menu". 
+Boot from the bootable USB stick you created above. To do so, press the "novo" button again and select "Boot Menu". 
 
 <img src=/img/linux_lenovo/06.jpg width="500"  />
 
@@ -113,7 +113,7 @@ Once you have checked that the hardware works, then restart your computer and in
 
 <img src=/img/linux_lenovo/09.jpg width="500"  />
 
-The rest of the process is well addressed in Joe Collins' video.  
+The rest of the process is very well explained in Joe Collins' video.  
 
 
 ---
