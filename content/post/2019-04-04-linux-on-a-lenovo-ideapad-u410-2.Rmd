@@ -34,7 +34,7 @@ Nothing new here. Go to "Start" > "Settings" > "Update & Security" > "Check for 
 
 If there is an update available, it will download and install it. If your Internet connection is decent and the update is not too big, then all you can do here is **WAIT** (yes, bolded capital letters). Otherwise, all you can do is **WAIT, WAIT & WAIT**.   
 
-Still lost? More details with screenshots included [here](https://www.wikihow.com/Update-Windows) 
+Still lost? More details with screenshots included [here](https://www.wikihow.com/Update-Windows). 
 
 **NOTE: This step might not be strictly necessary, but since we are going to update the BIOS booting into Windows we don't want any interference. And Windows updates can certainly be an interference.**  
 
@@ -69,7 +69,7 @@ This is a tiny button located on the left side of your laptop (Lenovo calls it "
 
 ### 4.3) Navigate tabs and select the "Boot" tab    
 
-To navigate between tabs using the arrows of your keyboard.   
+Navigate between tabs using the arrows of your keyboard.   
 
 <img src=/img/linux_lenovo/03.jpg width="750"  />
 
@@ -93,7 +93,7 @@ When you get to tutorial's step #6 you don't need to select the Ubuntu ISO. I in
 
 # 6) Install Linux        
 
-Boot from the bootable USB stick you created above. To do so, press the "novo" button again and select "Boot Menu". 
+Boot from the bootable USB stick you created above. To do so, plug in the USB stick to your turned off laptop, press the "novo" button again and select "Boot Menu". 
 
 <img src=/img/linux_lenovo/06.jpg width="500"  />
 
@@ -101,13 +101,13 @@ Then choose the name of the USB stick and hit enter.
 
 <img src=/img/linux_lenovo/07.jpg width="500"  />
 
-**Before installing anything, try the "live" mode**: this way you can check at no cost if the distro you wish to install supports the hardware you have. You should see something like this (it's the first option):
+**Before installing anything, try the "live" mode**: this way you can check at no cost if the distro you wish to install supports the hardware you have. You should see something like this ("live" mode is the first option):
 
 <img src=/img/linux_lenovo/08.jpg width="500"  />
 
 Using the "live" mode open YouTube and try watching a video: you'll check WiFi, video, and audio all at the same time.  
 
-At this point, you may find that some hardware doesn't work with Linux. Some folks had to sacrifice the webcam or the keyboard shortcuts in order to install Linux. The final decision is up to you. As I mentioned above, all the Lenovo IdeaPad U410 hardware works perfectly with Linux Mint and the Cinnamon desktop.       
+At this point, you may find that some hardware doesn't work with Linux. Some folks had to sacrifice the webcam or the keyboard shortcuts as a consequence of installing Linux. The final decision is up to you. As I mentioned above, all the Lenovo IdeaPad U410 hardware works perfectly with Linux Mint and the Cinnamon desktop.       
 
 Once you have checked that the hardware works, then restart your computer and install Linux. Before doing so, I recommend the videos in [Joe Collins' YouTube channel](https://www.youtube.com/channel/UCTfabOKD7Yty6sDF4POBVqA), particularly [this one](https://www.youtube.com/watch?v=G0AFuhVSvEk&list=PLq4roe1E45w8b5L18aQqnSo6Z7wFARVG4&index=3&t=0s). To install Linux in the hard drive, you can boot into the "live" mode and select the "Install Linux Mint" icon on the desktop.  
 
