@@ -3,6 +3,7 @@ title: "Contact"
 output: html_document
 ---
 
+<div style="text-align: center">
 
+<img src=/img/email.jpeg height="600"  />
 
-![](/img/email.jpeg)
