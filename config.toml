@@ -1,9 +1,9 @@
 baseurl = "/"
 languageCode = "en-us"
-title = "jmcanovas"
+title = "JM"
 theme = "hugo-lithium"
 googleAnalytics = "UA-121816467-2"
-disqusShortname = "jmcanovas"
+disqusShortname = "canovasjm"
 ignoreFiles = ["\\.Rmd$", "\\.Rmarkdown$", "_files$", "_cache$"]
 
 [permalinks]
@@ -20,13 +20,13 @@ ignoreFiles = ["\\.Rmd$", "\\.Rmarkdown$", "_files$", "_cache$"]
     url = "https://stats.stackexchange.com/users/218995/juan-manuel"
 [[menu.main]]
     name = "GitHub"
-    url = "https://github.com/jmcanovas"
+    url = "https://github.com/canovasjm"
 [[menu.main]]
     name = "Portfolio"
     url = "/portfolio/"
 [[menu.main]]
     name = "Posts"
-    url = "https://jmcanovas.netlify.com"
+    url = "https://canovasjm.netlify.com"
 
 
 [params]
