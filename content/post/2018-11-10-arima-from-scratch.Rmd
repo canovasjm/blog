@@ -5,14 +5,22 @@ date: '2018-12-31'
 slug: arima-from-scratch
 categories: []
 tags: []
+output:
+  blogdown::html_page:
+    number_sections: true
+    toc: true
 ---
 
+
+# Introduction
 
 Hi there! This post is a modification of the final project I did for my Time Series class and the idea is simple: fit an ARIMA model and make a forecast. To do so in R we can use `auto.arima()` function from **forecast** package or we can decide what model are we going to fit and why. We will choose the latter path :)     
 
 Here we are going to explore how the number of domestic air passengers in Argentina has evolved in the last years, fit a model to the data, and forecast the number of domestic passengers for the next twelve months. 
 
-We will start by loading all the libraries needed:    
+--- 
+
+Before starting we will load all the libraries needed:    
 
 ```{r, echo = TRUE, message = FALSE, warning = FALSE}
 # Required libraries  
@@ -21,9 +29,8 @@ library(astsa)
 library(knitr)
 ```
 
----       
 
-## The data   
+# The data   
 
 The data was taken from **"Tablas de Movimientos y Pasajeros EANA 2014 - 2018"**, a report from Empresa Argentina de Navegacion Aerea. It can be accessed via the following link: https://www.eana.com.ar/estadisticas#informes   
   
@@ -36,7 +43,7 @@ The data is presented as an xlsx file and it is displayed in a way that it is ha
 
 ```{r, echo = TRUE}
 # Import csv file
-df <- read.csv("C:/Users/Juan Manuel/Documents/STAT 498/Project/EANA/passengers_ts.csv", 
+df <- read.csv("/home/jm/blog/static/passengers_ts.csv", 
                header = TRUE)
 
 # Remove year and month
@@ -65,6 +72,8 @@ The time plot above is showing that the data presents an upward trend and the va
 Before fitting a model we will need to do some work on this data: i) variance stabilization transformation and ii) trend removal.    
 
 
+# Transformations
+
 ## Variance stabilization transformation    
 
 *Why do we want to stabilize the variance?*, you may be wondering. Well, the problem with non-constant variance (a.k.a *heteroscedasticity*) is that, as time grows, small percent changes become large absolute changes. And we don't want that in our model.    
@@ -73,7 +82,7 @@ So, in order to stabilize the variance, we took the natural logarithm of the ori
 
 ```{r, echo = TRUE}
 # Log transformation
-log_dat<- log(dat[ , 1])
+log_dat <- log(dat[ , 1])
 plot.ts(log_dat,
         ylab = "log thousand passengers",
         main = "Domestic air passengers in Argentina 2014 - 2018")
@@ -159,13 +168,13 @@ abline(h = 0, lwd = 1.5)
 ---    
 
 
-## Model fitting and cross-validation     
+# Model fitting and cross-validation     
 
-Now that we have analyzed our data, and decided which transformations we are going to apply, we are going to select the model with cross-validation (CV). However, the cross-validation procedure that we are going to apply with time series data is a little bit different to what we usually do with independent data. If you want to read about CV for time series I recommend [here](https://stats.stackexchange.com/a/326247/218995), [here](https://robjhyndman.com/publications/cv-time-series/), and [here](https://robjhyndman.com/hyndsight/tscv/)     
+Now that we have analyzed our data, and decided which transformations we are going to apply, we are going to select the model with cross-validation (CV). However, the cross-validation procedure that we are going to apply with time series data is a little bit different to what we usually do with independent data. If you want to read about CV for time series I recommend [here](https://stats.stackexchange.com/a/326247/218995), [here](https://robjhyndman.com/publications/cv-time-series/), and [here](https://robjhyndman.com/hyndsight/tscv/).     
 
 *Why do we need cross-validation?*. The answer is that we don't want to test our models with the same data used to train them; that would be an overly optimistic scenario. Instead, we want to test our model on unseen data.   
 
-A graphic representation of this process is shown in Rob J Hyndman's blog post (I reproduced below) and he also provides the code to make it [here](https://gist.github.com/robjhyndman/9fa152c585442bb076eb42a30a020091)    
+A graphic representation of this process is shown in [Rob J Hyndman's blog post](https://robjhyndman.com/hyndsight/tscv/) (I reproduced the plot below) and he also provides the code to make it [here](https://gist.github.com/robjhyndman/9fa152c585442bb076eb42a30a020091).    
 
 Starting with 36 of our 54 months we are going to:
 
@@ -243,7 +252,6 @@ while(i < length(log_dat)){
               order = c(1, 1, 0), 
               seasonal = list(order = c(1, 1, 0), period = 12),
               method = "ML")
-              #optim.control = list(maxit = 1000))
   # Predict observation i + 1
   y_hat <- predict(m2, n.ahead = 1)
   # Prediction MSE
@@ -320,7 +328,7 @@ sqrt(diag(m1$var.coef))
 ```  
 
 
-## Forecast    
+# Forecast    
 
 For the forecast we can use `sarima.for()` from package astsa, but it automatically prints a plot of the forecasted values.   
 I wanted to show how to do the plots instead, so we are going to use the `predict()` function to get the forecast. However, the **m11** object we fitted with `sarima()` function is not going to work here, so in order to use the `predict()` function we are going to use the **m1** model that we created with `arima()` function.    
@@ -328,13 +336,14 @@ I wanted to show how to do the plots instead, so we are going to use the `predic
 Note that the arguments of `predict()` are the name of the model and the forecast scope. Since our data is monthly, we will set `n.ahead = 12` to predict a whole year.   
 
 ```{r}
-# Fit the m1 model with all the data point available
+# Fit the m1 model with all the observations available
 m1 <- arima(log_dat, 
               order = c(1, 1, 1), 
               seasonal = list(order = c(1, 1, 0), period = 12),
               method = "ML")
 ```
 
+Forecast for the next year using `predict()` and model **m1**:
 
 ```{r, eval=TRUE}
 # Forecast
@@ -342,7 +351,7 @@ m1_for <- predict(m1, n.ahead = 12)
 ```
 
 
-## More plots: Original data + forecast
+# More plots: Original data + forecast
 
 Finally, we are going to plot the original data and our forecast. To do so we start by creating a data frame with the values of interest.   
 
