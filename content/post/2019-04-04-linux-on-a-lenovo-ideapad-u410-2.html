@@ -5,10 +5,33 @@ date: '2019-04-04'
 slug: linux-on-a-lenovo-ideapad-u410-2
 categories: []
 tags: []
+output:
+  blogdown::html_page:
+    number_sections: true
+    toc: true
 ---
 
 
+<div id="TOC">
+<ul>
+<li><a href="#introduction"><span class="toc-section-number">1</span> Introduction</a></li>
+<li><a href="#back-ups"><span class="toc-section-number">2</span> Back up(s)</a></li>
+<li><a href="#update-windows"><span class="toc-section-number">3</span> Update Windows</a></li>
+<li><a href="#update-the-bios-version"><span class="toc-section-number">4</span> Update the BIOS version</a></li>
+<li><a href="#disable-uefi"><span class="toc-section-number">5</span> Disable UEFI</a><ul>
+<li><a href="#press-the-novo-button"><span class="toc-section-number">5.1</span> Press the “novo” button</a></li>
+<li><a href="#select-bios-setup"><span class="toc-section-number">5.2</span> Select BIOS setup</a></li>
+<li><a href="#navigate-tabs-and-select-the-boot-tab"><span class="toc-section-number">5.3</span> Navigate tabs and select the “Boot” tab</a></li>
+<li><a href="#save-changes-and-exit"><span class="toc-section-number">5.4</span> Save changes and exit</a></li>
+</ul></li>
+<li><a href="#create-a-bootable-usb-stick-with-your-favourite-distro"><span class="toc-section-number">6</span> Create a bootable USB stick with your favourite distro</a></li>
+<li><a href="#install-linux"><span class="toc-section-number">7</span> Install Linux</a></li>
+<li><a href="#conclusion"><span class="toc-section-number">8</span> Conclusion</a></li>
+</ul>
+</div>
 
+<div id="introduction" class="section level1">
+<h1><span class="header-section-number">1</span> Introduction</h1>
 <p>This is part 2 of the migration from Windows to Linux. Here I will focus on the steps I followed to get Linux running on this Lenovo IdeaPad U410. Briefly speaking, the steps boil down to:</p>
 <ol style="list-style-type: decimal">
 <li>Make (several) back up(s) of the data you wish to keep<br />
@@ -25,21 +48,22 @@ tags: []
 </ol>
 <p><strong>NOTE: We will not cover how to set up dual boot (keep Windows and Linux in the same computer and decide which OS you wish to boot into). Here we will format the hard drive and remove Windows completely.</strong></p>
 <hr />
+</div>
 <div id="back-ups" class="section level1">
-<h1>1) Back up(s)</h1>
+<h1><span class="header-section-number">2</span> Back up(s)</h1>
 <p><strong>DO NOT use any backup program nor the built-in Windows backup utility</strong>. Any of these will backup your data into a format that can not be read in Linux, so your <em>“back up”</em> won’t be so.</p>
 <p>Instead, you should copy and paste the data you wish to save to an external hard drive, a USB stick or burn it to CDs/DVDs. This way, your data will be saved into FAT32 or NTFS formats, that can be read by a Linux system. It is also OK to store backup data in a Zip file.</p>
 <p>This step can be time-consuming, but it’s worth the pain: if things go wrong it’s better to be safe than sorry.</p>
 </div>
 <div id="update-windows" class="section level1">
-<h1>2) Update Windows</h1>
+<h1><span class="header-section-number">3</span> Update Windows</h1>
 <p>Nothing new here. Go to “Start” &gt; “Settings” &gt; “Update &amp; Security” &gt; “Check for updates”</p>
 <p>If there is an update available, it will download and install it. If your Internet connection is decent and the update is not too big, then all you can do here is <strong>WAIT</strong> (yes, bolded capital letters). Otherwise, all you can do is <strong>WAIT, WAIT &amp; WAIT</strong>.</p>
 <p>Still lost? More details with screenshots included <a href="https://www.wikihow.com/Update-Windows">here</a>.</p>
 <p><strong>NOTE: This step might not be strictly necessary, but since we are going to update the BIOS booting into Windows we don’t want any interference. And Windows updates can certainly be an interference.</strong></p>
 </div>
 <div id="update-the-bios-version" class="section level1">
-<h1>3) Update the BIOS version</h1>
+<h1><span class="header-section-number">4</span> Update the BIOS version</h1>
 <p>The BIOS, short for Basic Input/Output System, is where we can choose where we wish to boot from. I am not going to delve into details, but if you want to know more about what it is and what it does check out the <a href="https://en.wikipedia.org/wiki/BIOS">Wikipedia page</a>.</p>
 <p>This Lenovo IdeaPad U410, and also the IdeaPad U310, came with a BIOS version which is <strong>65CN89WW</strong>. According to my Internet research when Windows <em>upgraded(?)</em> from 8 to 8.1 something made impossible to access the BIOS. In order to recover the access to the BIOS and select where we wish to boot from, we need to update it to the <strong>65CN99WW</strong> version. This new version is available on Lenovo’s website and it should be the only place where you download the file.</p>
 <p>Also, you <strong>must</strong> watch this 2 min video by Lenovo: <a href="https://www.youtube.com/watch?v=9jMz7KV76VA&amp;list=PLq4roe1E45w8b5L18aQqnSo6Z7wFARVG4&amp;index=1">check it out here</a>. They explain all you need to know about the process.</p>
@@ -48,37 +72,37 @@ tags: []
 <p>As soon as I double clicked, it started to install the new BIOS version and restarted the computer several times. Here you will see black screens with white console letters. The whole process took approximately 7 minutes for me, but it may be longer for you. <strong>Be patient</strong> and don’t forget to do this with your battery charged AND your computer plugged in. Any power fluctuation can turn the process into a failure.</p>
 </div>
 <div id="disable-uefi" class="section level1">
-<h1>4) Disable UEFI</h1>
+<h1><span class="header-section-number">5</span> Disable UEFI</h1>
 <p>AFTER updating the BIOS, you will be able to access it and disable UEFI. What UEFI is? That is out of the scope of this post but we will need to turn it off in order to boot from a USB stick and install Linux. The way to go is:</p>
-<div id="press-the-novo-button" class="section level3">
-<h3>4.1) Press the “novo” button</h3>
+<div id="press-the-novo-button" class="section level2">
+<h2><span class="header-section-number">5.1</span> Press the “novo” button</h2>
 <p>This is a tiny button located on the left side of your laptop (Lenovo calls it “novo button”). Press it once and wait.</p>
 <p><img src=/img/linux_lenovo/01.jpg width="500"  /></p>
 </div>
-<div id="select-bios-setup" class="section level3">
-<h3>4.2) Select BIOS setup</h3>
+<div id="select-bios-setup" class="section level2">
+<h2><span class="header-section-number">5.2</span> Select BIOS setup</h2>
 <p><img src=/img/linux_lenovo/02.png width="500"  /></p>
 </div>
-<div id="navigate-tabs-and-select-the-boot-tab" class="section level3">
-<h3>4.3) Navigate tabs and select the “Boot” tab</h3>
+<div id="navigate-tabs-and-select-the-boot-tab" class="section level2">
+<h2><span class="header-section-number">5.3</span> Navigate tabs and select the “Boot” tab</h2>
 <p>Navigate between tabs using the arrows of your keyboard.</p>
 <p><img src=/img/linux_lenovo/03.jpg width="750"  /></p>
 <p>Inside the “Boot” tab, select “Boot mode” and hit enter. Once there, choose “Legacy Support” and hit enter again.</p>
 <p><img src=/img/linux_lenovo/04.jpg width="750"  /></p>
 </div>
-<div id="save-changes-and-exit" class="section level3">
-<h3>4.4) Save changes and exit</h3>
+<div id="save-changes-and-exit" class="section level2">
+<h2><span class="header-section-number">5.4</span> Save changes and exit</h2>
 <p>Navigate to the “Exit” tab and select “Exit Saving Changes”. Then select “Yes” and your laptop will boot into Windows.</p>
 <p><img src=/img/linux_lenovo/05.jpg width="750"  /></p>
 </div>
 </div>
 <div id="create-a-bootable-usb-stick-with-your-favourite-distro" class="section level1">
-<h1>5) Create a bootable USB stick with your favourite distro</h1>
+<h1><span class="header-section-number">6</span> Create a bootable USB stick with your favourite distro</h1>
 <p>You will need a 4 GB (or larger) USB stick. This tutorial by the Ubuntu team is awesome: <a href="https://tutorials.ubuntu.com/tutorial/tutorial-create-a-usb-stick-on-windows#0">link</a>. Bear in mind that the USB stick will be formatted and all the data in it lost.</p>
 <p>When you get to tutorial’s step #6 you don’t need to select the Ubuntu ISO. I installed <a href="https://linuxmint.com/download.php">Linux Mint</a> with the Cinnamon desktop and it worked flawlessly. WiFi, video, audio, webcam, microphone, keyboard shortcuts: all of them work perfectly!</p>
 </div>
 <div id="install-linux" class="section level1">
-<h1>6) Install Linux</h1>
+<h1><span class="header-section-number">7</span> Install Linux</h1>
 <p>Boot from the bootable USB stick you created above. To do so, plug in the USB stick to your turned off laptop, press the “novo” button again and select “Boot Menu”.</p>
 <p><img src=/img/linux_lenovo/06.jpg width="500"  /></p>
 <p>Then choose the name of the USB stick and hit enter.</p>
@@ -93,7 +117,7 @@ tags: []
 <hr />
 </div>
 <div id="conclusion" class="section level1">
-<h1>Conclusion</h1>
+<h1><span class="header-section-number">8</span> Conclusion</h1>
 <p>Getting rid of Windows brought this Lenovo IdeaPad U410 back to live <strong>at no cost</strong>. Now I have a fully capable laptop AND 730 dollars that otherwise would be in someone else’s pocket. If you have any computer that turned out to be unusable due to <a href="https://en.wikipedia.org/wiki/Software_bloat">bloatware</a>, I encourage you to try Linux.</p>
 <p>Have you brought an old computer back to life? Do you have any questions? Please leave a comment and let us now!</p>
 </div>

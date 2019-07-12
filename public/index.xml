@@ -17,13 +17,7 @@
       <pubDate>Thu, 04 Apr 2019 00:00:00 +0000</pubDate>
       
       <guid>/2019/04/04/linux-on-a-lenovo-ideapad-u410-2/</guid>
-      <description>This is part 2 of the migration from Windows to Linux. Here I will focus on the steps I followed to get Linux running on this Lenovo IdeaPad U410. Briefly speaking, the steps boil down to:
-Make (several) back up(s) of the data you wish to keep
- Update Windows
- Update BIOS version
- Disable UEFI
- Create a bootable USB stick with your favourite distro
- Install Linux  NOTE: We will not cover how to set up dual boot (keep Windows and Linux in the same computer and decide which OS you wish to boot into).</description>
+      <description>1 Introduction 2 Back up(s) 3 Update Windows 4 Update the BIOS version 5 Disable UEFI 5.1 Press the “novo” button 5.2 Select BIOS setup 5.3 Navigate tabs and select the “Boot” tab 5.4 Save changes and exit  6 Create a bootable USB stick with your favourite distro 7 Install Linux 8 Conclusion   1 Introduction This is part 2 of the migration from Windows to Linux.</description>
     </item>
     
     <item>

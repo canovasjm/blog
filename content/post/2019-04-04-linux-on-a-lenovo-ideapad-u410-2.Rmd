@@ -5,7 +5,13 @@ date: '2019-04-04'
 slug: linux-on-a-lenovo-ideapad-u410-2
 categories: []
 tags: []
+output:
+  blogdown::html_page:
+    number_sections: true
+    toc: true
 ---
+
+# Introduction  
 
 This is part 2 of the migration from Windows to Linux. Here I will focus on the steps I followed to get Linux running on this Lenovo IdeaPad U410. Briefly speaking, the steps boil down to:
 
@@ -20,7 +26,7 @@ This is part 2 of the migration from Windows to Linux. Here I will focus on the 
 
 --- 
 
-# 1) Back up(s)   
+# Back up(s)   
 
 **DO NOT use any backup program nor the built-in Windows backup utility**. Any of these will backup your data into a format that can not be read in Linux, so your *"back up"* won't be so.    
 
@@ -28,7 +34,7 @@ Instead, you should copy and paste the data you wish to save to an external hard
 
 This step can be time-consuming, but it's worth the pain: if things go wrong it's better to be safe than sorry.   
 
-# 2) Update Windows   
+# Update Windows   
 
 Nothing new here. Go to "Start" > "Settings" > "Update & Security" > "Check for updates"   
 
@@ -39,7 +45,7 @@ Still lost? More details with screenshots included [here](https://www.wikihow.co
 **NOTE: This step might not be strictly necessary, but since we are going to update the BIOS booting into Windows we don't want any interference. And Windows updates can certainly be an interference.**  
 
 
-# 3) Update the BIOS version   
+# Update the BIOS version   
 
 The BIOS, short for Basic Input/Output System, is where we can choose where we wish to boot from. I am not going to delve into details, but if you want to know more about what it is and what it does check out the [Wikipedia page](https://en.wikipedia.org/wiki/BIOS). 
 
@@ -53,21 +59,21 @@ I downloaded the file from Lenovo's webpage (see the 2 min video I linked above:
 
 As soon as I double clicked, it started to install the new BIOS version and restarted the computer several times. Here you will see black screens with white console letters. The whole process took approximately 7 minutes for me, but it may be longer for you. **Be patient** and don't forget to do this with your battery charged AND your computer plugged in. Any power fluctuation can turn the process into a failure.   
 
-# 4) Disable UEFI    
+# Disable UEFI    
 
 AFTER updating the BIOS, you will be able to access it and disable UEFI. What UEFI is? That is out of the scope of this post but we will need to turn it off in order to boot from a USB stick and install Linux. The way to go is:   
 
-### 4.1) Press the "novo" button   
+## Press the "novo" button   
 
 This is a tiny button located on the left side of your laptop (Lenovo calls it "novo button"). Press it once and wait.  
 
 <img src=/img/linux_lenovo/01.jpg width="500"  />
 
-### 4.2) Select BIOS setup     
+## Select BIOS setup     
 
 <img src=/img/linux_lenovo/02.png width="500"  />
 
-### 4.3) Navigate tabs and select the "Boot" tab    
+## Navigate tabs and select the "Boot" tab    
 
 Navigate between tabs using the arrows of your keyboard.   
 
@@ -77,21 +83,21 @@ Inside the "Boot" tab, select "Boot mode" and hit enter. Once there, choose "Leg
 
 <img src=/img/linux_lenovo/04.jpg width="750"  />
 
-### 4.4) Save changes and exit   
+## Save changes and exit   
 
 Navigate to the "Exit" tab and select "Exit Saving Changes". Then select "Yes" and your laptop will boot into Windows.  
 
 <img src=/img/linux_lenovo/05.jpg width="750"  />
 
 
-# 5) Create a bootable USB stick with your favourite distro   
+# Create a bootable USB stick with your favourite distro   
 
 You will need a 4 GB (or larger) USB stick. This tutorial by the Ubuntu team is awesome: [link](https://tutorials.ubuntu.com/tutorial/tutorial-create-a-usb-stick-on-windows#0). Bear in mind that the USB stick will be formatted and all the data in it lost.    
 
 When you get to tutorial's step #6 you don't need to select the Ubuntu ISO. I installed [Linux Mint](https://linuxmint.com/download.php) with the Cinnamon desktop and it worked flawlessly. WiFi, video, audio, webcam, microphone, keyboard shortcuts: all of them work perfectly!   
 
 
-# 6) Install Linux        
+# Install Linux        
 
 Boot from the bootable USB stick you created above. To do so, plug in the USB stick to your turned off laptop, press the "novo" button again and select "Boot Menu". 
 
