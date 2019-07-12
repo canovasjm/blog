@@ -5,7 +5,13 @@ date: '2019-02-15'
 slug: linux-on-a-lenovo-ideapad-u410
 categories: []
 tags: []
+output:
+  blogdown::html_page:
+    number_sections: true
+    toc: true
 ---
+
+# Introduction  
 
 Hi again! This is the first of a series of posts related to my recent journey from Windows to Linux. This first post will cover the reasons why I decided to migrate to Linux and further posts will explain the process. I also want to state beforehand that this post will be highly bias **against** Windows. Continue reading to see why. Let's get started.   
 
