@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Posts on JM</title>
@@ -6,10 +6,21 @@
     <description>Recent content in Posts on JM</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Thu, 04 Apr 2019 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Sun, 01 Dec 2019 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="/post/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Tidy Tuesday Shiny App: Nuclear Explosions</title>
+      <link>/2019/12/01/tidy-tuesday-shiny-app-nuclear-explosions/</link>
+      <pubDate>Sun, 01 Dec 2019 00:00:00 +0000</pubDate>
+      
+      <guid>/2019/12/01/tidy-tuesday-shiny-app-nuclear-explosions/</guid>
+      <description>1 Introduction 2 The data 2.1 Sources 2.2 Data cleaning  3 What I learned along the way 4 Useful resources 5 Conclusion   1 Introduction It’s been a long time since my last post, but I’m here again: this time with a Shiny App. Shiny is defined as a “Web Application Framework for R”.
+From ?shiny:
+  Shiny makes it incredibly easy to build interactive web applications with R.</description>
+    </item>
     
     <item>
       <title>Linux on a Lenovo IdeaPad U410 (2)</title>

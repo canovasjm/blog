@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="generator" content="Hugo 0.60.1" />
+
+
+<title>Tidy Tuesday Shiny App: Nuclear Explosions - JM</title>
+<meta property="og:title" content="Tidy Tuesday Shiny App: Nuclear Explosions - JM">
+
+
+
+  
+
+
+
+
+
+
+
+
+<link href='//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css' rel='stylesheet' type='text/css' />
+
+
+
+<link rel="stylesheet" href="/css/fonts.css" media="all">
+<link rel="stylesheet" href="/css/main.css" media="all">
+
+
+
+  </head>
+  <body>
+    <div class="wrapper">
+      <header class="header">
+        <nav class="nav">
+  <a href="/" class="nav-logo">
+    <img src="/images/%3cnil%3e"
+         width=""
+         height=""
+         alt="">
+  </a>
+
+  <ul class="nav-links">
+    
+    <li><a href="/about/">About</a></li>
+    
+    <li><a href="/contact/">Contact</a></li>
+    
+    <li><a href="https://stats.stackexchange.com/users/218995/juan-manuel">Cross Validated</a></li>
+    
+    <li><a href="https://github.com/canovasjm">GitHub</a></li>
+    
+    <li><a href="/portfolio/">Portfolio</a></li>
+    
+    <li><a href="https://canovasjm.netlify.com">Posts</a></li>
+    
+  </ul>
+</nav>
+
+      </header>
+
+
+<main class="content" role="main">
+
+  <article class="article">
+    
+    <span class="article-duration">2 min read</span>
+    
+
+    <h1 class="article-title">Tidy Tuesday Shiny App: Nuclear Explosions</h1>
+
+    
+    <span class="article-date">2019/12/01</span>
+    
+
+    <div class="article-content">
+      
+
+<div id="TOC">
+<ul>
+<li><a href="#introduction"><span class="toc-section-number">1</span> Introduction</a></li>
+<li><a href="#the-data"><span class="toc-section-number">2</span> The data</a><ul>
+<li><a href="#sources"><span class="toc-section-number">2.1</span> Sources</a></li>
+<li><a href="#data-cleaning"><span class="toc-section-number">2.2</span> Data cleaning</a></li>
+</ul></li>
+<li><a href="#what-i-learned-along-the-way"><span class="toc-section-number">3</span> What I learned along the way</a></li>
+<li><a href="#useful-resources"><span class="toc-section-number">4</span> Useful resources</a></li>
+<li><a href="#conclusion"><span class="toc-section-number">5</span> Conclusion</a></li>
+</ul>
+</div>
+
+<div id="introduction" class="section level1">
+<h1><span class="header-section-number">1</span> Introduction</h1>
+<p>It’s been a long time since my last post, but I’m here again: this time with a Shiny App. Shiny is defined as a <em>“Web Application Framework for R”.</em></p>
+<p>From <code>?shiny</code>:</p>
+<blockquote>
+<blockquote>
+<p><em>Shiny makes it incredibly easy to build interactive web applications with R. Automatic “reactive” binding between inputs and outputs and extensive prebuilt widgets make it possible to build beautiful, responsive, and powerful applications with minimal effort.</em></p>
+</blockquote>
+</blockquote>
+<p>Although you will write them in R, Shiny Apps are a whole new world. One word in the definition above deserves special attention, specially if you don’t have experience in web development: <strong>reactive</strong>.</p>
+<p><strong>Reactivity: The key idea of reactive programming is to specify a graph of dependencies so that when an input changes, all related outputs are automatically updated.</strong></p>
+<p>It turns out reactivity is a fundamental concept in Shiny development. In fact, most powerful shiny apps relies heavily on this concept. Although mastering the concept will take some time, investing time and effort to grasp its foundations will pay off soon.</p>
+</div>
+<div id="the-data" class="section level1">
+<h1><span class="header-section-number">2</span> The data</h1>
+<p>What it is about</p>
+<div id="sources" class="section level2">
+<h2><span class="header-section-number">2.1</span> Sources</h2>
+<p>GitHub repo and original sources</p>
+</div>
+<div id="data-cleaning" class="section level2">
+<h2><span class="header-section-number">2.2</span> Data cleaning</h2>
+<p>Name of regions for Ukraine and France regions</p>
+</div>
+</div>
+<div id="what-i-learned-along-the-way" class="section level1">
+<h1><span class="header-section-number">3</span> What I learned along the way</h1>
+<p>The use of <code>%in%</code> from <code>base</code> R package, which returns a vector of the positions of matches of its first argument in its second. Let’s see an example (taken from <code>?'%in%'</code>):</p>
+<pre class="r"><code>a &lt;- 1:5
+b &lt;- 3:8
+
+a</code></pre>
+<pre><code>## [1] 1 2 3 4 5</code></pre>
+<pre class="r"><code>b</code></pre>
+<pre><code>## [1] 3 4 5 6 7 8</code></pre>
+<pre class="r"><code>a %in% b</code></pre>
+<pre><code>## [1] FALSE FALSE  TRUE  TRUE  TRUE</code></pre>
+<p>use of <code>mapvalues()</code> from <code>plyr</code></p>
+<p>timevis library based on javascript D3.js</p>
+</div>
+<div id="useful-resources" class="section level1">
+<h1><span class="header-section-number">4</span> Useful resources</h1>
+<p><a href="https://mastering-shiny.org/">Mastering shiny</a>, from the R legend Hadley Wickham.</p>
+</div>
+<div id="conclusion" class="section level1">
+<h1><span class="header-section-number">5</span> Conclusion</h1>
+</div>
+
+    </div>
+  </article>
+
+  
+<section id="comments">
+  <div id="disqus_thread"></div>
+  <script>
+  var disqus_config = function () {
+  
+  };
+  (function() {
+    var inIFrame = function() {
+      var iframe = true;
+      try { iframe = window.self !== window.top; } catch (e) {}
+      return iframe;
+    };
+    if (inIFrame()) return;
+    var d = document, s = d.createElement('script');
+    s.src = '//jmcanovas.disqus.com/embed.js'; s.async = true;
+    s.setAttribute('data-timestamp', +new Date());
+    (d.head || d.body).appendChild(s);
+  })();
+  </script>
+  <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</section>
+
+
+
+</main>
+
+      <footer class="footer">
+        <ul class="footer-links">
+          <li>
+            <a href="/index.xml" type="application/rss+xml" target="_blank">RSS feed</a>
+          </li>
+          <li>
+            <a href="https://gohugo.io/" class="footer-links-kudos">Made with <img src="/images/hugo-logo.png" alt="Img link to Hugo website" width="22" height="22"></a>
+          </li>
+        </ul>
+      </footer>
+
+    </div>
+    
+
+
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+
+
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/r.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/yaml.min.js"></script>
+<script>hljs.configure({languages: []}); hljs.initHighlightingOnLoad();</script>
+
+
+
+    
+
+    
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+	(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+	m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+	ga('create', 'UA-121816467-2', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+
+  </body>
+</html>
+

@@ -1,0 +1,63 @@
+---
+title: 'Tidy Tuesday Shiny App: Nuclear Explosions'
+author: Juan Manuel Canovas
+date: '2019-12-01'
+slug: tidy-tuesday-shiny-app-nuclear-explosions
+categories: []
+tags: []
+output:
+  blogdown::html_page:
+    number_sections: true
+    toc: true
+---
+
+# Introduction  
+
+It’s been a long time since my last post, but I’m here again: this time with a Shiny App. Shiny is defined as a *"Web Application Framework for R".*   
+
+From `?shiny`:
+
+>> *Shiny makes it incredibly easy to build interactive web applications with R. Automatic "reactive" binding between inputs and outputs and extensive prebuilt widgets make it possible to build beautiful, responsive, and powerful applications with minimal effort.*
+
+Although you will write them in R, Shiny Apps are a whole new world. One word in the definition above deserves special attention, specially if you don’t have experience in web development: **reactive**. 
+
+**Reactivity: The key idea of reactive programming is to specify a graph of dependencies so that when an input changes, all related outputs are automatically updated.**  
+
+It turns out reactivity is a fundamental concept in Shiny development. In fact, most powerful shiny apps relies heavily on this concept. Although mastering the concept will take some time, investing time and effort to grasp its foundations will pay off soon.
+
+# The data  
+
+What it is about  
+
+## Sources  
+
+GitHub repo and original sources  
+
+## Data cleaning  
+
+Name of regions for Ukraine and France regions  
+
+# What I learned along the way
+
+The use of `%in%` from `base` R package, which returns a vector of the positions of matches of its first argument in its second. Let's see an example (taken from `?'%in%'`):
+
+```{r, echo=TRUE}
+a <- 1:5
+b <- 3:8
+
+a
+b
+a %in% b
+```
+
+
+use of `mapvalues()` from `plyr`  
+
+timevis library based on javascript D3.js   
+
+# Useful resources  
+
+[Mastering shiny](https://mastering-shiny.org/), from the R legend Hadley Wickham.  
+
+# Conclusion  
+
