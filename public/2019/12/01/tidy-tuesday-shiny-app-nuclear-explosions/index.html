@@ -84,7 +84,11 @@
 <li><a href="#sources"><span class="toc-section-number">2.1</span> Sources</a></li>
 <li><a href="#data-cleaning"><span class="toc-section-number">2.2</span> Data cleaning</a></li>
 </ul></li>
-<li><a href="#what-i-learned-along-the-way"><span class="toc-section-number">3</span> What I learned along the way</a></li>
+<li><a href="#what-i-learned-along-the-way"><span class="toc-section-number">3</span> What I learned along the way</a><ul>
+<li><a href="#the-use-of-in-from-base-r-package"><span class="toc-section-number">3.1</span> The use of <code>%in%</code> from <code>base</code> R package</a></li>
+<li><a href="#the-use-of-mapvalues-from-plyr"><span class="toc-section-number">3.2</span> The use of <code>mapvalues()</code> from <code>plyr</code></a></li>
+<li><a href="#the-timevis-library"><span class="toc-section-number">3.3</span> The <code>timevis</code> library</a></li>
+</ul></li>
 <li><a href="#useful-resources"><span class="toc-section-number">4</span> Useful resources</a></li>
 <li><a href="#conclusion"><span class="toc-section-number">5</span> Conclusion</a></li>
 </ul>
@@ -100,7 +104,7 @@
 </blockquote>
 </blockquote>
 <p>Although you will write them in R, Shiny Apps are a whole new world. One word in the definition above deserves special attention, specially if you don’t have experience in web development: <strong>reactive</strong>.</p>
-<p><strong>Reactivity: The key idea of reactive programming is to specify a graph of dependencies so that when an input changes, all related outputs are automatically updated.</strong></p>
+<p><strong>Reactivity: The key idea of reactive programming is to specify a graph of dependencies so that when an input changes, all related outputs are automatically updated. Also, <a href="https://vimeo.com/rstudioinc/review/131218530/212d8a5a7a/#t=47m25s">check this 2 minutes video.</a></strong></p>
 <p>It turns out reactivity is a fundamental concept in Shiny development. In fact, most powerful shiny apps relies heavily on this concept. Although mastering the concept will take some time, investing time and effort to grasp its foundations will pay off soon.</p>
 </div>
 <div id="the-data" class="section level1">
@@ -117,22 +121,43 @@
 </div>
 <div id="what-i-learned-along-the-way" class="section level1">
 <h1><span class="header-section-number">3</span> What I learned along the way</h1>
-<p>The use of <code>%in%</code> from <code>base</code> R package, which returns a vector of the positions of matches of its first argument in its second. Let’s see an example (taken from <code>?'%in%'</code>):</p>
-<pre class="r"><code>a &lt;- 1:5
+<div id="the-use-of-in-from-base-r-package" class="section level2">
+<h2><span class="header-section-number">3.1</span> The use of <code>%in%</code> from <code>base</code> R package</h2>
+<p>This in an interface to the <code>match()</code> function, which returns a vector of the positions of matches of its first argument in its second. Let’s see an example (taken from <code>?'%in%'</code>):</p>
+<pre class="r"><code># create two vectors
+a &lt;- 1:5
 b &lt;- 3:8
 
+# print the vectors
 a</code></pre>
 <pre><code>## [1] 1 2 3 4 5</code></pre>
 <pre class="r"><code>b</code></pre>
 <pre><code>## [1] 3 4 5 6 7 8</code></pre>
-<pre class="r"><code>a %in% b</code></pre>
+<pre class="r"><code># check which elements from vector &quot;a&quot; are also in vector &quot;b&quot;
+a %in% b</code></pre>
 <pre><code>## [1] FALSE FALSE  TRUE  TRUE  TRUE</code></pre>
-<p>use of <code>mapvalues()</code> from <code>plyr</code></p>
-<p>timevis library based on javascript D3.js</p>
+</div>
+<div id="the-use-of-mapvalues-from-plyr" class="section level2">
+<h2><span class="header-section-number">3.2</span> The use of <code>mapvalues()</code> from <code>plyr</code></h2>
+</div>
+<div id="the-timevis-library" class="section level2">
+<h2><span class="header-section-number">3.3</span> The <code>timevis</code> library</h2>
+<p>based on javascript D3.js</p>
+</div>
 </div>
 <div id="useful-resources" class="section level1">
 <h1><span class="header-section-number">4</span> Useful resources</h1>
-<p><a href="https://mastering-shiny.org/">Mastering shiny</a>, from the R legend Hadley Wickham.</p>
+<p>In no particular order, resources I found useful are:</p>
+<ul>
+<li><a href="https://mastering-shiny.org/">Mastering shiny</a>, from Hadley Wickham.</li>
+<li><a href="https://www.youtube.com/watch?v=_0ORRJqctHE&amp;list=PL6wLL_RojB5xNOhe2OTSd-DPkMLVY9DfB">R Shiny app tutorial</a>, from Abhinav Agrawal.<br />
+</li>
+<li><a href="https://shiny.rstudio.com/tutorial/">Shiny tutorial</a>, from Garrett Grolemund.<br />
+</li>
+<li><a href="https://shiny.rstudio.com/gallery/">Shiny gallery</a>, from RStudio.<br />
+</li>
+<li><a href="https://cfss.uchicago.edu/notes/shiny/">Building Shiny applications</a>, by Dr. Benjamin Soltoff.</li>
+</ul>
 </div>
 <div id="conclusion" class="section level1">
 <h1><span class="header-section-number">5</span> Conclusion</h1>

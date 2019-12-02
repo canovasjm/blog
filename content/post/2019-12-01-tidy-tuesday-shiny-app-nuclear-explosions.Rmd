@@ -21,7 +21,7 @@ From `?shiny`:
 
 Although you will write them in R, Shiny Apps are a whole new world. One word in the definition above deserves special attention, specially if you don’t have experience in web development: **reactive**. 
 
-**Reactivity: The key idea of reactive programming is to specify a graph of dependencies so that when an input changes, all related outputs are automatically updated.**  
+**Reactivity: The key idea of reactive programming is to specify a graph of dependencies so that when an input changes, all related outputs are automatically updated. Also, [check this 2 minutes video.](https://vimeo.com/rstudioinc/review/131218530/212d8a5a7a/#t=47m25s)**  
 
 It turns out reactivity is a fundamental concept in Shiny development. In fact, most powerful shiny apps relies heavily on this concept. Although mastering the concept will take some time, investing time and effort to grasp its foundations will pay off soon.
 
@@ -39,25 +39,41 @@ Name of regions for Ukraine and France regions
 
 # What I learned along the way
 
-The use of `%in%` from `base` R package, which returns a vector of the positions of matches of its first argument in its second. Let's see an example (taken from `?'%in%'`):
+## The use of `%in%` from `base` R package  
+
+This in an interface to the `match()` function, which returns a vector of the positions of matches of its first argument in its second. Let's see an example (taken from `?'%in%'`):
 
 ```{r, echo=TRUE}
+# create two vectors
 a <- 1:5
 b <- 3:8
 
+# print the vectors
 a
 b
+
+# check which elements from vector "a" are also in vector "b"
 a %in% b
 ```
 
 
-use of `mapvalues()` from `plyr`  
+## The use of `mapvalues()` from `plyr`  
 
-timevis library based on javascript D3.js   
+## The `timevis` library 
+
+based on javascript D3.js   
+
 
 # Useful resources  
 
-[Mastering shiny](https://mastering-shiny.org/), from the R legend Hadley Wickham.  
+In no particular order, resources I found useful are:   
+
+* [Mastering shiny](https://mastering-shiny.org/), from Hadley Wickham.
+* [R Shiny app tutorial](https://www.youtube.com/watch?v=_0ORRJqctHE&list=PL6wLL_RojB5xNOhe2OTSd-DPkMLVY9DfB), from Abhinav Agrawal.  
+* [Shiny tutorial](https://shiny.rstudio.com/tutorial/), from Garrett Grolemund.  
+* [Shiny gallery](https://shiny.rstudio.com/gallery/), from RStudio.  
+* [Building Shiny applications](https://cfss.uchicago.edu/notes/shiny/), by Dr. Benjamin Soltoff.  
+
 
 # Conclusion  
 
