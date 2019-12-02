@@ -27,11 +27,13 @@ It turns out reactivity is a fundamental concept in Shiny development. In fact, 
 
 # The data  
 
-What it is about  
+What it is about... 
+
+Additional information on this topic and related datasets can be found on this [article](https://ourworldindata.org/nuclear-weapons), by Max Roser and Mohamed Nagdy.
 
 ## Sources  
 
-GitHub repo and original sources  
+[GitHub repository](https://github.com/rfordatascience/tidytuesday/tree/master/data/2019/2019-08-20) and original sources  
 
 ## Data cleaning  
 
