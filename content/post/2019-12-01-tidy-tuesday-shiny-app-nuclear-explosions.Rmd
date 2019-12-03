@@ -123,9 +123,9 @@ based on javascript D3.js
 
 In no particular order, resources I found useful are:   
 
-* [Mastering shiny](https://mastering-shiny.org/), from Hadley Wickham.
-* [R Shiny app tutorial](https://www.youtube.com/watch?v=_0ORRJqctHE&list=PL6wLL_RojB5xNOhe2OTSd-DPkMLVY9DfB), from Abhinav Agrawal.  
-* [Shiny tutorial](https://shiny.rstudio.com/tutorial/), from Garrett Grolemund.  
+* [Mastering shiny](https://mastering-shiny.org/), a book by Hadley Wickham.
+* [R Shiny app tutorial](https://www.youtube.com/watch?v=_0ORRJqctHE&list=PL6wLL_RojB5xNOhe2OTSd-DPkMLVY9DfB), a series of videos by Abhinav Agrawal.  
+* [Shiny tutorial](https://shiny.rstudio.com/tutorial/), a series of videos by Garrett Grolemund.  
 * [Shiny gallery](https://shiny.rstudio.com/gallery/), from RStudio.  
 * [Building Shiny applications](https://cfss.uchicago.edu/notes/shiny/), by Dr. Benjamin Soltoff.  
 
