@@ -11,6 +11,7 @@ output:
     toc: true
 ---
 
+
 # Introduction  
 
 It’s been a long time since my last post, but I’m here again: this time with a Shiny App. Shiny is defined as a *"Web Application Framework for R".*   
@@ -27,7 +28,24 @@ It turns out reactivity is a fundamental concept in Shiny development. In fact, 
 
 # The data  
 
+First of all, let's load some libraries we will need to work with the data.   
+
+```{r, message=FALSE, warning=FALSE}
+# required libraries
+library(plyr)
+library(dplyr)
+library(tidyr)
+library(stringr)
+```
+
+
 What it is about... 
+
+```{r}
+# import data
+ne_original <- readr::read_csv("https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2019/2019-08-20/nuclear_explosions.csv")
+```
+
 
 Additional information on this topic and related datasets can be found on this [article](https://ourworldindata.org/nuclear-weapons), by Max Roser and Mohamed Nagdy.
 
@@ -35,9 +53,6 @@ Additional information on this topic and related datasets can be found on this [
 
 [GitHub repository](https://github.com/rfordatascience/tidytuesday/tree/master/data/2019/2019-08-20) and original sources  
 
-## Data cleaning  
-
-Name of regions for Ukraine and France regions  
 
 # What I learned along the way
 
@@ -61,6 +76,44 @@ a %in% b
 
 ## The use of `mapvalues()` from `plyr`  
 
+There are some regions that have been written differently, possibly due to the fact that the data is coming from different sources, as we can see below:  
+
+```{r}
+# "UKRAINE" in the USSR is written as "UKEAINE" and "UKRAINE"
+ne_original %>% 
+  select(country, region, source) %>% 
+  filter(str_detect(region, "^UK"))
+
+# "FANGATAUFAA" in France is written as "FANGATAUFAA" and "FANGATAUFA"
+ne_original %>% 
+  select(country, region, source) %>% 
+  filter(str_detect(region, "^FANGATAUFA"))
+```
+
+An easy way to fix these cases is with function `mapvalues()` from `plyr` package. From `?mapvalues()` we can see that the function takes on the following arguments: `mapvalues(x, from, to, warn_missing = TRUE)`
+
+* `x`: the factor or vector to modify  
+* `from`: a vector of the items to replace  
+* `to`: a vector of replacement values  
+* `warn_missing`: print a message if any of the old values are not actually present in `x`
+
+Let's see it in action:  
+
+```{r, eval=FALSE}
+# impute corrections for "UKRAINE"
+ne <- ne %>% 
+  mutate(region = mapvalues(region, 
+                            from = "UKEAINE", 
+                            to = "UKRAINE"))
+
+# impute corrections for "FANGATAUFA"
+ne <- ne %>% 
+  mutate(region = mapvalues(region, 
+                            from = c("FANGATAUFAA", "MUEUEOA"), 
+                            to = c("FANGATAUFA", "MURUROA")))
+```
+
+
 ## The `timevis` library 
 
 based on javascript D3.js   
@@ -79,5 +132,6 @@ In no particular order, resources I found useful are:
 
 # Conclusion  
 
-You can check the Shiny app here: https://canovasjm.shinyapps.io/nuclear_explosions/
+You can check the Shiny app here:   
+https://canovasjm.shinyapps.io/nuclear_explosions/
 

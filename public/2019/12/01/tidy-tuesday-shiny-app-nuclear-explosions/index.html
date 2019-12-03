@@ -65,7 +65,7 @@
 
   <article class="article">
     
-    <span class="article-duration">3 min read</span>
+    <span class="article-duration">4 min read</span>
     
 
     <h1 class="article-title">Tidy Tuesday Shiny App: Nuclear Explosions</h1>
@@ -82,7 +82,6 @@
 <li><a href="#introduction"><span class="toc-section-number">1</span> Introduction</a></li>
 <li><a href="#the-data"><span class="toc-section-number">2</span> The data</a><ul>
 <li><a href="#sources"><span class="toc-section-number">2.1</span> Sources</a></li>
-<li><a href="#data-cleaning"><span class="toc-section-number">2.2</span> Data cleaning</a></li>
 </ul></li>
 <li><a href="#what-i-learned-along-the-way"><span class="toc-section-number">3</span> What I learned along the way</a><ul>
 <li><a href="#the-use-of-in-from-base-r-package"><span class="toc-section-number">3.1</span> The use of <code>%in%</code> from <code>base</code> R package</a></li>
@@ -109,15 +108,38 @@
 </div>
 <div id="the-data" class="section level1">
 <h1><span class="header-section-number">2</span> The data</h1>
+<p>First of all, let’s load some libraries we will need to work with the data.</p>
+<pre class="r"><code># required libraries
+library(plyr)
+library(dplyr)
+library(tidyr)
+library(stringr)</code></pre>
 <p>What it is about…</p>
+<pre class="r"><code># import data
+ne_original &lt;- readr::read_csv(&quot;https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2019/2019-08-20/nuclear_explosions.csv&quot;)</code></pre>
+<pre><code>## Parsed with column specification:
+## cols(
+##   date_long = col_double(),
+##   year = col_double(),
+##   id_no = col_double(),
+##   country = col_character(),
+##   region = col_character(),
+##   source = col_character(),
+##   latitude = col_double(),
+##   longitude = col_double(),
+##   magnitude_body = col_double(),
+##   magnitude_surface = col_double(),
+##   depth = col_double(),
+##   yield_lower = col_double(),
+##   yield_upper = col_double(),
+##   purpose = col_character(),
+##   name = col_character(),
+##   type = col_character()
+## )</code></pre>
 <p>Additional information on this topic and related datasets can be found on this <a href="https://ourworldindata.org/nuclear-weapons">article</a>, by Max Roser and Mohamed Nagdy.</p>
 <div id="sources" class="section level2">
 <h2><span class="header-section-number">2.1</span> Sources</h2>
 <p><a href="https://github.com/rfordatascience/tidytuesday/tree/master/data/2019/2019-08-20">GitHub repository</a> and original sources</p>
-</div>
-<div id="data-cleaning" class="section level2">
-<h2><span class="header-section-number">2.2</span> Data cleaning</h2>
-<p>Name of regions for Ukraine and France regions</p>
 </div>
 </div>
 <div id="what-i-learned-along-the-way" class="section level1">
@@ -140,6 +162,59 @@ a %in% b</code></pre>
 </div>
 <div id="the-use-of-mapvalues-from-plyr" class="section level2">
 <h2><span class="header-section-number">3.2</span> The use of <code>mapvalues()</code> from <code>plyr</code></h2>
+<p>There are some regions that have been written differently, possibly due to the fact that the data is coming from different sources, as we can see below:</p>
+<pre class="r"><code># &quot;UKRAINE&quot; in the USSR is written as &quot;UKEAINE&quot; and &quot;UKRAINE&quot;
+ne_original %&gt;% 
+  select(country, region, source) %&gt;% 
+  filter(str_detect(region, &quot;^UK&quot;))</code></pre>
+<pre><code>## # A tibble: 2 x 3
+##   country region  source
+##   &lt;chr&gt;   &lt;chr&gt;   &lt;chr&gt; 
+## 1 USSR    UKRAINE DOE   
+## 2 USSR    UKEAINE MTM</code></pre>
+<pre class="r"><code># &quot;FANGATAUFAA&quot; in France is written as &quot;FANGATAUFAA&quot; and &quot;FANGATAUFA&quot;
+ne_original %&gt;% 
+  select(country, region, source) %&gt;% 
+  filter(str_detect(region, &quot;^FANGATAUFA&quot;))</code></pre>
+<pre><code>## # A tibble: 14 x 3
+##    country region      source
+##    &lt;chr&gt;   &lt;chr&gt;       &lt;chr&gt; 
+##  1 FRANCE  FANGATAUFA  DOE   
+##  2 FRANCE  FANGATAUFA  UGS   
+##  3 FRANCE  FANGATAUFA  UGS   
+##  4 FRANCE  FANGATAUFA  DOE   
+##  5 FRANCE  FANGATAUFA  WTN   
+##  6 FRANCE  FANGATAUFA  WTN   
+##  7 FRANCE  FANGATAUFA  WTN   
+##  8 FRANCE  FANGATAUFA  WTN   
+##  9 FRANCE  FANGATAUFAA WTN   
+## 10 FRANCE  FANGATAUFA  WTN   
+## 11 FRANCE  FANGATAUFA  WTN   
+## 12 FRANCE  FANGATAUFA  WTN   
+## 13 FRANCE  FANGATAUFA  WTN   
+## 14 FRANCE  FANGATAUFA  WTN</code></pre>
+<p>An easy way to fix these cases is with function <code>mapvalues()</code> from <code>plyr</code> package. From <code>?mapvalues()</code> we can see that the function takes on the following arguments: <code>mapvalues(x, from, to, warn_missing = TRUE)</code></p>
+<ul>
+<li><code>x</code>: the factor or vector to modify<br />
+</li>
+<li><code>from</code>: a vector of the items to replace<br />
+</li>
+<li><code>to</code>: a vector of replacement values<br />
+</li>
+<li><code>warn_missing</code>: print a message if any of the old values are not actually present in <code>x</code></li>
+</ul>
+<p>Let’s see it in action:</p>
+<pre class="r"><code># impute corrections for &quot;UKRAINE&quot;
+ne &lt;- ne %&gt;% 
+  mutate(region = mapvalues(region, 
+                            from = &quot;UKEAINE&quot;, 
+                            to = &quot;UKRAINE&quot;))
+
+# impute corrections for &quot;FANGATAUFA&quot;
+ne &lt;- ne %&gt;% 
+  mutate(region = mapvalues(region, 
+                            from = c(&quot;FANGATAUFAA&quot;, &quot;MUEUEOA&quot;), 
+                            to = c(&quot;FANGATAUFA&quot;, &quot;MURUROA&quot;)))</code></pre>
 </div>
 <div id="the-timevis-library" class="section level2">
 <h2><span class="header-section-number">3.3</span> The <code>timevis</code> library</h2>
@@ -162,7 +237,8 @@ a %in% b</code></pre>
 </div>
 <div id="conclusion" class="section level1">
 <h1><span class="header-section-number">5</span> Conclusion</h1>
-<p>You can check the Shiny app here: <a href="https://canovasjm.shinyapps.io/nuclear_explosions/" class="uri">https://canovasjm.shinyapps.io/nuclear_explosions/</a></p>
+<p>You can check the Shiny app here:<br />
+<a href="https://canovasjm.shinyapps.io/nuclear_explosions/" class="uri">https://canovasjm.shinyapps.io/nuclear_explosions/</a></p>
 </div>
 
     </div>
