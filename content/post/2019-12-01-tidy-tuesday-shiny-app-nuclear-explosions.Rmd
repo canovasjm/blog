@@ -33,7 +33,7 @@ It turns out reactivity is a fundamental concept in Shiny development. In fact, 
 The data is from Stockholm International Peace Research Institute and shows the annual numbers of nuclear tests conducted
 since 1945. Addtional information concerning the tests is also presented. While the list draws on a wide range of sources, the core data are those compiled by FOA (Swedish National Defence Research Institute).   
 
-Additional information on this topic and related datasets can be found on this [article](https://ourworldindata.org/nuclear-weapons), by Max Roser and Mohamed Nagdy.
+More information on this topic and related datasets can be found on this [article](https://ourworldindata.org/nuclear-weapons), by Max Roser and Mohamed Nagdy.
 
 Before moving on, let's load some libraries we will need to work with the data.   
 
