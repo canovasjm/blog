@@ -56,7 +56,7 @@ Additional information on this topic and related datasets can be found on this [
 
 # What I learned along the way
 
-## The use of `%in%` from `base` R package  
+## The use of `%in%` from base R package  
 
 This in an interface to the `match()` function, which returns a vector of the positions of matches of its first argument in its second. Let's see an example (taken from `?'%in%'`):
 
@@ -65,8 +65,10 @@ This in an interface to the `match()` function, which returns a vector of the po
 a <- 1:5
 b <- 3:8
 
-# print the vectors
+# print vector "a"
 a
+
+# print vector "b"
 b
 
 # check which elements from vector "a" are also in vector "b"
@@ -74,7 +76,7 @@ a %in% b
 ```
 
 
-## The use of `mapvalues()` from `plyr`  
+## The use of `mapvalues()` from {plyr}  
 
 There are some regions that have been written differently, possibly due to the fact that the data is coming from different sources, as we can see below:  
 
@@ -90,7 +92,7 @@ ne_original %>%
   filter(str_detect(region, "^FANGATAUFA"))
 ```
 
-An easy way to fix these cases is with function `mapvalues()` from `plyr` package. From `?mapvalues()` we can see that the function takes on the following arguments: `mapvalues(x, from, to, warn_missing = TRUE)`
+An easy way to fix these cases is with function `mapvalues()` from {plyr} package. From `?mapvalues()` we can see that the function takes on the following arguments: `mapvalues(x, from, to, warn_missing = TRUE)`
 
 * `x`: the factor or vector to modify  
 * `from`: a vector of the items to replace  
@@ -114,7 +116,7 @@ ne <- ne %>%
 ```
 
 
-## The `timevis` library 
+## Timelines with {timevis} library 
 
 based on javascript D3.js   
 
