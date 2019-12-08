@@ -65,7 +65,7 @@
 
   <article class="article">
     
-    <span class="article-duration">4 min read</span>
+    <span class="article-duration">5 min read</span>
     
 
     <h1 class="article-title">Tidy Tuesday Shiny App: Nuclear Explosions</h1>
@@ -81,10 +81,11 @@
 <ul>
 <li><a href="#introduction"><span class="toc-section-number">1</span> Introduction</a></li>
 <li><a href="#the-data"><span class="toc-section-number">2</span> The data</a><ul>
-<li><a href="#sources"><span class="toc-section-number">2.1</span> Sources</a></li>
+<li><a href="#brief-description"><span class="toc-section-number">2.1</span> Brief description</a></li>
+<li><a href="#sources"><span class="toc-section-number">2.2</span> Sources</a></li>
 </ul></li>
 <li><a href="#what-i-learned-along-the-way"><span class="toc-section-number">3</span> What I learned along the way</a><ul>
-<li><a href="#the-use-of-in-from-base-r-package"><span class="toc-section-number">3.1</span> The use of <code>%in%</code> from base R package</a></li>
+<li><a href="#the-use-of-in-from-base-r"><span class="toc-section-number">3.1</span> The use of <code>%in%</code> from base R</a></li>
 <li><a href="#the-use-of-mapvalues-from-plyr"><span class="toc-section-number">3.2</span> The use of <code>mapvalues()</code> from {plyr}</a></li>
 <li><a href="#timelines-with-timevis-library"><span class="toc-section-number">3.3</span> Timelines with {timevis} library</a></li>
 </ul></li>
@@ -108,13 +109,17 @@
 </div>
 <div id="the-data" class="section level1">
 <h1><span class="header-section-number">2</span> The data</h1>
-<p>First of all, let’s load some libraries we will need to work with the data.</p>
+<div id="brief-description" class="section level2">
+<h2><span class="header-section-number">2.1</span> Brief description</h2>
+<p>The data is from Stockholm International Peace Research Institute and shows the annual numbers of nuclear tests conducted since 1945. Addtional information concerning the tests is also presented. While the list draws on a wide range of sources, the core data are those compiled by FOA (Swedish National Defence Research Institute).</p>
+<p>Additional information on this topic and related datasets can be found on this <a href="https://ourworldindata.org/nuclear-weapons">article</a>, by Max Roser and Mohamed Nagdy.</p>
+<p>Before moving on, let’s load some libraries we will need to work with the data.</p>
 <pre class="r"><code># required libraries
 library(plyr)
 library(dplyr)
 library(tidyr)
 library(stringr)</code></pre>
-<p>What it is about…</p>
+<p>We now can import the data:</p>
 <pre class="r"><code># import data
 ne_original &lt;- readr::read_csv(&quot;https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2019/2019-08-20/nuclear_explosions.csv&quot;)</code></pre>
 <pre><code>## Parsed with column specification:
@@ -136,16 +141,16 @@ ne_original &lt;- readr::read_csv(&quot;https://raw.githubusercontent.com/rforda
 ##   name = col_character(),
 ##   type = col_character()
 ## )</code></pre>
-<p>Additional information on this topic and related datasets can be found on this <a href="https://ourworldindata.org/nuclear-weapons">article</a>, by Max Roser and Mohamed Nagdy.</p>
+</div>
 <div id="sources" class="section level2">
-<h2><span class="header-section-number">2.1</span> Sources</h2>
+<h2><span class="header-section-number">2.2</span> Sources</h2>
 <p><a href="https://github.com/rfordatascience/tidytuesday/tree/master/data/2019/2019-08-20">GitHub repository</a> and original sources</p>
 </div>
 </div>
 <div id="what-i-learned-along-the-way" class="section level1">
 <h1><span class="header-section-number">3</span> What I learned along the way</h1>
-<div id="the-use-of-in-from-base-r-package" class="section level2">
-<h2><span class="header-section-number">3.1</span> The use of <code>%in%</code> from base R package</h2>
+<div id="the-use-of-in-from-base-r" class="section level2">
+<h2><span class="header-section-number">3.1</span> The use of <code>%in%</code> from base R</h2>
 <p>This in an interface to the <code>match()</code> function, which returns a vector of the positions of matches of its first argument in its second. Let’s see an example (taken from <code>?'%in%'</code>):</p>
 <pre class="r"><code># create two vectors
 a &lt;- 1:5

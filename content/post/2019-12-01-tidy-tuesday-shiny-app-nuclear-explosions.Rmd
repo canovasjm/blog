@@ -28,7 +28,14 @@ It turns out reactivity is a fundamental concept in Shiny development. In fact, 
 
 # The data  
 
-First of all, let's load some libraries we will need to work with the data.   
+## Brief description  
+
+The data is from Stockholm International Peace Research Institute and shows the annual numbers of nuclear tests conducted
+since 1945. Addtional information concerning the tests is also presented. While the list draws on a wide range of sources, the core data are those compiled by FOA (Swedish National Defence Research Institute).   
+
+Additional information on this topic and related datasets can be found on this [article](https://ourworldindata.org/nuclear-weapons), by Max Roser and Mohamed Nagdy.
+
+Before moving on, let's load some libraries we will need to work with the data.   
 
 ```{r, message=FALSE, warning=FALSE}
 # required libraries
@@ -38,16 +45,13 @@ library(tidyr)
 library(stringr)
 ```
 
-
-What it is about... 
+We now can import the data:  
 
 ```{r}
 # import data
 ne_original <- readr::read_csv("https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2019/2019-08-20/nuclear_explosions.csv")
 ```
 
-
-Additional information on this topic and related datasets can be found on this [article](https://ourworldindata.org/nuclear-weapons), by Max Roser and Mohamed Nagdy.
 
 ## Sources  
 
@@ -56,7 +60,7 @@ Additional information on this topic and related datasets can be found on this [
 
 # What I learned along the way
 
-## The use of `%in%` from base R package  
+## The use of `%in%` from base R   
 
 This in an interface to the `match()` function, which returns a vector of the positions of matches of its first argument in its second. Let's see an example (taken from `?'%in%'`):
 
