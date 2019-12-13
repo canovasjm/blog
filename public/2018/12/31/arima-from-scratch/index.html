@@ -186,8 +186,15 @@ abline(h = 0, lwd = 1.5)</code></pre>
 </div>
 <div id="seasonal-differentiation" class="section level3">
 <h3><span class="header-section-number">3.2.2</span> Seasonal differentiation</h3>
-<p>Now we will remove the seasonal correlation. To do this we use again the function <code>diff()</code>. Note that this time <code>lag = 12</code>: we are telling R to difference observations that are 12 months apart. This will perform January 2018 - January 2017, February 2018 - February 2017, March 2018 - March 2017, etc.</p>
-<p>Once we took seasonal differentiation, the ACF values lie between the blue dashed lines; meaning that the autocorrelation function is not significantly different from zero.</p>
+<p>Now we will remove the seasonal correlation. To do this we use again the function <code>diff()</code>. Note that this time <code>lag = 12</code>: we are telling R to difference observations that are 12 months apart. This will perform:</p>
+<ul>
+<li>January 2018 - January 2017<br />
+</li>
+<li>February 2018 - February 2017<br />
+</li>
+<li>March 2018 - March 2017</li>
+</ul>
+<p>So on and so forth. Once we took seasonal differentiation, the ACF values lie between the blue dashed lines; meaning that the autocorrelation function is not significantly different from zero.</p>
 <pre class="r"><code># seasonal and non seasonal differenced log data - ACF/PACF
 ddlog_dat &lt;- diff(dlog_dat, lag = 12)
 ddlog_acf &lt;- acf2(ddlog_dat,
