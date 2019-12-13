@@ -14,7 +14,7 @@ output:
 
 # Introduction
 
-Hi there! This post is a modification of the final project I did for my Time Series class and the idea is simple: fit an ARIMA model and make a forecast. To do so in R we can use `auto.arima()` function from **forecast** package or we can decide what model are we going to fit and why. We will choose the latter path :)     
+Hi there! This post is a modification of the final project I did for my Time Series class and the idea is simple: fit an ARIMA model and make a forecast. To do so in R we can use `auto.arima()` function from {forecast} package or we can decide what model are we going to fit and why. We will choose the latter path :)     
 
 Here we are going to explore how the number of domestic air passengers in Argentina has evolved in the last years, fit a model to the data, and forecast the number of domestic passengers for the next twelve months. 
 
@@ -23,7 +23,7 @@ Here we are going to explore how the number of domestic air passengers in Argent
 Before starting we will load all the libraries needed:    
 
 ```{r, echo = TRUE, message = FALSE, warning = FALSE}
-# Required libraries  
+# required libraries  
 library(dplyr)
 library(astsa)
 library(knitr)
@@ -42,15 +42,15 @@ The data is presented as an xlsx file and it is displayed in a way that it is ha
 
 
 ```{r, echo = TRUE}
-# Import csv file
+# import csv file
 df <- read.csv("/home/jm/blog/static/passengers_ts.csv", 
                header = TRUE)
 
-# Remove year and month
+# remove year and month
 dat <- df %>% 
   select(-c(year, month))
 
-# Create time series object
+# create time series object
 dat <- dat %>% 
   ts(start = c(2014, 1), end = c(2018, 6), deltat = 1/12)
 ```   
@@ -61,7 +61,7 @@ dat <- dat %>%
 The first step in the analysis is to make a plot of the original data, where the number of domestic passengers is taken as the response variable and the time (months) as the explanatory variable. To do the plot we just use the function `plot.ts()`     
 
 ```{r, echo = TRUE}
-# Original data time plot
+# original data time plot
 plot.ts(dat[ , 1],
         ylab = "thousand passengers",
         main = "Domestic air passengers in Argentina 2014 - 2018")
@@ -81,7 +81,7 @@ Before fitting a model we will need to do some work on this data: i) variance st
 So, in order to stabilize the variance, we took the natural logarithm of the original data and will store the transformed data in **log_dat**    
 
 ```{r, echo = TRUE}
-# Log transformation
+# log transformation
 log_dat <- log(dat[ , 1])
 plot.ts(log_dat,
         ylab = "log thousand passengers",
@@ -94,12 +94,12 @@ This plot looks very similar to the first, but the range of the dependent variab
 ## Trend removal     
 
 On the first time plot we observed an upward trend that can be removed by differencing the data. Besides the time plot, one can use the ACF to determine if differencing is needed before fitting a model.   
-In this section, we will use the `acf2()` function from **astsa** package, which plots the ACF and PACF values for different lags.     
+In this section, we will use the `acf2()` function from {astsa} package, which plots the ACF and PACF values for different lags.     
 
 *Note: In the x-axis for the ACF and PACF plots below, the integer numbers represent years. In between two integers there are twelve marks in the x-axis, one for each month of the year.*   
 
 ```{r, echo = TRUE}
-# Correlation structure
+# correlation structure
 log_acf <- acf2(log_dat, 
                 max.lag = 30, 
                 main = "log thousand passengers")
@@ -113,7 +113,7 @@ As we see in the ACF plot above, it presents a slow decay as the lag increases. 
 Here we will difference the transformed data (**log_dat**) and repeat the ACF and PACF analysis using `acf2()`.     
 
 ```{r, echo = TRUE}
-# Differentiation
+# differentiation
 dlog_dat <- diff(log_dat, lag = 1)
 dlog_acf <- acf2(dlog_dat,
                   max.lag = 45,
@@ -129,7 +129,7 @@ Since the ACF tails off for $12 * k$ for $k = 1, 2, \ldots$ and PACF cuts off af
 Additionally, the following time plot of the non-seasonal differenced log data also helps in the analysis: we observe how the peaks and valleys repeat every twelve months.   
 
 ```{r, echo = TRUE}
-# Time plot of non seasonal differenced data
+# time plot of non seasonal differenced data
 plot.ts(dlog_dat,
         ylab = "log thousand passengers",
         main = "(Non seasonal differenced) log thousand passengers")
@@ -144,7 +144,7 @@ Now we will remove the seasonal correlation. To do this we use again the functio
 Once we took seasonal differentiation, the ACF values lie between the blue dashed lines; meaning that the autocorrelation function is not significantly different from zero.  
      
 ```{r, echo = TRUE}
-# Seasonal and non seasonal differenced log data - ACF/PACF
+# seasonal and non seasonal differenced log data - ACF/PACF
 ddlog_dat <- diff(dlog_dat, lag = 12)
 ddlog_acf <- acf2(ddlog_dat,
                    max.lag = 35,
@@ -157,7 +157,7 @@ ddlog_acf <- acf2(ddlog_dat,
 Finally, we make a time plot of the transformed and differenced data and it shows that now the process seems to be stationary:   
 
 ```{r, echo = TRUE}
-# Seasonal and non seasonal differenced log data - Time plot
+# seasonal and non seasonal differenced log data - time plot
 plot.ts(ddlog_dat,
         type = "l",
         ylab = "log thousand passengers",
@@ -222,20 +222,20 @@ i <- 36
 MSE1 <- c()
 
 while(i < length(log_dat)){
-  # Train the model with i observations
+  # train the model with i observations
   m1 <- arima(log_dat[1:i], 
               order = c(1, 1, 1), 
               seasonal = list(order = c(1, 1, 0), period = 12),
               method = "ML")
-  # Predict observation i + 1
+  # predict observation i + 1
   y_hat <- predict(m1, n.ahead = 1)
-  # Prediction MSE
+  # prediction MSE
   MSE1 <- c(MSE1, (log_dat[i + 1] - y_hat$pred)^2)
-  # Increase i 
+  # increase i 
   i <- i + 1
 }
 
-# Untransform data. Back to the original scale
+# untransform data: back to the original scale
 exp(mean(MSE1))
 ```
 
@@ -247,31 +247,31 @@ i <- 36
 MSE2 <- c()
 
 while(i < length(log_dat)){
-  # Train the model with i observations
+  # train the model with i observations
   m2 <- arima(log_dat[1:i], 
               order = c(1, 1, 0), 
               seasonal = list(order = c(1, 1, 0), period = 12),
               method = "ML")
-  # Predict observation i + 1
+  # predict observation i + 1
   y_hat <- predict(m2, n.ahead = 1)
-  # Prediction MSE
+  # prediction MSE
   MSE2 <- c(MSE2, (log_dat[i + 1] - y_hat$pred)^2)
-  # Increase i
+  # increase i
   i <- i + 1
 }
 
-# Untransform data. Back to the original scale
+# untransform data: back to the original scale
 exp(mean(MSE2))
 ```
 
 The MSE obtained with CV is slightly better for model 2. (We look for smaller values of MSE).    
 
-Now we are going to use the function `sarima()` from package **astsa**. This function is basically a wrapper of `arima()`, but additionally it returns an object called **ttable** that has the results of t-tests performed on each of the coefficients. The **ttable** is also printed in the summary of the model. Using `sarima()` from astsa package:   
+Now we are going to use the function `sarima()` from package {astsa}. This function is basically a wrapper of `arima()`, but additionally it returns an object called **ttable** that has the results of t-tests performed on each of the coefficients. The **ttable** is also printed in the summary of the model. Using `sarima()` from {astsa} package:   
 
 **Model 1**    
 
 ```{r, eval = TRUE, echo = TRUE}
-# Model_1 fitting
+# model_1 fitting
 m11 <- sarima(log_dat, 
               p = 1, d = 1, q = 1, 
               P = 1, D = 1, Q = 0, S = 12, 
@@ -283,7 +283,7 @@ m11
 **Model 2**
 
 ```{r, eval=TRUE, echo = TRUE}
-# Model_2 fitting
+# model_2 fitting
 m22 <- sarima(log_dat, 
               p = 1, d = 1, q = 0, 
               P = 1, D = 1, Q = 0, S = 12,
@@ -300,7 +300,7 @@ Additionally, AICc and BIC values are smaller for model 1, which leads us to pre
 There is one step left to conclude if the model is adequate or not: residual analysis. For this analysis I used the following plots:
 
 ```{r, eval = TRUE, echo = TRUE}
-# Residual plot for model 1
+# residual plot for model 1
 plot.ts(m1$residuals,
         ylab = "log thousand passengers",
         main = "Model 1 residuals")
@@ -320,33 +320,33 @@ In the time plot of the residuals for model 1, they seem to be uncorrelated. Fur
 To wrap up, the selected model is model 1:   
 
 ```{r, eval = TRUE, echo = TRUE}
-# Coefficients estimates
+# coefficients estimates
 m1$coef
 
-# Coefficients' standard error
+# coefficients' standard error
 sqrt(diag(m1$var.coef))
 ```  
 
 
 # Forecast    
 
-For the forecast we can use `sarima.for()` from package astsa, but it automatically prints a plot of the forecasted values.   
+For the forecast we can use `sarima.for()` from package {astsa}, but it automatically prints a plot of the forecasted values.   
 I wanted to show how to do the plots instead, so we are going to use the `predict()` function to get the forecast. However, the **m11** object we fitted with `sarima()` function is not going to work here, so in order to use the `predict()` function we are going to use the **m1** model that we created with `arima()` function.    
 
 Note that the arguments of `predict()` are the name of the model and the forecast scope. Since our data is monthly, we will set `n.ahead = 12` to predict a whole year.   
 
 ```{r}
-# Fit the m1 model with all the observations available
+# fit the m1 model with all the observations available
 m1 <- arima(log_dat, 
-              order = c(1, 1, 1), 
-              seasonal = list(order = c(1, 1, 0), period = 12),
-              method = "ML")
+            order = c(1, 1, 1), 
+            seasonal = list(order = c(1, 1, 0), period = 12),
+            method = "ML")
 ```
 
 Forecast for the next year using `predict()` and model **m1**:
 
 ```{r, eval=TRUE}
-# Forecast
+# forecast
 m1_for <- predict(m1, n.ahead = 12)
 ```
 
@@ -356,14 +356,14 @@ m1_for <- predict(m1, n.ahead = 12)
 Finally, we are going to plot the original data and our forecast. To do so we start by creating a data frame with the values of interest.   
 
 ```{r, echo = TRUE, eval=TRUE}
-# Final values
+# final values
 f_values <- data.frame("Year" = c(rep(2017, 6), rep(2018, 6)), 
                        "Month" = c("Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
                                    "Jan", "Feb", "Mar", "Apr", "May", "Jun"),
                        "Forecasted_Passengers" = round(exp(m1_for$pred), 2))
 
-## Forecast plots 
-# Past data
+## forecast plots 
+# past data
 t <- 1:66
 
 plot(t, rep(NA, 66), 
@@ -379,12 +379,12 @@ lines(t,
       lwd = 2,
       type = "l")
 
-# Add forecasted values
+# add forecasted values
 lines(t, c(rep(NA, 53), df[54, 3], f_values$Forecasted_Passengers),
       lwd = 2,
       col = "red")
 
-# Legend
+# legend
 legend(x = "bottomright", 
        legend = c("Train", "Forecast"),
        col = c(1, 2), 
@@ -396,7 +396,7 @@ Since the data taken to run the forecast was the log-transformed data, it is req
 
 
 ```{r, echo = FALSE, eval=TRUE}
-# Forecast untransformed
+# forecast untransformed
 f_values <- data.frame("Year" = c(rep(2018, 6), rep(2019, 6)), 
                        "Month" = c("Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
                                    "Jan", "Feb", "Mar", "Apr", "May", "Jun"),

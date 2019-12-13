@@ -101,11 +101,11 @@
 
 <div id="introduction" class="section level1">
 <h1><span class="header-section-number">1</span> Introduction</h1>
-<p>Hi there! This post is a modification of the final project I did for my Time Series class and the idea is simple: fit an ARIMA model and make a forecast. To do so in R we can use <code>auto.arima()</code> function from <strong>forecast</strong> package or we can decide what model are we going to fit and why. We will choose the latter path :)</p>
+<p>Hi there! This post is a modification of the final project I did for my Time Series class and the idea is simple: fit an ARIMA model and make a forecast. To do so in R we can use <code>auto.arima()</code> function from {forecast} package or we can decide what model are we going to fit and why. We will choose the latter path :)</p>
 <p>Here we are going to explore how the number of domestic air passengers in Argentina has evolved in the last years, fit a model to the data, and forecast the number of domestic passengers for the next twelve months.</p>
 <hr />
 <p>Before starting we will load all the libraries needed:</p>
-<pre class="r"><code># Required libraries  
+<pre class="r"><code># required libraries  
 library(dplyr)
 library(astsa)
 library(knitr)</code></pre>
@@ -116,21 +116,21 @@ library(knitr)</code></pre>
 <p><strong>NOTE: The curious reader will note that the data file available now on EANA’s website is different from the one I will work with. When I started this project, the data file available was <a href="https://drive.google.com/open?id=1fm7KckXnKaHfu_RZ7FMVVC0hNJs6QD_q">this</a>. At some point between August 2018 and December 2018 they changed the file including more years and modifying the numbers.</strong></p>
 <p>The data set I used for my project contains a lot of information about airline passengers and flights in Argentina for the period 2014 - 2018. We will concentrate on the number of domestic airline passengers for the 54 months between January 2014 and June 2018.</p>
 <p>The data is presented as an xlsx file and it is displayed in a way that it is hard to import in R. Hence, before importing it, I pre-cleaned it using Microsoft Excel. You can access the pre-cleaned version <a href="https://drive.google.com/open?id=1ZV8cLn3RglLMw79KNUUj75mZ68axwhBY">here</a>.</p>
-<pre class="r"><code># Import csv file
+<pre class="r"><code># import csv file
 df &lt;- read.csv(&quot;/home/jm/blog/static/passengers_ts.csv&quot;, 
                header = TRUE)
 
-# Remove year and month
+# remove year and month
 dat &lt;- df %&gt;% 
   select(-c(year, month))
 
-# Create time series object
+# create time series object
 dat &lt;- dat %&gt;% 
   ts(start = c(2014, 1), end = c(2018, 6), deltat = 1/12)</code></pre>
 <div id="first-analysis-time-plot" class="section level2">
 <h2><span class="header-section-number">2.1</span> First analysis: time plot</h2>
 <p>The first step in the analysis is to make a plot of the original data, where the number of domestic passengers is taken as the response variable and the time (months) as the explanatory variable. To do the plot we just use the function <code>plot.ts()</code></p>
-<pre class="r"><code># Original data time plot
+<pre class="r"><code># original data time plot
 plot.ts(dat[ , 1],
         ylab = &quot;thousand passengers&quot;,
         main = &quot;Domestic air passengers in Argentina 2014 - 2018&quot;)</code></pre>
@@ -145,7 +145,7 @@ plot.ts(dat[ , 1],
 <h2><span class="header-section-number">3.1</span> Variance stabilization transformation</h2>
 <p><em>Why do we want to stabilize the variance?</em>, you may be wondering. Well, the problem with non-constant variance (a.k.a <em>heteroscedasticity</em>) is that, as time grows, small percent changes become large absolute changes. And we don’t want that in our model.</p>
 <p>So, in order to stabilize the variance, we took the natural logarithm of the original data and will store the transformed data in <strong>log_dat</strong></p>
-<pre class="r"><code># Log transformation
+<pre class="r"><code># log transformation
 log_dat &lt;- log(dat[ , 1])
 plot.ts(log_dat,
         ylab = &quot;log thousand passengers&quot;,
@@ -156,9 +156,9 @@ plot.ts(log_dat,
 <div id="trend-removal" class="section level2">
 <h2><span class="header-section-number">3.2</span> Trend removal</h2>
 <p>On the first time plot we observed an upward trend that can be removed by differencing the data. Besides the time plot, one can use the ACF to determine if differencing is needed before fitting a model.<br />
-In this section, we will use the <code>acf2()</code> function from <strong>astsa</strong> package, which plots the ACF and PACF values for different lags.</p>
+In this section, we will use the <code>acf2()</code> function from {astsa} package, which plots the ACF and PACF values for different lags.</p>
 <p><em>Note: In the x-axis for the ACF and PACF plots below, the integer numbers represent years. In between two integers there are twelve marks in the x-axis, one for each month of the year.</em></p>
-<pre class="r"><code># Correlation structure
+<pre class="r"><code># correlation structure
 log_acf &lt;- acf2(log_dat, 
                 max.lag = 30, 
                 main = &quot;log thousand passengers&quot;)</code></pre>
@@ -167,7 +167,7 @@ log_acf &lt;- acf2(log_dat,
 <div id="non-seasonal-differentiation" class="section level3">
 <h3><span class="header-section-number">3.2.1</span> Non-seasonal differentiation</h3>
 <p>Here we will difference the transformed data (<strong>log_dat</strong>) and repeat the ACF and PACF analysis using <code>acf2()</code>.</p>
-<pre class="r"><code># Differentiation
+<pre class="r"><code># differentiation
 dlog_dat &lt;- diff(log_dat, lag = 1)
 dlog_acf &lt;- acf2(dlog_dat,
                   max.lag = 45,
@@ -177,7 +177,7 @@ dlog_acf &lt;- acf2(dlog_dat,
 <p>In plain English, this is telling us that the number of air passengers of a certain month is related to the number of passengers for the same month in previous years. That is, the number of passengers in January 2018 is related to the number of passengers in January 2017, and so on.</p>
 <p>Since the ACF tails off for <span class="math inline">\(12 * k\)</span> for <span class="math inline">\(k = 1, 2, \ldots\)</span> and PACF cuts off after lag 1, a seasonal autoregressive component of order one is needed.</p>
 <p>Additionally, the following time plot of the non-seasonal differenced log data also helps in the analysis: we observe how the peaks and valleys repeat every twelve months.</p>
-<pre class="r"><code># Time plot of non seasonal differenced data
+<pre class="r"><code># time plot of non seasonal differenced data
 plot.ts(dlog_dat,
         ylab = &quot;log thousand passengers&quot;,
         main = &quot;(Non seasonal differenced) log thousand passengers&quot;)
@@ -188,7 +188,7 @@ abline(h = 0, lwd = 1.5)</code></pre>
 <h3><span class="header-section-number">3.2.2</span> Seasonal differentiation</h3>
 <p>Now we will remove the seasonal correlation. To do this we use again the function <code>diff()</code>. Note that this time <code>lag = 12</code>: we are telling R to difference observations that are 12 months apart. This will perform January 2018 - January 2017, February 2018 - February 2017, March 2018 - March 2017, etc.</p>
 <p>Once we took seasonal differentiation, the ACF values lie between the blue dashed lines; meaning that the autocorrelation function is not significantly different from zero.</p>
-<pre class="r"><code># Seasonal and non seasonal differenced log data - ACF/PACF
+<pre class="r"><code># seasonal and non seasonal differenced log data - ACF/PACF
 ddlog_dat &lt;- diff(dlog_dat, lag = 12)
 ddlog_acf &lt;- acf2(ddlog_dat,
                    max.lag = 35,
@@ -199,7 +199,7 @@ ddlog_acf &lt;- acf2(ddlog_dat,
 <div id="stationary-data" class="section level2">
 <h2><span class="header-section-number">3.3</span> Stationary data</h2>
 <p>Finally, we make a time plot of the transformed and differenced data and it shows that now the process seems to be stationary:</p>
-<pre class="r"><code># Seasonal and non seasonal differenced log data - Time plot
+<pre class="r"><code># seasonal and non seasonal differenced log data - time plot
 plot.ts(ddlog_dat,
         type = &quot;l&quot;,
         ylab = &quot;log thousand passengers&quot;,
@@ -234,20 +234,20 @@ i &lt;- 36
 MSE1 &lt;- c()
 
 while(i &lt; length(log_dat)){
-  # Train the model with i observations
+  # train the model with i observations
   m1 &lt;- arima(log_dat[1:i], 
               order = c(1, 1, 1), 
               seasonal = list(order = c(1, 1, 0), period = 12),
               method = &quot;ML&quot;)
-  # Predict observation i + 1
+  # predict observation i + 1
   y_hat &lt;- predict(m1, n.ahead = 1)
-  # Prediction MSE
+  # prediction MSE
   MSE1 &lt;- c(MSE1, (log_dat[i + 1] - y_hat$pred)^2)
-  # Increase i 
+  # increase i 
   i &lt;- i + 1
 }
 
-# Untransform data. Back to the original scale
+# untransform data: back to the original scale
 exp(mean(MSE1))</code></pre>
 <pre><code>## [1] 1.001494</code></pre>
 <pre class="r"><code>################################################################################
@@ -257,26 +257,26 @@ i &lt;- 36
 MSE2 &lt;- c()
 
 while(i &lt; length(log_dat)){
-  # Train the model with i observations
+  # train the model with i observations
   m2 &lt;- arima(log_dat[1:i], 
               order = c(1, 1, 0), 
               seasonal = list(order = c(1, 1, 0), period = 12),
               method = &quot;ML&quot;)
-  # Predict observation i + 1
+  # predict observation i + 1
   y_hat &lt;- predict(m2, n.ahead = 1)
-  # Prediction MSE
+  # prediction MSE
   MSE2 &lt;- c(MSE2, (log_dat[i + 1] - y_hat$pred)^2)
-  # Increase i
+  # increase i
   i &lt;- i + 1
 }
 
-# Untransform data. Back to the original scale
+# untransform data: back to the original scale
 exp(mean(MSE2))</code></pre>
 <pre><code>## [1] 1.001469</code></pre>
 <p>The MSE obtained with CV is slightly better for model 2. (We look for smaller values of MSE).</p>
-<p>Now we are going to use the function <code>sarima()</code> from package <strong>astsa</strong>. This function is basically a wrapper of <code>arima()</code>, but additionally it returns an object called <strong>ttable</strong> that has the results of t-tests performed on each of the coefficients. The <strong>ttable</strong> is also printed in the summary of the model. Using <code>sarima()</code> from astsa package:</p>
+<p>Now we are going to use the function <code>sarima()</code> from package {astsa}. This function is basically a wrapper of <code>arima()</code>, but additionally it returns an object called <strong>ttable</strong> that has the results of t-tests performed on each of the coefficients. The <strong>ttable</strong> is also printed in the summary of the model. Using <code>sarima()</code> from {astsa} package:</p>
 <p><strong>Model 1</strong></p>
-<pre class="r"><code># Model_1 fitting
+<pre class="r"><code># model_1 fitting
 m11 &lt;- sarima(log_dat, 
               p = 1, d = 1, q = 1, 
               P = 1, D = 1, Q = 0, S = 12, 
@@ -314,7 +314,7 @@ m11</code></pre>
 ## $BIC
 ## [1] -2.577951</code></pre>
 <p><strong>Model 2</strong></p>
-<pre class="r"><code># Model_2 fitting
+<pre class="r"><code># model_2 fitting
 m22 &lt;- sarima(log_dat, 
               p = 1, d = 1, q = 0, 
               P = 1, D = 1, Q = 0, S = 12,
@@ -354,7 +354,7 @@ m22</code></pre>
 <h2><span class="header-section-number">4.1</span> Model selection</h2>
 <p>From the tables above, we can see that the estimates of the coefficients for model 1 are all significantly different from zero; while this is not the case for model 2. In the latter, the p-value for the non seasonal autoregressive coefficient estimate is 0.57 meaning that we fail to reject the null the hypothesis that the coefficient is equal to zero.</p>
 <p>Additionally, AICc and BIC values are smaller for model 1, which leads us to prefer model 1 over model 2. There is one step left to conclude if the model is adequate or not: residual analysis. For this analysis I used the following plots:</p>
-<pre class="r"><code># Residual plot for model 1
+<pre class="r"><code># residual plot for model 1
 plot.ts(m1$residuals,
         ylab = &quot;log thousand passengers&quot;,
         main = &quot;Model 1 residuals&quot;)
@@ -367,11 +367,11 @@ res_acf &lt;- acf2(m1$residuals,
 <p><img src="/post/2018-11-10-arima-from-scratch_files/figure-html/unnamed-chunk-16-1.png" width="672" /></p>
 <p>In the time plot of the residuals for model 1, they seem to be uncorrelated. Furthermore, the ACF/PACF values are not significantly different from zero; except for the PACF values corresponding to lag three, nine, and twelve. This result suggests the possibility that there is still some slight seasonal regularity in the residuals, but the addition of another seasonal autoregressive component does not improve the results.</p>
 <p>To wrap up, the selected model is model 1:</p>
-<pre class="r"><code># Coefficients estimates
+<pre class="r"><code># coefficients estimates
 m1$coef</code></pre>
 <pre><code>##        ar1        ma1       sar1 
 ## -0.1251408  0.2365606 -0.4286284</code></pre>
-<pre class="r"><code># Coefficients&#39; standard error
+<pre class="r"><code># coefficients&#39; standard error
 sqrt(diag(m1$var.coef))</code></pre>
 <pre><code>##       ar1       ma1      sar1 
 ## 0.5888534 0.5596424 0.1568349</code></pre>
@@ -379,29 +379,29 @@ sqrt(diag(m1$var.coef))</code></pre>
 </div>
 <div id="forecast" class="section level1">
 <h1><span class="header-section-number">5</span> Forecast</h1>
-<p>For the forecast we can use <code>sarima.for()</code> from package astsa, but it automatically prints a plot of the forecasted values.<br />
+<p>For the forecast we can use <code>sarima.for()</code> from package {astsa}, but it automatically prints a plot of the forecasted values.<br />
 I wanted to show how to do the plots instead, so we are going to use the <code>predict()</code> function to get the forecast. However, the <strong>m11</strong> object we fitted with <code>sarima()</code> function is not going to work here, so in order to use the <code>predict()</code> function we are going to use the <strong>m1</strong> model that we created with <code>arima()</code> function.</p>
 <p>Note that the arguments of <code>predict()</code> are the name of the model and the forecast scope. Since our data is monthly, we will set <code>n.ahead = 12</code> to predict a whole year.</p>
-<pre class="r"><code># Fit the m1 model with all the observations available
+<pre class="r"><code># fit the m1 model with all the observations available
 m1 &lt;- arima(log_dat, 
-              order = c(1, 1, 1), 
-              seasonal = list(order = c(1, 1, 0), period = 12),
-              method = &quot;ML&quot;)</code></pre>
+            order = c(1, 1, 1), 
+            seasonal = list(order = c(1, 1, 0), period = 12),
+            method = &quot;ML&quot;)</code></pre>
 <p>Forecast for the next year using <code>predict()</code> and model <strong>m1</strong>:</p>
-<pre class="r"><code># Forecast
+<pre class="r"><code># forecast
 m1_for &lt;- predict(m1, n.ahead = 12)</code></pre>
 </div>
 <div id="more-plots-original-data-forecast" class="section level1">
 <h1><span class="header-section-number">6</span> More plots: Original data + forecast</h1>
 <p>Finally, we are going to plot the original data and our forecast. To do so we start by creating a data frame with the values of interest.</p>
-<pre class="r"><code># Final values
+<pre class="r"><code># final values
 f_values &lt;- data.frame(&quot;Year&quot; = c(rep(2017, 6), rep(2018, 6)), 
                        &quot;Month&quot; = c(&quot;Jul&quot;, &quot;Aug&quot;, &quot;Sep&quot;, &quot;Oct&quot;, &quot;Nov&quot;, &quot;Dec&quot;,
                                    &quot;Jan&quot;, &quot;Feb&quot;, &quot;Mar&quot;, &quot;Apr&quot;, &quot;May&quot;, &quot;Jun&quot;),
                        &quot;Forecasted_Passengers&quot; = round(exp(m1_for$pred), 2))
 
-## Forecast plots 
-# Past data
+## forecast plots 
+# past data
 t &lt;- 1:66
 
 plot(t, rep(NA, 66), 
@@ -417,12 +417,12 @@ lines(t,
       lwd = 2,
       type = &quot;l&quot;)
 
-# Add forecasted values
+# add forecasted values
 lines(t, c(rep(NA, 53), df[54, 3], f_values$Forecasted_Passengers),
       lwd = 2,
       col = &quot;red&quot;)
 
-# Legend
+# legend
 legend(x = &quot;bottomright&quot;, 
        legend = c(&quot;Train&quot;, &quot;Forecast&quot;),
        col = c(1, 2), 
