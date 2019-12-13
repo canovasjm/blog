@@ -111,8 +111,8 @@
 <h1><span class="header-section-number">2</span> The data</h1>
 <div id="brief-description" class="section level2">
 <h2><span class="header-section-number">2.1</span> Brief description</h2>
-<p>The data is from Stockholm International Peace Research Institute and shows the annual numbers of nuclear tests conducted since 1945. Addtional information concerning the tests is also presented. While the list draws on a wide range of sources, the core data are those compiled by FOA (Swedish National Defence Research Institute).</p>
-<p>More information on this topic and related datasets can be found on this <a href="https://ourworldindata.org/nuclear-weapons">article</a>, by Max Roser and Mohamed Nagdy.</p>
+<p>The data is from Stockholm International Peace Research Institute and shows the annual numbers of nuclear tests conducted since 1945. There are 16 variables where we can find, among others, the country and region where the tests where performed. We can also find an estimate of the lower and upper yield in kilotones of TNT, the purpose of the tests (military exercise, peaceful nuclear explosion, weapons development program, etc.), and additional information.</p>
+<p>While the list draws on a wide range of sources, the core data are those compiled by FOA (Swedish National Defence Research Institute). More information on this topic and related datasets can be found on this <a href="https://ourworldindata.org/nuclear-weapons">article</a>, by Max Roser and Mohamed Nagdy.</p>
 <p>Before moving on, let’s load some libraries we will need to work with the data.</p>
 <pre class="r"><code># required libraries
 library(plyr)
@@ -144,7 +144,7 @@ ne_original &lt;- readr::read_csv(&quot;https://raw.githubusercontent.com/rforda
 </div>
 <div id="sources" class="section level2">
 <h2><span class="header-section-number">2.2</span> Sources</h2>
-<p><a href="https://github.com/rfordatascience/tidytuesday/tree/master/data/2019/2019-08-20">GitHub repository</a> and original sources</p>
+<p>Check the <a href="https://github.com/rfordatascience/tidytuesday/tree/master/data/2019/2019-08-20">GitHub repository</a>.</p>
 </div>
 </div>
 <div id="what-i-learned-along-the-way" class="section level1">
@@ -199,7 +199,7 @@ ne_original %&gt;%
 ## 12 FRANCE  FANGATAUFA  WTN   
 ## 13 FRANCE  FANGATAUFA  WTN   
 ## 14 FRANCE  FANGATAUFA  WTN</code></pre>
-<p>An easy way to fix these cases is with function <code>mapvalues()</code> from {plyr} package. From <code>?mapvalues()</code> we can see that the function takes on the following arguments: <code>mapvalues(x, from, to, warn_missing = TRUE)</code></p>
+<p>An easy way to fix these cases is with the function <code>mapvalues()</code> from {plyr} package. From <code>?mapvalues()</code> we can see that the function takes on the following arguments: <code>mapvalues(x, from, to, warn_missing = TRUE)</code></p>
 <ul>
 <li><code>x</code>: the factor or vector to modify<br />
 </li>
@@ -243,8 +243,8 @@ ne &lt;- ne %&gt;%
 </div>
 <div id="conclusion" class="section level1">
 <h1><span class="header-section-number">5</span> Conclusion</h1>
-<p>You can check the Shiny app here:<br />
-<a href="https://canovasjm.shinyapps.io/nuclear_explosions/" class="uri">https://canovasjm.shinyapps.io/nuclear_explosions/</a></p>
+<p>You can check the Shiny app in the link below:<br />
+<a href="https://canovasjm.shinyapps.io/nuclear_explosions/" class="uri">https://canovasjm.shinyapps.io/nuclear_explosions/</a>.</p>
 </div>
 
     </div>

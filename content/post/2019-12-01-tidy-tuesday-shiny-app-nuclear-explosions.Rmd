@@ -31,9 +31,9 @@ It turns out reactivity is a fundamental concept in Shiny development. In fact, 
 ## Brief description  
 
 The data is from Stockholm International Peace Research Institute and shows the annual numbers of nuclear tests conducted
-since 1945. Addtional information concerning the tests is also presented. While the list draws on a wide range of sources, the core data are those compiled by FOA (Swedish National Defence Research Institute).   
+since 1945. There are 16 variables where we can find, among others, the country and region where the tests where performed. We can also find an estimate of the lower and upper yield in kilotones of TNT, the purpose of the tests (military exercise, peaceful nuclear explosion, weapons development program, etc.), and additional information.   
 
-More information on this topic and related datasets can be found on this [article](https://ourworldindata.org/nuclear-weapons), by Max Roser and Mohamed Nagdy.
+While the list draws on a wide range of sources, the core data are those compiled by FOA (Swedish National Defence Research Institute). More information on this topic and related datasets can be found on this [article](https://ourworldindata.org/nuclear-weapons), by Max Roser and Mohamed Nagdy.   
 
 Before moving on, let's load some libraries we will need to work with the data.   
 
@@ -55,8 +55,7 @@ ne_original <- readr::read_csv("https://raw.githubusercontent.com/rfordatascienc
 
 ## Sources  
 
-[GitHub repository](https://github.com/rfordatascience/tidytuesday/tree/master/data/2019/2019-08-20) and original sources  
-
+Check the [GitHub repository](https://github.com/rfordatascience/tidytuesday/tree/master/data/2019/2019-08-20).     
 
 # What I learned along the way
 
@@ -96,7 +95,7 @@ ne_original %>%
   filter(str_detect(region, "^FANGATAUFA"))
 ```
 
-An easy way to fix these cases is with function `mapvalues()` from {plyr} package. From `?mapvalues()` we can see that the function takes on the following arguments: `mapvalues(x, from, to, warn_missing = TRUE)`
+An easy way to fix these cases is with the function `mapvalues()` from {plyr} package. From `?mapvalues()` we can see that the function takes on the following arguments: `mapvalues(x, from, to, warn_missing = TRUE)`
 
 * `x`: the factor or vector to modify  
 * `from`: a vector of the items to replace  
@@ -138,6 +137,6 @@ In no particular order, resources I found useful are:
 
 # Conclusion  
 
-You can check the Shiny app here:   
-https://canovasjm.shinyapps.io/nuclear_explosions/
+You can check the Shiny app in the link below:   
+https://canovasjm.shinyapps.io/nuclear_explosions/.  
 
