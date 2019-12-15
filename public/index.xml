@@ -17,7 +17,7 @@
       <pubDate>Sun, 01 Dec 2019 00:00:00 +0000</pubDate>
       
       <guid>/2019/12/01/tidy-tuesday-shiny-app-nuclear-explosions/</guid>
-      <description>1 Introduction 2 The data 2.1 Brief description 2.2 Sources  3 What I learned along the way 3.1 The use of %in% from base R 3.2 The use of mapvalues() from {plyr} 3.3 Timelines with {timevis} library  4 Useful resources 5 Conclusion   1 Introduction It’s been a long time since my last post, but I’m here again: this time with a Shiny App. Shiny is defined as a “Web Application Framework for R”.</description>
+      <description>1 Introduction 2 The data 2.1 Brief description 2.2 Sources  3 What I learned along the way 3.1 The use of %in% from base R 3.2 The use of mapvalues() from {plyr} 3.3 Timelines with {timevis} package  4 Useful resources 5 Conclusion   1 Introduction It’s been a long time since my last post, but I’m here again: this time with a Shiny App. Shiny is defined as a “Web Application Framework for R”.</description>
     </item>
     
     <item>

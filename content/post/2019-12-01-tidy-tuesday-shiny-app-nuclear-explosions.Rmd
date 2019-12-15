@@ -119,9 +119,11 @@ ne <- ne %>%
 ```
 
 
-## Timelines with {timevis} library 
+## Timelines with {timevis} package 
 
-based on javascript D3.js   
+This package by Dean Attali makes possible to create awesome interactive timelines. You can use the mouse to "navigate" in time and to zoom in and out using the scroll. There are also more advanced features, like customizing how it looks with css or displaying groups of elements.    
+
+Lastly, {timevis} package is based on the vis.js Timeline module and the {htmlwidgets} R package; you can find more info in its [GitHub repository](https://github.com/daattali/timevis).   
 
 
 # Useful resources  
