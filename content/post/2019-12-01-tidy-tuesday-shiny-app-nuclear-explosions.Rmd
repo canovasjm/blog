@@ -140,5 +140,5 @@ In no particular order, resources I found useful are:
 # Conclusion  
 
 You can check the Shiny app in the link below:   
-https://canovasjm.shinyapps.io/nuclear_explosions/.  
+https://canovasjm.shinyapps.io/nuclear_explosions/  
 
