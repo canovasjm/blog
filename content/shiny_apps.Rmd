@@ -3,5 +3,16 @@ title: "Shiny Apps"
 output: html_document
 ---
 
-## Shiny apps   
+Here is a list of the Shiny Apps I've developed.    
+
+## Tidy Tuesday  
+
+| Topic                                                                                                 	| Date       	| Shiny App                                         	|
+|-------------------------------------------------------------------------------------------------------	|------------	|---------------------------------------------------	|
+| [Nuclear explosions](https://github.com/rfordatascience/tidytuesday/tree/master/data/2019/2019-08-20) 	| 2019-08-20 	| https://canovasjm.shinyapps.io/nuclear_explosions 	|  
+
+
+## Others   
+
+
 
