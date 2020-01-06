@@ -79,4 +79,8 @@
     <loc>/portfolio/</loc>
   </url>
   
+  <url>
+    <loc>/shiny_apps/</loc>
+  </url>
+  
 </urlset>

@@ -27,6 +27,9 @@ ignoreFiles = ["\\.Rmd$", "\\.Rmarkdown$", "_files$", "_cache$"]
 [[menu.main]]
     name = "Posts"
     url = "https://canovasjm.netlify.com"
+[[menu.main]]
+    name = "Shiny Apps"
+    url = "/shiny_apps/"
 
 
 [params]
