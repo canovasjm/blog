@@ -3,9 +3,9 @@ title: "Shiny Apps"
 output: html_document
 ---
 
-Here is a list of the Shiny Apps I've developed.    
-
 ## Tidy Tuesday  
+
+All the following apps use data from #TidyTuesday. You can find all the data sets in their [GitHub repository](https://github.com/rfordatascience/tidytuesday/tree/master/data)    
 
 | Topic                                                                                                 	| Date       	| Shiny App                                         	|
 |-------------------------------------------------------------------------------------------------------	|------------	|---------------------------------------------------	|
