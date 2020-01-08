@@ -46,7 +46,7 @@ I did what (I think) most people would have done: 1) ask friends whose computer 
 
 Option 1) was really disappointing: _"Buy a new computer"_ was all I got. I was not going to spend money because Micro$oft had flooded my computer with crap which was, clearly, draining my resources. See the following screenshot:   
 
-<img src=/img/windows_desktop.jpg width="750"  />
+<img src=/img/linux_lenovo_1/windows_desktop.jpg width="750"  />
 
 Do you think I installed "Bubble Witch 3 Saga", "Microsoft Solitaire Collection", or "Disney Magic Kingdoms"? The answer is **DEFINITELY NO.** And here it comes the moment when I say Windows is a virus, according to [Wikipedia virus definition](https://en.wikipedia.org/wiki/Computer_virus): 
 
@@ -60,7 +60,7 @@ This is another painful "feature" of Windows. The fact that, while Windows updat
 
 Imagine updating Windows with this connection:
 
-![](/img/internet_speed.png)       
+![](/img/linux_lenovo_1/internet_speed.png)       
 
 But don't let me be misunderstood: by no means I want an OS that doesn't update. All I want is to decide when the updates are going to be installed, just like in Linux :)   
 

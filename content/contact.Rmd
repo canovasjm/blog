@@ -5,5 +5,5 @@ output: html_document
 
 <div style="text-align: center">
 
-<img src=/img/email.jpeg height="600"  />
+<img src=/img/contact/email.jpeg height="600"  />
 

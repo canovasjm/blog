@@ -67,27 +67,27 @@ AFTER updating the BIOS, you will be able to access it and disable UEFI. What UE
 
 This is a tiny button located on the left side of your laptop (Lenovo calls it "novo button"). Press it once and wait.  
 
-<img src=/img/linux_lenovo/01.jpg width="500"  />
+<img src=/img/linux_lenovo_2/01.jpg width="500"  />
 
 ## Select BIOS setup     
 
-<img src=/img/linux_lenovo/02.png width="500"  />
+<img src=/img/linux_lenovo_2/02.png width="500"  />
 
 ## Navigate tabs and select the "Boot" tab    
 
 Navigate between tabs using the arrows of your keyboard.   
 
-<img src=/img/linux_lenovo/03.jpg width="750"  />
+<img src=/img/linux_lenovo_2/03.jpg width="750"  />
 
 Inside the "Boot" tab, select "Boot mode" and hit enter. Once there, choose "Legacy Support" and hit enter again.   
 
-<img src=/img/linux_lenovo/04.jpg width="750"  />
+<img src=/img/linux_lenovo_2/04.jpg width="750"  />
 
 ## Save changes and exit   
 
 Navigate to the "Exit" tab and select "Exit Saving Changes". Then select "Yes" and your laptop will boot into Windows.  
 
-<img src=/img/linux_lenovo/05.jpg width="750"  />
+<img src=/img/linux_lenovo_2/05.jpg width="750"  />
 
 
 # Create a bootable USB stick with your favourite distro   
@@ -101,15 +101,15 @@ When you get to tutorial's step #6 you don't need to select the Ubuntu ISO. I in
 
 Boot from the bootable USB stick you created above. To do so, plug in the USB stick to your turned off laptop, press the "novo" button again and select "Boot Menu". 
 
-<img src=/img/linux_lenovo/06.jpg width="500"  />
+<img src=/img/linux_lenovo_2/06.jpg width="500"  />
 
 Then choose the name of the USB stick and hit enter.  
 
-<img src=/img/linux_lenovo/07.jpg width="500"  />
+<img src=/img/linux_lenovo_2/07.jpg width="500"  />
 
 **Before installing anything, try the "live" mode**: this way you can check at no cost if the distro you wish to install supports the hardware you have. You should see something like this ("live" mode is the first option):
 
-<img src=/img/linux_lenovo/08.jpg width="500"  />
+<img src=/img/linux_lenovo_2/08.jpg width="500"  />
 
 Using the "live" mode open YouTube and try watching a video: you'll check WiFi, video, and audio all at the same time.  
 
@@ -117,7 +117,7 @@ At this point, you may find that some hardware doesn't work with Linux. Some fol
 
 Once you have checked that the hardware works, then restart your computer and install Linux. Before doing so, I recommend the videos in [Joe Collins' YouTube channel](https://www.youtube.com/channel/UCTfabOKD7Yty6sDF4POBVqA), particularly [this one](https://www.youtube.com/watch?v=G0AFuhVSvEk&list=PLq4roe1E45w8b5L18aQqnSo6Z7wFARVG4&index=3&t=0s). To install Linux in the hard drive, you can boot into the "live" mode and select the "Install Linux Mint" icon on the desktop.  
 
-<img src=/img/linux_lenovo/09.jpg width="500"  />
+<img src=/img/linux_lenovo_2/09.jpg width="500"  />
 
 The rest of the process is very well explained in Joe Collins' video.  
 
