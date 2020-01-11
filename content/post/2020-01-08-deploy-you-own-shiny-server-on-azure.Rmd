@@ -1,0 +1,245 @@
+---
+title: Deploy you own Shiny Server on Azure
+author: ''
+date: '2020-01-08'
+slug: deploy-you-own-shiny-server-on-azure
+categories: []
+tags: []
+output:
+  blogdown::html_page:
+    number_sections: true
+    toc: true
+---
+
+# Introduction  
+
+As a continuation of my last post, I have been playing around with Shiny apps for a few weeks now. One way to share your Shiny apps is through [shinyapps.io](https://www.shinyapps.io/), maintained by RStudio. But you can also deploy your own Shiny server and that is what we are going to see now.   
+
+Generally speaking, one can set up a virtual machine running Linux (from now on, our *Linux server*), install the necessary packages, and finally save your Shiny apps in a folder within the server. If everything is set up correctly, a person pointing to the Shiny app's url should be able to see it on their browser.     
+
+Particularly, our virtual machine will be set up in Microsoft Azure and will be running on CentOS Linux. After that, we are going to enable the corresponding port to serve Shiny apps and install base R, {shiny}, {rmarkdown}, and Shiny server.
+
+# Create a VM in Microsoft Azure   
+
+The first thing you need to do is to sign up for a free account. Go to https://azure.microsoft.com , choose "Free account" or "Start free", and then follow the steps there.   
+
+<img src=/img/shiny_azure/1.png width="750"  />
+
+Once you have your account go to "Virtual Machines".  
+
+<img src=/img/shiny_azure/2.png width="750"  />   
+
+Inside there, click on "Add".  
+
+<img src=/img/shiny_azure/3.png width="750"  />
+
+The next step is going to ask you for a "Resource group" (my resource group is called `shiny-group`). If you don't have any, just click on "Create new". Next, you have to provide a name for your virtual machine (my VM is named `testing-vm`).   
+
+You also need to select one Linux image for the server. If you plan to follow this tutorial, then choose CentOS because the commands we are going to run later are proven to run in CentOS. Otherwise, you can choose any available Linux image (Ubuntu, RHEL, SUSE, Debian) but **not Windows Server** because Shiny server doesn't run there.   
+
+<img src=/img/shiny_azure/4.png width="750"  />
+
+In the bottom of the page, you will find the authentication type. If you don't know what SSH is, then choose "Password" and create a username and a password (my user name is `juanmanuel`). You can choose different hardware settings clicking on "Change size", **but keep in mind that anything less than 1GB of RAM on your server may cause the installation of Shiny Server or its related R packages to fail.**      
+
+<img src=/img/shiny_azure/5.png width="750"  />
+
+Finally, in port inbound rules leave it as it is.   
+
+<img src=/img/shiny_azure/6.png width="750"  />  
+
+For the scope of this tutorial you can go on with the defaults for rest the of the settings and create the VM. It will take some minutes to create
+
+<img src=/img/shiny_azure/7.png width="750"  />  
+
+Once the process is finished, you will be able to see the VM in `Home > Virtual Machines`. Note that `testing-vm` has been created and is **Running** (for reference, I have another VM called `shiny-vm` which is **Stopped (deallocated)**). 
+
+<img src=/img/shiny_azure/8.png width="750"  />  
+
+Bear in mind that as long as the VMs are running, Azure is either charging you or taking it from your trial balance. So if you want to take a break, select the VM by clicking on the check box next to its name and then hit **Stop** in the ribbon above.    
+
+
+# Log in into the VM   
+
+This can be particularly challenging, so we are going to treat it on its own section and step by step. We still need to install packages in the server we have just set up... but how are we going to do so, if we don't have physical access to it?   
+
+The answer is through the Internet. Using our own laptops, we are going to *log in* into the server and take control of it. The steps below show you how to connect a local computer running Linux (i.e. your laptop) to our VM using the Linux terminal. As far as I know, the steps also work for Mac computers though I haven't tried them by myself.  
+
+## Get the public IP of your VM     
+
+In order to log in, we will need the public IP. You can get that information and more by clicking on the VM's name, so that you go to `Home > Virtual Machines > testing-vm`. Once there, Azure shows a summary for that VM. As long as the VM is **Running** it will have a public IP.  
+
+<img src=/img/shiny_azure/9.png width="750"  />  
+
+Then click **Connect** on the top left and a pane on the right of the screen will show up. From the there, copy the last line which in this case is `ssh juanmanuel@40.80.146.164`
+
+<img src=/img/shiny_azure/10.png width="750"  />
+
+## Open a Terminal  
+
+In many Linux distros `Ctrl + T` will launch a terminal. In general you will see the username, the computer you are controlling name's, and the current directory.   
+
+In the following screenshot that sequence is coded the following way: `username@computername:currentdirectory$`.   
+
+Different Linux versions may show this information with its own flavour, but the general structure is going to be similar. I am using Linux Mint with the Cinnamon desktop and here we have: 
+
+* Username is `jm`   
+* Computer name is `lenovo410`
+* Current directory is `~`. The tilde symbol represents the home directory, so alternatively the current directory is `/home/jm`   
+
+Excellent videos on the Linux file system are [this](https://www.youtube.com/watch?v=HbgzrKJvDRw) by DorianDotSlash and [this](https://www.youtube.com/results?search_query=linux+file+system) by Joe Collins.
+
+<img src=/img/shiny_azure/11.png width="750"  />  
+
+
+## Connect to the VM   
+
+In the terminal type your version of `ssh juanmanuel@40.80.146.164` (you have to change the username as well as the public IP) and hit enter. Then write your password and hit enter again (when writing your password the screen will remain empty but, don't panic, it's working). If everything went as expected, you should be seeing something like this:  
+
+<img src=/img/shiny_azure/12.png width="750"  />  
+
+The image above is a fundamental thing to understand:  
+
+* on the first line we were on `jm@lenovo410` (namely, my laptop) where we executed a command, 
+* on the second line we introduced our password, 
+* and in the third line we are in `juanmanuel@40.80.146.164` (namely, the server).    
+
+From now on every command we run on the terminal is going to take effect in the server, **not** in our laptop.   
+
+
+## That's so cool, but I'm on Windows... how can I proceed?   
+
+Yet another reason to leave Windows once and for all!. To connect a Windows laptop to our server you will need an SSH client. One of them is called [PuTTY](https://putty.org/).
+
+Another way is using Azure's console which is essentialy the same we are doing in our Linux terminal. With the VM **running** click on the `>_` symbol in the blue ribbon.   
+
+<img src=/img/shiny_azure/13.png width="750"  />  
+
+It will open a terminal in the bottom part of the screen. Make sure it says `Bash` in the top left corner; if not use the dropdown menu to change it. From now on, the steps are the same as in 3.3)    
+
+<img src=/img/shiny_azure/14.png width="750"  />  
+
+
+# Time to instalaR   
+
+The steps from this section onwards are valid for every CentOS server. In other words, you don't need a server in Azure. As long as it's running CentOS it can be on AWS, Google Cloud, or even be your own hardware.    
+
+## Add Extra Packages for Enterprise Linux (EPEL)
+
+First we need to add EPEL to the list of repositories. Check https://fedoraproject.org/wiki/EPEL and choose the corresponding line of code for your version. You need to be root to perform this command, so start it with `sudo`. This is a program that allows users to run programs with the security privileges of another user, by default the [superuser](https://en.wikipedia.org/wiki/Superuser).  
+
+```{r, eval=FALSE}
+sudo yum install https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+```  
+
+Paste the command, write you password, and finally `y`.  
+
+<img src=/img/shiny_azure/15.png width="750"  />  
+
+
+## Install R  
+
+**Once EPEL is added**, you can install R.  
+
+```{r, eval=FALSE}
+sudo yum install R
+```  
+
+
+## Install R {packages}  
+
+Then we need to install, at least, one R package which is {shiny}.    
+
+```{bash, eval=FALSE}
+sudo su - \
+-c "R -e \"install.packages('shiny', repos='https://cran.rstudio.com/')\""
+```
+
+Since the Shiny server can also host RMarkdown documents, we are going to also install {rmarkdown}.  
+
+```{r, eval=FALSE}
+sudo su - \
+-c "R -e \"install.packages('rmarkdown', repos='https://cran.rstudio.com/')\""
+```
+
+## Download and install Shiny Server   
+
+Choose the right version for you here: https://rstudio.com/products/shiny/download-server/ and copy the link. `wget` is a free utility for download of files from the web.
+
+```{r, eval=FALSE}
+wget https://download3.rstudio.org/centos6.3/x86_64/shiny-server-1.5.12.933-x86_64.rpm
+sudo yum install --nogpgcheck shiny-server-1.5.12.933-x86_64.rpm
+```
+
+<img src=/img/shiny_azure/16.png width="800"  />  
+
+# Enable port 3838
+
+We need to enable port 3838 because this is the port used by default to serve Shiny apps. You can change this from the `config` file, but we are going to stick to the defaults settings.   
+
+Click on Networking in the left pane, so you are in `Home > testing-vm > Networking`. Next click on "Add inbound port rule".
+
+<img src=/img/shiny_azure/17.png width="800"  />  
+
+A pane in the right section of the screen will show up. Change the default "Destination port ranges" value from `8080` to `3838`. In "protocol" select `TCP` and in "Action" `Allow`
+
+<img src=/img/shiny_azure/18.png width="750"  />  
+
+Scroll down and write a correct name and a description if you want. Finally, click on add. 
+
+<img src=/img/shiny_azure/19.png width="750"  />  
+
+Go to your web browser and type the public IP of your server, colon, 3838. Something like this: `40.80.146.164:3838`.   
+If everything installed correctly, you should see the following screen:
+
+<img src=/img/shiny_azure/20.png width="800"  />  
+
+# Put your Shiny app in the server   
+
+We still need to put our Shiny app (either the `ui.R` and the `server.R` files or the `app.R` file) in the server.
+
+## Using GitHub  
+
+To clone the app from GitHub, we need to install `git` first. In the terminal write:  
+
+```{r, eval=FALSE}
+sudo yum install git
+```
+
+<img src=/img/shiny_azure/21.png width="750"  />  
+
+Let's share our first app! From rstudio's GitHub, we are going to clone one called "shiny_example". It's here: https://github.com/rstudio/shiny_example  
+
+There you have to click on the green button that says "Clone or download" and copy the link.  
+
+<img src=/img/shiny_azure/22.png width="750"  />  
+
+Now we need to move to the directory where Shiny apps are supposed to be saved. To do so we use `cd` as follows:
+
+```{r, eval=FALSE}
+cd /srv/shiny-server/
+```
+
+The image below shows how we moved from `~` to `shiny-server`. 
+
+<img src=/img/shiny_azure/23.png width="750"  />  
+
+Once there, clone the repository with:  
+
+```{r, eval=FALSE}
+sudo git clone https://github.com/rstudio/shiny_example.git
+```
+
+## See your app running
+
+Go to your browser and paste the following (remember, you will have a different public IP):
+
+```{r, eval=FALSE}
+40.80.146.164:3838/shiny_example/
+```
+
+<img src=/img/shiny_azure/24.png width="750"  />  
+
+
+# Where to go next   
+
+The documentation for Shiny server is pretty good: https://docs.rstudio.com/shiny-server/

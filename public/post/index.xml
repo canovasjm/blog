@@ -6,10 +6,19 @@
     <description>Recent content in Posts on JM</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sun, 01 Dec 2019 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Wed, 08 Jan 2020 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="/post/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Deploy you own Shiny Server on Azure</title>
+      <link>/2020/01/08/deploy-you-own-shiny-server-on-azure/</link>
+      <pubDate>Wed, 08 Jan 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/2020/01/08/deploy-you-own-shiny-server-on-azure/</guid>
+      <description>1 Introduction 2 Create a VM in Microsoft Azure 3 Log in into the VM 3.1 Get the public IP of your VM 3.2 Open a Terminal 3.3 Connect to the VM 3.4 That’s so cool, but I’m on Windows… how can I proceed?  4 Time to instalaR 4.1 Add Extra Packages for Enterprise Linux (EPEL) 4.2 Install R 4.3 Install R {packages} 4.4 Download and install Shiny Server  5 Enable port 3838 6 Put your Shiny app in the server 6.</description>
+    </item>
     
     <item>
       <title>Tidy Tuesday Shiny App: Nuclear Explosions</title>
