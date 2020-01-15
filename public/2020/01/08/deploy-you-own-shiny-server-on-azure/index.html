@@ -67,7 +67,7 @@
 
   <article class="article">
     
-    <span class="article-duration">9 min read</span>
+    <span class="article-duration">10 min read</span>
     
 
     <h1 class="article-title">Deploy you own Shiny Server on Azure</h1>
@@ -98,9 +98,10 @@
 <li><a href="#enable-port-3838"><span class="toc-section-number">5</span> Enable port 3838</a></li>
 <li><a href="#put-your-shiny-app-in-the-server"><span class="toc-section-number">6</span> Put your Shiny app in the server</a><ul>
 <li><a href="#using-github"><span class="toc-section-number">6.1</span> Using GitHub</a></li>
-<li><a href="#see-your-app-running"><span class="toc-section-number">6.2</span> See your app running</a></li>
+<li><a href="#copy-files-from-your-local-machine-with-scp"><span class="toc-section-number">6.2</span> Copy files from your local machine with <code>scp</code></a></li>
+<li><a href="#see-your-app-running"><span class="toc-section-number">6.3</span> See your app running</a></li>
 </ul></li>
-<li><a href="#where-to-go-next"><span class="toc-section-number">7</span> Where to go next</a></li>
+<li><a href="#additional-resources"><span class="toc-section-number">7</span> Additional resources</a></li>
 </ul>
 </div>
 
@@ -125,7 +126,7 @@
 <p><img src=/img/shiny_azure/5.png width="750"  /></p>
 <p>Finally, in port inbound rules leave it as it is.</p>
 <p><img src=/img/shiny_azure/6.png width="750"  /></p>
-<p>For the scope of this tutorial you can go on with the defaults for rest the of the settings and create the VM. It will take some minutes to create</p>
+<p>For the scope of this tutorial you can go on with the defaults for rest the of the settings and create the VM. It will take some minutes to create.</p>
 <p><img src=/img/shiny_azure/7.png width="750"  /></p>
 <p>Once the process is finished, you will be able to see the VM in <code>Home &gt; Virtual Machines</code>. Note that <code>testing-vm</code> has been created and is <strong>Running</strong> (for reference, I have another VM called <code>shiny-vm</code> which is <strong>Stopped (deallocated)</strong>).</p>
 <p><img src=/img/shiny_azure/8.png width="750"  /></p>
@@ -163,7 +164,7 @@
 <p>The image above is a fundamental thing to understand:</p>
 <ul>
 <li>on the first line we were on <code>jm@lenovo410</code> (namely, my laptop) where we executed a command,</li>
-<li>on the second line we introduced our password,</li>
+<li>on the second line we introduced our server’s password,</li>
 <li>and in the third line we are in <code>juanmanuel@40.80.146.164</code> (namely, the server).</li>
 </ul>
 <p>From now on every command we run on the terminal is going to take effect in the server, <strong>not</strong> in our laptop.</p>
@@ -182,7 +183,7 @@
 <p>The steps from this section onwards are valid for every CentOS server. In other words, you don’t need a server in Azure. As long as it’s running CentOS it can be on AWS, Google Cloud, or even be your own hardware.</p>
 <div id="add-extra-packages-for-enterprise-linux-epel" class="section level2">
 <h2><span class="header-section-number">4.1</span> Add Extra Packages for Enterprise Linux (EPEL)</h2>
-<p>First we need to add EPEL to the list of repositories. Check <a href="https://fedoraproject.org/wiki/EPEL" class="uri">https://fedoraproject.org/wiki/EPEL</a> and choose the corresponding line of code for your version. You need to be root to perform this command, so start it with <code>sudo</code>. This is a program that allows users to run programs with the security privileges of another user, by default the <a href="https://en.wikipedia.org/wiki/Superuser">superuser</a>.</p>
+<p>First we need to add EPEL to the list of repositories. Check <a href="https://fedoraproject.org/wiki/EPEL" class="uri">https://fedoraproject.org/wiki/EPEL</a> and choose the corresponding line for your version. You need to be root to perform this command, so start it with <code>sudo</code>. This is a program that allows users to run programs with the security privileges of another user, by default the <a href="https://en.wikipedia.org/wiki/Superuser">superuser</a>.</p>
 <pre class="r"><code>sudo yum install https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm</code></pre>
 <p>Paste the command, write you password, and finally <code>y</code>.</p>
 <p><img src=/img/shiny_azure/15.png width="750"  /></p>
@@ -203,7 +204,7 @@
 </div>
 <div id="download-and-install-shiny-server" class="section level2">
 <h2><span class="header-section-number">4.4</span> Download and install Shiny Server</h2>
-<p>Choose the right version for you here: <a href="https://rstudio.com/products/shiny/download-server/" class="uri">https://rstudio.com/products/shiny/download-server/</a> and copy the link. <code>wget</code> is a free utility for download of files from the web.</p>
+<p>Choose the right version for you here: <a href="https://rstudio.com/products/shiny/download-server/" class="uri">https://rstudio.com/products/shiny/download-server/</a> and copy the link. <code>wget</code> is a free utility for download of files from the web and we use it download Shiny server from RStudio’s website.</p>
 <pre class="r"><code>wget https://download3.rstudio.org/centos6.3/x86_64/shiny-server-1.5.12.933-x86_64.rpm
 sudo yum install --nogpgcheck shiny-server-1.5.12.933-x86_64.rpm</code></pre>
 <p><img src=/img/shiny_azure/16.png width="800"  /></p>
@@ -219,18 +220,29 @@ sudo yum install --nogpgcheck shiny-server-1.5.12.933-x86_64.rpm</code></pre>
 <p>Scroll down and write a correct name and a description if you want. Finally, click on add.</p>
 <p><img src=/img/shiny_azure/19.png width="750"  /></p>
 <p>Go to your web browser and type the public IP of your server, colon, 3838. Something like this: <code>40.80.146.164:3838</code>.<br />
-If everything installed correctly, you should see the following screen:</p>
+If everything is installed correctly, you should see the following screen:</p>
 <p><img src=/img/shiny_azure/20.png width="800"  /></p>
 </div>
 <div id="put-your-shiny-app-in-the-server" class="section level1">
 <h1><span class="header-section-number">6</span> Put your Shiny app in the server</h1>
-<p>We still need to put our Shiny app (either the <code>ui.R</code> and the <code>server.R</code> files or the <code>app.R</code> file) in the server.</p>
+<p>We still need to put our Shiny app (either the <code>ui.R</code> and the <code>server.R</code> files or the <code>app.R</code> file) in the server. Regardless of the way you choose to put your Shiny apps in the server, by default they have to be in their own directory inside <code>/srv/shiny-server/</code>. In other words, the file structure expected by the server is something like this:</p>
+<pre><code>/srv/shiny-server/
+  |
+  |-- app_1_directory
+  |     |
+  |     |-- ui.R
+  |     |-- server.R
+  |
+  |-- app_2_directory
+        |
+        |-- app.R
+        </code></pre>
 <div id="using-github" class="section level2">
 <h2><span class="header-section-number">6.1</span> Using GitHub</h2>
 <p>To clone the app from GitHub, we need to install <code>git</code> first. In the terminal write:</p>
 <pre class="r"><code>sudo yum install git</code></pre>
 <p><img src=/img/shiny_azure/21.png width="750"  /></p>
-<p>Let’s share our first app! From rstudio’s GitHub, we are going to clone one called “shiny_example”. It’s here: <a href="https://github.com/rstudio/shiny_example" class="uri">https://github.com/rstudio/shiny_example</a></p>
+<p>Let’s share our first app! From RStudio’s GitHub, we are going to clone one called “shiny_example”. It’s here: <a href="https://github.com/rstudio/shiny_example" class="uri">https://github.com/rstudio/shiny_example</a></p>
 <p>There you have to click on the green button that says “Clone or download” and copy the link.</p>
 <p><img src=/img/shiny_azure/22.png width="750"  /></p>
 <p>Now we need to move to the directory where Shiny apps are supposed to be saved. To do so we use <code>cd</code> as follows:</p>
@@ -240,16 +252,42 @@ If everything installed correctly, you should see the following screen:</p>
 <p>Once there, clone the repository with:</p>
 <pre class="r"><code>sudo git clone https://github.com/rstudio/shiny_example.git</code></pre>
 </div>
+<div id="copy-files-from-your-local-machine-with-scp" class="section level2">
+<h2><span class="header-section-number">6.2</span> Copy files from your local machine with <code>scp</code></h2>
+<p>Alternatively one can copy a file from a local machine to the server. No GitHub needed here. Instead, we will use <code>scp</code> which stands for <em>securely copy</em>.</p>
+<p>The app I will copy is one I made using <a href="https://canovasjm.netlify.com/2019/12/01/tidy-tuesday-shiny-app-nuclear-explosions/">tidy tuesday’s data set on nuclear explosions</a>. It consists of a single <code>app.R</code> file which lives in my hard drive in the folder <code>~/nuclear_explosions</code>. We are going to copy the whole folder.</p>
+<p><img src=/img/shiny_azure/25.png width="750"  /></p>
+<p>The way to use <code>scp</code> is as follows (more details <a href="https://linuxize.com/post/how-to-use-scp-command-to-securely-transfer-files/">here</a>):</p>
+<pre class="r"><code>scp -r /local/directory remote_username@40.80.146.164:/remote/directory </code></pre>
+<p><img src=/img/shiny_azure/26.png width="750"  /></p>
+<p>Note that I didn’t include anything after the colon. That’s because we will need writing permission in the destination directory. For further details on this, please see <a href="https://unix.stackexchange.com/questions/47909/transfer-files-using-scp-permission-denied#47911">here</a>.</p>
+<p>Instead, writing the code up to the colon will copy the file to the home directory on the server. Using <code>ls</code> there, we can now see the nuclear explosions folder.</p>
+<p><img src=/img/shiny_azure/27.png width="750"  /></p>
+<p>But we need the app in <code>/srv/shiny-server/</code>. The solution to this is to move the nuclear_explosions folder (this requires <code>sudo</code>).</p>
+<pre class="r"><code>sudo mv nuclear_explosions /srv/shiny-server</code></pre>
+<p>If we now do <code>ls</code> once again, we no longer see the nuclear_explosions folder.</p>
+<p><img src=/img/shiny_azure/28.png width="750"  /></p>
+</div>
 <div id="see-your-app-running" class="section level2">
-<h2><span class="header-section-number">6.2</span> See your app running</h2>
+<h2><span class="header-section-number">6.3</span> See your app running</h2>
 <p>Go to your browser and paste the following (remember, you will have a different public IP):</p>
-<pre class="r"><code>40.80.146.164:3838/shiny_example/</code></pre>
+<pre class="r"><code>40.80.146.164:3838/shiny_example/
+40.80.146.164:3838/nuclear_explosions/</code></pre>
 <p><img src=/img/shiny_azure/24.png width="750"  /></p>
+<p><img src=/img/shiny_azure/29.png width="750"  /></p>
+<p>Finally, we can check that these two apps are living in <code>/srv/shiny-server/</code>. To do so:</p>
+<pre class="r"><code>cd /srv/shiny-server
+ls</code></pre>
+<p><img src=/img/shiny_azure/30.png width="750"  /></p>
 </div>
 </div>
-<div id="where-to-go-next" class="section level1">
-<h1><span class="header-section-number">7</span> Where to go next</h1>
-<p>The documentation for Shiny server is pretty good: <a href="https://docs.rstudio.com/shiny-server/" class="uri">https://docs.rstudio.com/shiny-server/</a></p>
+<div id="additional-resources" class="section level1">
+<h1><span class="header-section-number">7</span> Additional resources</h1>
+<ul>
+<li><p>The README file in Shiny server GitHub’s repository is pretty good: <a href="https://github.com/rstudio/shiny-server/blob/master/README.md" class="uri">https://github.com/rstudio/shiny-server/blob/master/README.md</a></p></li>
+<li><p>The documentation for Shiny server is a great one also: <a href="https://docs.rstudio.com/shiny-server/" class="uri">https://docs.rstudio.com/shiny-server/</a></p></li>
+<li><p>Dean Attali’s blog post: <a href="https://deanattali.com/2015/05/09/setup-rstudio-shiny-server-digital-ocean/" class="uri">https://deanattali.com/2015/05/09/setup-rstudio-shiny-server-digital-ocean/</a></p></li>
+</ul>
 </div>
 
     </div>

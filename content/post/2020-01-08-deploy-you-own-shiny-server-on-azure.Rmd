@@ -47,7 +47,7 @@ Finally, in port inbound rules leave it as it is.
 
 <img src=/img/shiny_azure/6.png width="750"  />  
 
-For the scope of this tutorial you can go on with the defaults for rest the of the settings and create the VM. It will take some minutes to create
+For the scope of this tutorial you can go on with the defaults for rest the of the settings and create the VM. It will take some minutes to create.   
 
 <img src=/img/shiny_azure/7.png width="750"  />  
 
@@ -100,7 +100,7 @@ In the terminal type your version of `ssh juanmanuel@40.80.146.164` (you have to
 The image above is a fundamental thing to understand:  
 
 * on the first line we were on `jm@lenovo410` (namely, my laptop) where we executed a command, 
-* on the second line we introduced our password, 
+* on the second line we introduced our server's password, 
 * and in the third line we are in `juanmanuel@40.80.146.164` (namely, the server).    
 
 From now on every command we run on the terminal is going to take effect in the server, **not** in our laptop.   
@@ -125,7 +125,7 @@ The steps from this section onwards are valid for every CentOS server. In other 
 
 ## Add Extra Packages for Enterprise Linux (EPEL)
 
-First we need to add EPEL to the list of repositories. Check https://fedoraproject.org/wiki/EPEL and choose the corresponding line of code for your version. You need to be root to perform this command, so start it with `sudo`. This is a program that allows users to run programs with the security privileges of another user, by default the [superuser](https://en.wikipedia.org/wiki/Superuser).  
+First we need to add EPEL to the list of repositories. Check https://fedoraproject.org/wiki/EPEL and choose the corresponding line for your version. You need to be root to perform this command, so start it with `sudo`. This is a program that allows users to run programs with the security privileges of another user, by default the [superuser](https://en.wikipedia.org/wiki/Superuser).  
 
 ```{r, eval=FALSE}
 sudo yum install https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
@@ -163,7 +163,7 @@ sudo su - \
 
 ## Download and install Shiny Server   
 
-Choose the right version for you here: https://rstudio.com/products/shiny/download-server/ and copy the link. `wget` is a free utility for download of files from the web.
+Choose the right version for you here: https://rstudio.com/products/shiny/download-server/ and copy the link. `wget` is a free utility for download of files from the web and we use it download Shiny server from RStudio's website.  
 
 ```{r, eval=FALSE}
 wget https://download3.rstudio.org/centos6.3/x86_64/shiny-server-1.5.12.933-x86_64.rpm
@@ -189,13 +189,27 @@ Scroll down and write a correct name and a description if you want. Finally, cli
 <img src=/img/shiny_azure/19.png width="750"  />  
 
 Go to your web browser and type the public IP of your server, colon, 3838. Something like this: `40.80.146.164:3838`.   
-If everything installed correctly, you should see the following screen:
+If everything is installed correctly, you should see the following screen:
 
 <img src=/img/shiny_azure/20.png width="800"  />  
 
 # Put your Shiny app in the server   
 
-We still need to put our Shiny app (either the `ui.R` and the `server.R` files or the `app.R` file) in the server.
+We still need to put our Shiny app (either the `ui.R` and the `server.R` files or the `app.R` file) in the server. Regardless of the way you choose to put your Shiny apps in the server, by default they have to be in their own directory inside `/srv/shiny-server/`. In other words, the file structure expected by the server is something like this:   
+
+```
+/srv/shiny-server/
+  |
+  |-- app_1_directory
+  |     |
+  |     |-- ui.R
+  |     |-- server.R
+  |
+  |-- app_2_directory
+        |
+        |-- app.R
+        
+```
 
 ## Using GitHub  
 
@@ -207,7 +221,7 @@ sudo yum install git
 
 <img src=/img/shiny_azure/21.png width="750"  />  
 
-Let's share our first app! From rstudio's GitHub, we are going to clone one called "shiny_example". It's here: https://github.com/rstudio/shiny_example  
+Let's share our first app! From RStudio's GitHub, we are going to clone one called "shiny_example". It's here: https://github.com/rstudio/shiny_example  
 
 There you have to click on the green button that says "Clone or download" and copy the link.  
 
@@ -229,17 +243,66 @@ Once there, clone the repository with:
 sudo git clone https://github.com/rstudio/shiny_example.git
 ```
 
+## Copy files from your local machine with `scp`
+
+Alternatively one can copy a file from a local machine to the server. No GitHub needed here. Instead, we will use `scp` which stands for *securely copy*.   
+
+The app I will copy is one I made using [tidy tuesday's data set on nuclear explosions](https://canovasjm.netlify.com/2019/12/01/tidy-tuesday-shiny-app-nuclear-explosions/). It consists of a single `app.R` file which lives in my hard drive in the folder `~/nuclear_explosions`. We are going to copy the whole folder.  
+
+<img src=/img/shiny_azure/25.png width="750"  />    
+
+The way to use `scp` is as follows (more details [here](https://linuxize.com/post/how-to-use-scp-command-to-securely-transfer-files/)):   
+
+```{r, eval=FALSE}
+scp -r /local/directory remote_username@40.80.146.164:/remote/directory 
+```
+
+<img src=/img/shiny_azure/26.png width="750"  />    
+
+Note that I didn't include anything after the colon. That's because we will need writing permission in the destination directory. For further details on this, please see [here](https://unix.stackexchange.com/questions/47909/transfer-files-using-scp-permission-denied#47911).
+
+Instead, writing the code up to the colon will copy the file to the home directory on the server. Using `ls` there, we can now see the nuclear explosions folder.   
+
+<img src=/img/shiny_azure/27.png width="750"  />    
+
+But we need the app in `/srv/shiny-server/`. The solution to this is to move the nuclear_explosions folder (this requires `sudo`).
+
+```{r, eval=FALSE}
+sudo mv nuclear_explosions /srv/shiny-server
+```
+
+If we now do `ls` once again, we no longer see the nuclear_explosions folder.
+
+<img src=/img/shiny_azure/28.png width="750"  />    
+
 ## See your app running
 
 Go to your browser and paste the following (remember, you will have a different public IP):
 
 ```{r, eval=FALSE}
 40.80.146.164:3838/shiny_example/
+40.80.146.164:3838/nuclear_explosions/
 ```
 
 <img src=/img/shiny_azure/24.png width="750"  />  
 
+<img src=/img/shiny_azure/29.png width="750"  />  
 
-# Where to go next   
+Finally, we can check that these two apps are living in `/srv/shiny-server/`. To do so:
 
-The documentation for Shiny server is pretty good: https://docs.rstudio.com/shiny-server/
+```{r, eval=FALSE}
+cd /srv/shiny-server
+ls
+```
+
+<img src=/img/shiny_azure/30.png width="750"  />  
+
+
+# Additional resources           
+
+* The README file in Shiny server GitHub's repository is pretty good: https://github.com/rstudio/shiny-server/blob/master/README.md   
+
+* The documentation for Shiny server is a great one also: https://docs.rstudio.com/shiny-server/  
+
+* Dean Attali's blog post: https://deanattali.com/2015/05/09/setup-rstudio-shiny-server-digital-ocean/  
+
