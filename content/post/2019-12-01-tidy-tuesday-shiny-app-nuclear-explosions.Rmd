@@ -141,4 +141,5 @@ In no particular order, resources I found useful are:
 
 You can check the Shiny app in the link below:   
 https://canovasjm.shinyapps.io/nuclear_explosions/  
-
+and the code here:   
+https://github.com/canovasjm/tt-2019-08-20-nuclear
