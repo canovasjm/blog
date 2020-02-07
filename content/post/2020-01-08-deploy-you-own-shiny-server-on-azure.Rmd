@@ -47,7 +47,7 @@ Finally, in port inbound rules leave it as it is.
 
 <img src=/img/shiny_azure/6.png width="750"  />  
 
-For the scope of this tutorial you can go on with the defaults for rest the of the settings and create the VM. It will take some minutes to create.   
+For the scope of this tutorial you can go on with the defaults for the rest of the settings and create the VM. It will take some minutes to create.   
 
 <img src=/img/shiny_azure/7.png width="750"  />  
 
