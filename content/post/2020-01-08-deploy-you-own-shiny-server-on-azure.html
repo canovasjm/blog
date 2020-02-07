@@ -78,7 +78,7 @@ output:
 </div>
 <div id="open-a-terminal" class="section level2">
 <h2><span class="header-section-number">3.2</span> Open a Terminal</h2>
-<p>In many Linux distros <code>Ctrl + T</code> will launch a terminal. In general you will see the username, the computer you are controlling name’s, and the current directory.</p>
+<p>In many Linux distros <code>Ctrl + Alt + T</code> will launch a terminal. In general you will see the username, the computer you are controlling name’s, and the current directory.</p>
 <p>In the following screenshot that sequence is coded the following way: <code>username@computername:currentdirectory$</code>.</p>
 <p>Different Linux versions may show this information with its own flavour, but the general structure is going to be similar. I am using Linux Mint with the Cinnamon desktop and here we have:</p>
 <ul>
@@ -191,10 +191,12 @@ If everything is installed correctly, you should see the following screen:</p>
 <p>The app I will copy is one I made using <a href="https://canovasjm.netlify.com/2019/12/01/tidy-tuesday-shiny-app-nuclear-explosions/">tidy tuesday’s data set on nuclear explosions</a>. It consists of a single <code>app.R</code> file which lives in my hard drive in the folder <code>~/nuclear_explosions</code>. We are going to copy the whole folder.</p>
 <p><img src=/img/shiny_azure/25.png width="750"  /></p>
 <p>The way to use <code>scp</code> is as follows (more details <a href="https://linuxize.com/post/how-to-use-scp-command-to-securely-transfer-files/">here</a>):</p>
-<pre class="r"><code>scp -r /local/directory remote_username@40.80.146.164:/remote/directory </code></pre>
+<pre class="r"><code># this is only to show how to use scp, it won&#39;t run
+scp -r /local/directory remote_username@remotepublicIP:/remote/directory </code></pre>
+<p>The <code>-r</code> flag stands for “recursive”, and it’s basically telling “copy the folder with its content”.</p>
 <p><img src=/img/shiny_azure/26.png width="750"  /></p>
-<p>Note that I didn’t include anything after the colon. That’s because we will need writing permission in the destination directory. For further details on this, please see <a href="https://unix.stackexchange.com/questions/47909/transfer-files-using-scp-permission-denied#47911">here</a>.</p>
-<p>Instead, writing the code up to the colon will copy the file to the home directory on the server. Using <code>ls</code> there, we can now see the nuclear explosions folder.</p>
+<p>If you pay attention to the screenshot above you’ll note that I didn’t include anything after the colon. That’s because we will need writing permission in the destination directory. For further details on this, please see <a href="https://unix.stackexchange.com/questions/47909/transfer-files-using-scp-permission-denied#47911">here</a>.</p>
+<p>Instead, writing the code up to the colon will copy the file to the home directory on the server and we <strong>do</strong> have writing permissions there. Using <code>ls</code> there, we can now see the nuclear explosions folder.</p>
 <p><img src=/img/shiny_azure/27.png width="750"  /></p>
 <p>But we need the app in <code>/srv/shiny-server/</code>. The solution to this is to move the nuclear_explosions folder (this requires <code>sudo</code>).</p>
 <pre class="r"><code>sudo mv nuclear_explosions /srv/shiny-server</code></pre>
