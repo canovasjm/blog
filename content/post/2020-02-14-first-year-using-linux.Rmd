@@ -1,0 +1,11 @@
+---
+title: First year using Linux
+author: 'Juan Manuel Canovas'
+date: '2020-02-14'
+slug: first-year-using-linux
+categories: []
+tags: []
+---
+
+
+
