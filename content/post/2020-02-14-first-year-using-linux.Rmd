@@ -20,7 +20,7 @@ It's been a year since I installed Linux for the first time and I think it's a g
 
 Now I'm able to see what updates are going to be installed and how long are they going to take. I think no one should resign this. 
 
-Furthermore, if Windows is not willing to tell you what is going on when updating at least they should show a more transparent message. Something like this would be OK:   
+If Windows is not willing to tell you what is going on when updating, at least they should show a more transparent message. Something like this would be OK:   
 
 <img src=/img/first_year_linux/01.gif width="750"  />
 
@@ -30,7 +30,11 @@ Furthermore, if Windows is not willing to tell you what is going on when updatin
 
 Do we need a 10th Gen core i7 and 32 GB RAM to open a browser and a couple of spreadsheets? Answer *should* be **NO**, but if our OS is full of bloatware... who knows. And as we all know, hardware costs money.   
 
-Wiping out Windows and all its bloatware from my hardware, made it possible to work on my 2013 laptop. On a regular basis I use R with RStudio, git, Firefox, and LibreOffice seamlessly.    
+Wiping out Windows and all its bloatware from my hardware, made it possible to work on my 2013 laptop. On a regular basis I use R with RStudio, git, Firefox, and LibreOffice seamlessly. For reference, this is my hardware:    
+
+<img src=/img/first_year_linux/02.png width="750"  />
+
+3rd Gen core i7 (only 4 cores!), 8 GB RAM... pretty old for today's standards. I seriously doubt about the performance of this hardware under an up-to-date version of Windows 10.   
 
 
 # Should I use Linux?
@@ -52,18 +56,21 @@ These days one of the most important is `git`. From its [Wikepedia entry](https:
 
 *"Git was created by Linus Torvalds in 2005 for development of the Linux kernel, with other kernel developers contributing to its initial development."*    
 
-You can imagine what's next, it also integrates very well with Linux.    
+You can imagine what's next, it also integrates very well with Linux. Below, `git` from Linux terminal while writing this post:      
+
+<img src=/img/first_year_linux/03.png width="750"  />
 
 
 ### 3) Going cloud 
 
 Cloud computing is a reality, and if we are dealing with moderate to heavy analysis we should go cloud and do the heavy lift there. One of the main reasons for doing this is that we can scale up and down easily.     
 
-<img src=/img/first_year_linux/02.jpg width="750"  />   
+<img src=/img/first_year_linux/04.jpg width="750"  />   
 
-My first cloud experience was [setting up a Shiny Server in CentOS](https://canovasjm.netlify.com/2020/01/08/deploy-you-own-shiny-server-on-azure/). Having a working knowledge of Linux beforehand definitely helped me along the way. For example, logging into the server via `ssh` was straightforward from the Linux terminal. Is not that easy from Windows.       
+My first cloud experience was [setting up a Shiny Server in CentOS](https://canovasjm.netlify.com/2020/01/08/deploy-you-own-shiny-server-on-azure/). Having a working knowledge of Linux beforehand definitely helped me along the way. For example, logging into the server via `SSH` was straightforward from the Linux terminal. Is not that easy from Windows.       
 
-As a closing comment, of course you can do 1), 2), or 3) from Windows but not as easily. For example, for 2) you will need to install git bash and for 3) and `ssh` client like PuTTY will be required.      
+As a closing comment, of course you can do 1), 2), or 3) from Windows but not as easily. For example, for 2) you will need to install git bash.   
+
 
 ---   
 
