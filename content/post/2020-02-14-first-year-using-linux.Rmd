@@ -56,7 +56,7 @@ These days one of the most important is `git`. From its [Wikepedia entry](https:
 
 *"Git was created by Linus Torvalds in 2005 for development of the Linux kernel, with other kernel developers contributing to its initial development."*    
 
-You can imagine what's next... it also integrates very well with Linux. Below, `git` from the Linux terminal while writing this post:      
+You can imagine what's next... it also integrates very well with Linux!. Below, `git` from the Linux terminal while writing this post:      
 
 <img src=/img/first_year_linux/03.png width="750"  />
 
