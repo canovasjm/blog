@@ -295,7 +295,8 @@ m22</code></pre>
 <div id="model-selection" class="section level2">
 <h2><span class="header-section-number">4.1</span> Model selection</h2>
 <p>From the tables above, we can see that the estimates of the coefficients for model 1 are all significantly different from zero; while this is not the case for model 2. In the latter, the p-value for the non seasonal autoregressive coefficient estimate is 0.57 meaning that we fail to reject the null the hypothesis that the coefficient is equal to zero.</p>
-<p>Additionally, AICc and BIC values are smaller for model 1, which leads us to prefer model 1 over model 2. There is one step left to conclude if the model is adequate or not: residual analysis. For this analysis I used the following plots:</p>
+<p>Additionally, AICc and BIC values are smaller for model 1, which leads us to prefer model 1 over model 2.
+There is one step left to conclude if the model is adequate or not: residual analysis. For this analysis I used the following plots:</p>
 <pre class="r"><code># residual plot for model 1
 plot.ts(m1$residuals,
         ylab = &quot;log thousand passengers&quot;,

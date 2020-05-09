@@ -14,5 +14,5 @@ All the following apps use data from #TidyTuesday. You can find all the data set
 
 ## Others   
 
-
+[COVID-19 Google mobility report for Argentina](https://canovasjm.shinyapps.io/covid-19-argentina/)  
 

@@ -106,7 +106,9 @@ tags: [regression, doe, design_of_experiments]
 <h2>1. Denominator of equation (1)</h2>
 <p>When <span class="math inline">\(a = 2\)</span> the denominator of expression <span class="math inline">\((1)\)</span> is:</p>
 <p><span class="math display">\[MSE = \frac{SSE}{N-2} = \frac{\sum_{j=1}^{n_1}{(y_{1j} - \bar{y}_{1.})^2} + \sum_{j=1}^{n_2}{(y_{2j} - \bar{y}_{2.})^2}}{N-2} \tag{3}\]</span></p>
-<p>Recalling that the formula for the sample variance estimator is, <span class="math display">\[S_{i}^2 = \frac{\sum_{j=1}^{n_i}(y_{ij} - \bar{y}_{i.})^2}{n_{i} - 1}\]</span> we can multiply and divide the terms in the numerator in <span class="math inline">\((3)\)</span> by <span class="math inline">\((n_{i} - 1)\)</span> and get <span class="math inline">\((4)\)</span>. Don’t forget that in this case <span class="math inline">\(N = n_{1} + n_{2}\)</span></p>
+<p>Recalling that the formula for the sample variance estimator is,
+<span class="math display">\[S_{i}^2 = \frac{\sum_{j=1}^{n_i}(y_{ij} - \bar{y}_{i.})^2}{n_{i} - 1}\]</span>
+we can multiply and divide the terms in the numerator in <span class="math inline">\((3)\)</span> by <span class="math inline">\((n_{i} - 1)\)</span> and get <span class="math inline">\((4)\)</span>. Don’t forget that in this case <span class="math inline">\(N = n_{1} + n_{2}\)</span></p>
 <p><span class="math display">\[\frac{SSE}{N-2} = \frac{(n_{1} - 1) S_{1}^2 + (n_{2} - 1) S_{2}^2}{n_{1} + n_{2} - 2} = S_{p}^2 \tag{4}\]</span></p>
 <p><span class="math inline">\(S_{p}^2\)</span> is called the <em>pooled variance estimator</em>.</p>
 <hr />

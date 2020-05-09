@@ -116,7 +116,8 @@ Forecasting with ARIMA model in R</description>
       
       <guid>/shiny_apps/</guid>
       <description> Tidy Tuesday All the following apps use data from #TidyTuesday. You can find all the data sets in their GitHub repository
-   Topic Date Shiny App    Nuclear explosions 2019-08-20 https://canovasjm.shinyapps.io/nuclear_explosions     Others  </description>
+    Topic Date Shiny App    Nuclear explosions 2019-08-20 https://canovasjm.shinyapps.io/nuclear_explosions     Others COVID-19 Google mobility report for Argentina
+ </description>
     </item>
     
   </channel>
