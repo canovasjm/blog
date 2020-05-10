@@ -60,7 +60,7 @@ This is another painful "feature" of Windows. The fact that, while Windows updat
 
 Imagine updating Windows with this connection:
 
-![](/img/linux_lenovo_1/02.png)       
+<img src=/img/linux_lenovo_1/02.png width="750"  />
 
 But don't let me be misunderstood: by no means I want an OS that doesn't update. All I want is to decide when the updates are going to be installed, just like in Linux :)   
 
