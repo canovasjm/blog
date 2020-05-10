@@ -6,10 +6,20 @@
     <description>Recent content in Posts on JM</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Fri, 14 Feb 2020 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Sun, 10 May 2020 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="/post/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>COVID-19 reporte de movilidad de Google</title>
+      <link>/2020/05/10/covid-19-reporte-de-movilidad-de-google/</link>
+      <pubDate>Sun, 10 May 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/2020/05/10/covid-19-reporte-de-movilidad-de-google/</guid>
+      <description>1 Introducción 2 Sobre los datos 2.1 Movilidad 2.2 Línea base 2.3 Categorias  3 Bajar y procesar los datos 4 Gŕaficos 5 Conclusion   1 Introducción Hola! Durante esta pasada semana encontré este data set de Google sobre la movilidad en tiempos del COVID-19. Me pareció muy interesante y decidí crear una shiny app para explorarlo en forma interactiva.
+ 2 Sobre los datos Si bien el data set tiene información para muchos países, solo me concentré en Argentina.</description>
+    </item>
     
     <item>
       <title>First year using Linux</title>

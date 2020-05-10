@@ -1,0 +1,157 @@
+---
+title: COVID-19 reporte de movilidad de Google
+author: Juan Manuel Canovas
+date: '2020-05-10'
+slug: covid-19-reporte-de-movilidad-de-google
+categories: []
+tags: []
+output:
+  blogdown::html_page:
+    number_sections: true
+    toc: true
+---
+
+# Introducción  
+
+Hola! Durante esta pasada semana encontré [este](https://www.google.com/covid19/mobility/) data set de Google sobre la movilidad en tiempos del COVID-19. Me pareció muy interesante y decidí crear una [shiny app](https://canovasjm.shinyapps.io/covid-19-argentina/) para explorarlo en forma interactiva.   
+
+
+# Sobre los datos   
+
+Si bien el data set tiene información para muchos países, solo me concentré en Argentina.   
+
+El data set muestra los cambios porcentuales en la _movilidad_ de cada día respecto a una _línea base_ para seis _categorías_. [Aquí](https://www.google.com/covid19/mobility/data_documentation.html?hl=en) se puede encontrar una descripción completa de los datos (en inglés) y recomiendo leerla. En forma resumida veamos cada uno de los términos en cursiva:   
+
+## Movilidad   
+
+Se refiere a los cambios en la cantidad y duración de las visitas a diferentes lugares. Google aclara que calculan estos cambios usando el mismo tipo de agregación y anonimización de datos que se usa para mostrar "horarios populares" en Google Maps.      
+
+## Línea base   
+
+Es la mediana del valor, para el mismo día de la semana, medida durante el periodo de 5 semanas entre el 3 de enero y 6 de febrero de 2020.   
+
+## Categorias   
+
+Incluye las siguientes:   
+
+**grocery_and_pharmacy:** lugares como mercados, almacenes, ferias, maxi kioscos y farmacias.   
+
+**parks**: lugares como parques, parques nacionales, playas, embarcaderos, plazas y jardines públicos.   
+
+**residential**: lugares residenciales.   
+
+**retail_and_recreation**: lugares como restaurants, cafes, shopping, parques temáticos, museos, bibliotecas y cines.    
+
+**transit_stations**: sitios de transporte público como estaciones de subterraneo, colectivos y trenes.    
+
+**workplaces**: lugares de trabajo.   
+
+
+
+# Bajar y procesar los datos   
+
+Usando `{tidyverse}` bajamos los datos desde su fuente original y hacemos algunos ajustes.    
+
+```{r, echo = TRUE, message = FALSE, warning = FALSE}
+# importamos tidyverse
+library(tidyverse)
+
+# leer los datos 
+df <- read_csv(file = "https://www.gstatic.com/covid19/mobility/Global_Mobility_Report.csv?cachebust=722f3143b586a83f")
+
+# transformar los datos
+df <- df %>% 
+  filter(country_region_code == "AR") %>% 
+  select(-c(country_region_code, sub_region_2)) %>% 
+  pivot_longer(-c(country_region, sub_region_1, date), 
+               names_to = "type", 
+               values_to = "values") %>% 
+  mutate(sub_region_1 = sub("Buenos Aires$", "CABA", sub_region_1)) %>% 
+  mutate(sub_region_1 = sub("* Province", "", sub_region_1)) %>%
+  mutate(sub_region_1 = replace_na(sub_region_1, "Todas las provincias")) %>% 
+  mutate(type = sub("_percent_change_from_baseline$", "", type))
+```
+
+# Gŕaficos   
+
+Veamos algunos gráficos, por ejemplo, para la provincia de San Juan.    
+
+```{r, echo = FALSE, message = FALSE, warning = FALSE}
+# importamos plotly
+library(plotly)
+
+# grafico para la provincia de San Juan
+p1 <- df %>% 
+  filter(sub_region_1 == "San Juan") %>% 
+  ggplot(aes(x = date, y = values, color = type)) +
+  geom_line() +
+  scale_x_date(date_breaks = "4 days", 
+               date_labels = "%a, %d-%b") +
+  labs(
+    title = paste("Mostrando datos de San Juan"),
+    color = "Tipo",
+    y = "% de cambio respecto a la linea base",
+    x = "Fecha"
+    ) +
+  theme_bw() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+# grafico animado usando plotly
+ggplotly(p1)
+```
+
+Observamos que desde el 15 de febrero (cuando comienzan los datos) hasta el 19 de marzo (cuando comenzó la cuarentena en Argentina) los índices de movilidad para las diferentes categorías se mantienen aproximadamente constantes y cercanos a cero. Es decir, no hay grandes cambios respecto de la línea base (recordemos que el eje de ordenadas mide porcentaje **de cambio**).    
+
+Hay una excepción a lo anterior: los días 24 y 25 de febrero, que fueron los feriados de carnaval. A partir del 19 de marzo, los índices bajan fuertemente con excepción del índice para lugares residenciales.         
+
+Pero veamos en detalle el periodo comprendido entre el 7 de marzo y el 1 de abril.  
+
+```{r, echo=FALSE}
+# grafico para la provincia de San Juan
+p2 <- df %>% 
+  filter(sub_region_1 == "San Juan" & 
+           date >= "2020-03-07" & 
+           date <= "2020-04-01") %>% 
+  ggplot(aes(x = date, y = values, color = type)) +
+  geom_line() +
+  scale_x_date(date_breaks = "4 days", 
+               date_labels = "%a, %d-%b") +
+  labs(
+    title = paste("Mostrando datos de San Juan"),
+    color = "Tipo",
+    y = "% de cambio respecto a la linea base",
+    x = "Fecha"
+    ) +
+  theme_bw() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  geom_vline(xintercept = as.numeric(df$date[199]),
+             linetype = "dashed")
+
+# grafico animado usando plotly
+ggplotly(p2)
+```
+
+Aquí vemos que los índices comenzaron a disminuir **antes** que se decretara la cuarentena. Aproximadamente desde el 15 de marzo comienzan a bajar de forma sostenida. Es decir, una semana antes las personas comenzaron a tomar sus precauciones y a disminuir el uso de transporte público o las salidas a restaurantes, por ejemplo.   
+
+
+# Conclusion   
+
+Aunque simples, estos gráficos dan una rápida idea del fenómeno y disparan muchas preguntas que merecen ser analizadas con más detenimiento.   
+
+Citando a John Tukey:
+
+>> "The simple graph has brought more information to the data analyst's mind than any other device"
+
+Estos gráficos dentro de una shiny app brindan una poderosa herramienta para explorar los datos en forma interactiva. Por ejemplo, ¿qué pasó para estas mismas fechas en Córdoba o en Chaco?. 
+
+Otras ventajas de hacer una shiny app: 
+
+* **Aceptan varios usuario en simultáneo**. Nunca más preguntarle a tu compañero _"che cerraste el archivo que necesito ver una cosa?"_    
+
+* **No hay que pagar licencias**. Y si necesitás que la app sea privada, podés montar tu propio servidor de shiny (de nuevo, sin pagar licencia). Para leer más sobre cómo montar tu servidor, [click aquí](https://canovasjm.netlify.app/2020/01/08/deploy-you-own-shiny-server-on-azure/).    
+
+Pueden ver la shiny app [aquí](https://canovasjm.shinyapps.io/covid-19-argentina/) y el código en [GitHub](https://github.com/canovasjm/covid-19)   
+
+
+
+
