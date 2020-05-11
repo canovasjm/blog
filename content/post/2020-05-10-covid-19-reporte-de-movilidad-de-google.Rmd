@@ -77,7 +77,7 @@ df <- df %>%
            sub("_percent_change_from_baseline$", "", type))
 ```
 
-# Gŕaficos   
+# Gráficos   
 
 Veamos algunos gráficos, por ejemplo, para la provincia de San Juan (se puede mostrar solo la línea de una categoría haciendo doble click sobre el nombre de la categoría deseada en la leyenda).    
 
@@ -155,7 +155,7 @@ Otras ventajas de hacer una shiny app:
 
 * **No hay que pagar licencias**. Y si necesitás que la app sea privada, podés montar tu propio servidor de shiny (de nuevo, sin pagar licencia). Para leer más sobre cómo montar tu servidor, [click aquí](https://canovasjm.netlify.app/2020/01/08/deploy-you-own-shiny-server-on-azure/).    
 
-Pueden ver la shiny app [aquí](https://canovasjm.shinyapps.io/covid-19-argentina/) y el código en [GitHub](https://github.com/canovasjm/covid-19)   
+Pueden ver la shiny app [aquí](https://canovasjm.shinyapps.io/covid-19-argentina/) y el código en [GitHub](https://github.com/canovasjm/covid-19).   
 
 
 
