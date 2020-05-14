@@ -130,7 +130,21 @@ p2 <- df %>%
   theme_bw() +
   theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
   geom_vline(xintercept = as.numeric(df$date[199]),
-             linetype = "dashed")
+             linetype = "dashed") +
+  annotate(
+    geom = "text", 
+    x = as.Date("2020-03-24"), 
+    y = 15, 
+    label = "Comienzo de \n la cuarentena")
+  # al momento de escribir este post, funciona en ggplot pero no en ggplotly()
+  # annotate(
+  #   geom = "curve", 
+  #   x = as.Date("2020-03-21"), 
+  #   y = 15, 
+  #   xend = as.Date("2020-03-19"), 
+  #   yend = 6, 
+  #   curvature = -.3, 
+  #   arrow = arrow(length = unit(2, "mm")))
 
 # grafico animado usando plotly
 ggplotly(p2)
