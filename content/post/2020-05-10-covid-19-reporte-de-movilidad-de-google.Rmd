@@ -13,7 +13,8 @@ output:
 
 # Introducción  
 
-Hola! Durante esta pasada semana encontré [este](https://www.google.com/covid19/mobility/) data set de Google sobre la movilidad en tiempos del COVID-19. Me pareció muy interesante y decidí crear una shiny app [(link aquí)](https://canovasjm.shinyapps.io/covid-19-argentina/) para explorarlo en forma interactiva.   
+Hola! Durante esta pasada semana encontré [este](https://www.google.com/covid19/mobility/) data set de Google sobre la movilidad en tiempos del COVID-19. Me pareció muy interesante y decidí crear una shiny app para explorarlo en forma interactiva.  
+Link aquí: https://canovasjm.shinyapps.io/covid-19-argentina/
 
 <img src=/img/COVID-19_google/01.gif width="750"  />
 
