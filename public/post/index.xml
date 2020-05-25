@@ -6,10 +6,19 @@
     <description>Recent content in Posts on JM</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sun, 10 May 2020 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Mon, 25 May 2020 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="/post/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Establecimientos educativos en Argentina</title>
+      <link>/2020/05/25/establecimientos-educativos-en-argentina/</link>
+      <pubDate>Mon, 25 May 2020 00:00:00 +0000</pubDate>
+      
+      <guid>/2020/05/25/establecimientos-educativos-en-argentina/</guid>
+      <description>1 Introducción 2 Mapa 3 Geolocalización 4 Contribuir 4.1 Encontrar una escuela mal geolocalizada 4.2 Ir a Google Maps 4.3 Click derecho: ¿Qué hay aquí? 4.4 Buscar el repositorio 4.5 Ir a correcciones 4.6 Editar el archivo  5 Conclusión 6 Links útiles   1 Introducción ¿Cuántos establecimientos educativos hay en Argentina? De acuerdo al Padrón Oficial de Establecimientos Educativos hay 63390, de gestión estatal y privada. Esto incluye escuelas, institutos, centros de capacitación, etc.</description>
+    </item>
     
     <item>
       <title>COVID-19 reporte de movilidad de Google</title>

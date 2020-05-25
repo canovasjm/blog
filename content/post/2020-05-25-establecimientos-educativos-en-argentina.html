@@ -1,0 +1,118 @@
+---
+title: Establecimientos educativos en Argentina
+author: 'Juan Manuel Canovas'
+date: '2020-05-25'
+slug: establecimientos-educativos-en-argentina
+categories: []
+tags: []
+output:
+  blogdown::html_page:
+    number_sections: true
+    toc: true
+---
+
+
+<div id="TOC">
+<ul>
+<li><a href="#introducción"><span class="toc-section-number">1</span> Introducción</a></li>
+<li><a href="#mapa"><span class="toc-section-number">2</span> Mapa</a></li>
+<li><a href="#geolocalización"><span class="toc-section-number">3</span> Geolocalización</a></li>
+<li><a href="#contribuir"><span class="toc-section-number">4</span> Contribuir</a><ul>
+<li><a href="#encontrar-una-escuela-mal-geolocalizada"><span class="toc-section-number">4.1</span> Encontrar una escuela mal geolocalizada</a></li>
+<li><a href="#ir-a-google-maps"><span class="toc-section-number">4.2</span> Ir a Google Maps</a></li>
+<li><a href="#click-derecho-qué-hay-aquí"><span class="toc-section-number">4.3</span> Click derecho: ¿Qué hay aquí?</a></li>
+<li><a href="#buscar-el-repositorio"><span class="toc-section-number">4.4</span> Buscar el repositorio</a></li>
+<li><a href="#ir-a-correcciones"><span class="toc-section-number">4.5</span> Ir a correcciones</a></li>
+<li><a href="#editar-el-archivo"><span class="toc-section-number">4.6</span> Editar el archivo</a></li>
+</ul></li>
+<li><a href="#conclusión"><span class="toc-section-number">5</span> Conclusión</a></li>
+<li><a href="#links-útiles"><span class="toc-section-number">6</span> Links útiles</a></li>
+</ul>
+</div>
+
+<div id="introducción" class="section level1">
+<h1><span class="header-section-number">1</span> Introducción</h1>
+<p>¿Cuántos establecimientos educativos hay en Argentina? De acuerdo al <a href="https://www.argentina.gob.ar/educacion/planeamiento/info-estadistica/padron-establecimientos"><em>Padrón Oficial de Establecimientos Educativos</em></a> hay 63390, de gestión estatal y privada. Esto incluye escuelas, institutos, centros de capacitación, etc. <strong>pero no universidades</strong>.</p>
+<p>Me pareció interesante ver estos establecimientos en el mapa, y para ello utilicé la librería {leaflet}. El resultado final se puede ver en la siguiente shiny app: <a href="https://canovasjm.shinyapps.io/escuelas-argentina/" class="uri">https://canovasjm.shinyapps.io/escuelas-argentina/</a></p>
+</div>
+<div id="mapa" class="section level1">
+<h1><span class="header-section-number">2</span> Mapa</h1>
+<p>El mapa muestra los establecimientos geolocalizados y coloreados según la variable <strong>sector</strong> del dataset original: los de gestión estatal en rojo y los de gestión privada en azul. En la parte izquierda del mapa hay botones que permiten incluir o quitar cada uno de estos sectores.</p>
+<p>Los botones del panel izquierdo también permiten seleccionar el mapa base entre alguno de los siguientes: “Toner”, “Dark” y “OSM”.</p>
+<ul>
+<li><p><strong>Toner</strong>: es el mapa base por defecto con el que se carga la shiny app. Me gustó porque tiene poca información y fondo blanco, lo cual permite distinguir bien los puntos que estamos localizando.</p></li>
+<li><p><strong>Dark</strong>: al igual que el anterior tiene poca información de base. Quizás no es la mejor elección teniendo en cuenta los colores azul y rojo que elegí para los puntos, pero hay quienes gustan de estos mapas oscuros.</p></li>
+<li><p><strong>OSM</strong>: corresponde al mapa base de <a href="https://www.openstreetmap.org"><em>OpenStreetMaps</em></a>, y a diferencia de los anteriores tiene mucha información de base (nombres de negocios, paradas de colectivos, comisarías, etc). Esto puede ser una ventaja o desventaja: por un lado, es difícil ver los puntos que estamos graficando pero por otro lado permite verlos en contexto. Por ejemplo, dada una escuela poder ver qué hay cerca.</p></li>
+</ul>
+<p>Finalmente, al hacer click sobre cada punto se despliega una leyenda que contiene el nombre del establecimiento, la CUE, la localidad y la jurisdicción.</p>
+<p>La CUE es la <a href="https://www.buenosaires.gob.ar/calidadyequidadeducativa/estadistica/establecimientos-y-edificios/registro-de-establecimientos">Clave Única del Establecimiento</a> y sirve para la identificación de cada establecimiento en el sistema estadístico nacional, tal como el DNI sirve para la identidad de las personas. Es decir, todos los establecimientos educativos reconocidos en forma oficial tienen asignado un número de CUE.</p>
+</div>
+<div id="geolocalización" class="section level1">
+<h1><span class="header-section-number">3</span> Geolocalización</h1>
+<p>Al explorar el data set original se darán cuenta que las variables latitud y longitud, no existen. Para obtenerlas, usé la API de Google Maps a través de la función <code>geocode()</code> de la librería {ggmap}.</p>
+<p>Esta función permite obtener las coordenadas a partir de un texto con la dirección del lugar que se desea localizar. Tener en cuenta que para usarla necesitarán una key válida a la API.</p>
+<p>También notarán que hay errores en la geolocalización. Por ejemplo, hay escuelas que figuran fuera de Argentina.</p>
+</div>
+<div id="contribuir" class="section level1">
+<h1><span class="header-section-number">4</span> Contribuir</h1>
+<p>Una manera de contribuir a este proyecto es corrigiendo las coordenadas de aquellos establecimientos que están mal codificados. ¿Cómo? Abriendo un <em>pull request</em> en GitHub.</p>
+<p>Veamos más detalles siguiendo un ejemplo.</p>
+<div id="encontrar-una-escuela-mal-geolocalizada" class="section level2">
+<h2><span class="header-section-number">4.1</span> Encontrar una escuela mal geolocalizada</h2>
+<p>Ir a la shiny app en <a href="https://canovasjm.shinyapps.io/escuelas-argentina/" class="uri">https://canovasjm.shinyapps.io/escuelas-argentina/</a> y encontrar una escuela mal geolocalizada. Por ejemplo, la escuela Rosario V. Peñaloza figura en Australia pero en realidad corresponde a la localidad Presidente Sarmiento (Godoy Cruz) en Mendoza.</p>
+<p>Hacer click sobre el punto y copiar los datos (por ejemplo, en el block de notas), ya que los necesitaremos más adelante.</p>
+<p><img src=/img/escuelas_argentina/01.png width="750"  /></p>
+</div>
+<div id="ir-a-google-maps" class="section level2">
+<h2><span class="header-section-number">4.2</span> Ir a Google Maps</h2>
+<p>En <a href="https://www.google.com/maps/">Google Maps</a> buscamos por su nombre la escuela que deseamos corregir:</p>
+<p><img src=/img/escuelas_argentina/02.png width="750"  /></p>
+</div>
+<div id="click-derecho-qué-hay-aquí" class="section level2">
+<h2><span class="header-section-number">4.3</span> Click derecho: ¿Qué hay aquí?</h2>
+<p>Al hacer click derecho sobre el punto se abrirá el siguiente menú:</p>
+<p><img src=/img/escuelas_argentina/03.png width="750"  /></p>
+<p>Seleccionar <em>¿Qué hay aquí?</em> y mostrará el siguiente cuadro en la parte inferior de la pantalla:</p>
+<p><img src=/img/escuelas_argentina/04.png width="750"  /></p>
+<p>Hacer click sobre los números de este cuadro y se abrirá un panel en el costado izquierdo:</p>
+<p><img src=/img/escuelas_argentina/05.png width="750"  /></p>
+<p>Desde allí podremos copiar las coordenadas a nuestro block de notas, junto con los datos anteriores.</p>
+</div>
+<div id="buscar-el-repositorio" class="section level2">
+<h2><span class="header-section-number">4.4</span> Buscar el repositorio</h2>
+<p>Ir a <a href="https://github.com/">https://github.com/</a> y crear una cuenta o iniciar sesión si tenés una. Luego buscar en la parte superior izquierda de la pantalla el repositorio (es decir, “el lugar” donde está este proyecto almacenado) cuyo nombre es <code>canovasjm/escuelas</code></p>
+<p><img src=/img/escuelas_argentina/06.png width="750"  /></p>
+<p>Alternativamente, podés hacer click aquí: <a href="https://github.com/canovasjm/escuelas" class="uri">https://github.com/canovasjm/escuelas</a></p>
+</div>
+<div id="ir-a-correcciones" class="section level2">
+<h2><span class="header-section-number">4.5</span> Ir a correcciones</h2>
+<p>Entrar a la carpeta correcciones:</p>
+<p><img src=/img/escuelas_argentina/07.png width="750"  /></p>
+<p>Allí hacer click sobre el archivo <strong>correcciones.csv</strong>:</p>
+<p><img src=/img/escuelas_argentina/08.png width="750"  /></p>
+<p>Finalmente, hacer click en la lápiz de la parte superior derecha:</p>
+<p><img src=/img/escuelas_argentina/09.png width="750"  /></p>
+</div>
+<div id="editar-el-archivo" class="section level2">
+<h2><span class="header-section-number">4.6</span> Editar el archivo</h2>
+<p>Abajo del texto existente, pegar la CUE, la latitud y la longitud corregidas que obtuvimos antes (es importante el orden):</p>
+<p><img src=/img/escuelas_argentina/10.png width="750"  /></p>
+<p>En la parte inferior de la pantalla, completar los campos con una descripción de los cambios propuestos y seleccionar la opción “Create a new branch for this commit and start a pull request”. Luego dar click en el botón verde “Propose file change”</p>
+<p><img src=/img/escuelas_argentina/11.png width="750"  /></p>
+<p>El último paso nos permite editar el texto anterior y se ve así:</p>
+<p><img src=/img/escuelas_argentina/12.png width="750"  /></p>
+<p>Darle click al botón verde que dice “Create pull request”.</p>
+</div>
+</div>
+<div id="conclusión" class="section level1">
+<h1><span class="header-section-number">5</span> Conclusión</h1>
+<p>En este post comentamos el data set <em>Padrón Oficial de Establecimientos Educativos</em> y la shiny app que hice a partir de él. También vimos rápidamente cómo hacer un pull request en GitHub. Cualquier comentario sobre la shiny app y su funcionamiento es bienvenido!</p>
+<p>Además si alguien tiene o conoce algún data set con las coordendas de los establecimientos y su respectiva CUE, no duden en contactarme. Pueden dejar un comentario aquí o por DM en twitter a <a href="https://twitter.com/canovasjm">@canovasjm</a></p>
+<p>Los datos, los scripts utilizados y un README con más detalles están en el <a href="https://github.com/canovasjm/escuelas">repositorio de GitHub</a>.</p>
+<p>¡Muchas gracias por leer!</p>
+</div>
+<div id="links-útiles" class="section level1">
+<h1><span class="header-section-number">6</span> Links útiles</h1>
+<p><a href="https://www.argentina.gob.ar/educacion/planeamiento/info-estadistica/padron-establecimientos" class="uri">https://www.argentina.gob.ar/educacion/planeamiento/info-estadistica/padron-establecimientos</a></p>
+<p><a href="https://www.buenosaires.gob.ar/calidadyequidadeducativa/estadistica/establecimientos-y-edificios/registro-de-establecimientos" class="uri">https://www.buenosaires.gob.ar/calidadyequidadeducativa/estadistica/establecimientos-y-edificios/registro-de-establecimientos</a></p>
+</div>
