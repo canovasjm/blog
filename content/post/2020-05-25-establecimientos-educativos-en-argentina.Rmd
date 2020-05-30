@@ -91,7 +91,7 @@ Ir a [https://github.com/](https://github.com/) y crear una cuenta o iniciar ses
 
 <img src=/img/escuelas_argentina/06.png width="750"  />
 
-Alternativamente, podés hacer click aquí: https://github.com/canovasjm/escuelas   
+Alternativamente, podés ir directo haciendo click aquí: https://github.com/canovasjm/escuelas   
 
 
 ## Ir a correcciones
@@ -104,7 +104,7 @@ Allí hacer click sobre el archivo **correcciones.csv**:
 
 <img src=/img/escuelas_argentina/08.png width="750"  />
 
-Finalmente, hacer click en la lápiz de la parte superior derecha:
+Finalmente, hacer click en el lápiz de la parte superior derecha:
 
 <img src=/img/escuelas_argentina/09.png width="750"  />
 
