@@ -63,7 +63,7 @@ You can imagine what's next... it also integrates very well with Linux!. Below, 
 
 ### 3) Going cloud 
 
-Cloud computing is a reality, and if we are dealing with moderate to heavy analysis we should go cloud and do the heavy lift there. One of the main reasons for doing this is that we can scale up and down easily.     
+Cloud computing is a reality, and if we are dealing with moderate to heavy analyses we should go cloud and do the heavy lift there. One of the main reasons for doing this is that we can scale up and down easily.     
 
 <img src=/img/first_year_linux/04.jpg width="750"  />   
 
@@ -76,5 +76,3 @@ As a closing comment, of course you can do 1), 2), or 3) from Windows but not as
 
 
 I learned a lot this past year, and I'm eager to keep learning about the FOSS world!   
-
-
