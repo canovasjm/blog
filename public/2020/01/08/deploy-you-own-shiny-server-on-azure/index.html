@@ -67,7 +67,7 @@
 
   <article class="article">
     
-    <span class="article-duration">10 min read</span>
+    <span class="article-duration">11 min read</span>
     
 
     <h1 class="article-title">Deploy you own Shiny Server on Azure</h1>
@@ -165,7 +165,7 @@
 <ul>
 <li>on the first line we were on <code>jm@lenovo410</code> (namely, my laptop) where we executed a command,</li>
 <li>on the second line we introduced our server’s password,</li>
-<li>and in the third line we are in <code>juanmanuel@40.80.146.164</code> (namely, the server).</li>
+<li>and in the third line we are in <code>juanmanuel@40.80.146.164</code> (namely, the server a.k.a <code>juanmanuel@testing-vm</code>).</li>
 </ul>
 <p>From now on every command we run on the terminal is going to take effect in the server, <strong>not</strong> in our laptop.</p>
 </div>
@@ -204,10 +204,12 @@
 </div>
 <div id="download-and-install-shiny-server" class="section level2">
 <h2><span class="header-section-number">4.4</span> Download and install Shiny Server</h2>
-<p>Choose the right version for you here: <a href="https://rstudio.com/products/shiny/download-server/" class="uri">https://rstudio.com/products/shiny/download-server/</a> and copy the link. <code>wget</code> is a free utility for download of files from the web and we use it download Shiny server from RStudio’s website.</p>
+<p>Choose the right version for you here: <a href="https://rstudio.com/products/shiny/download-server/" class="uri">https://rstudio.com/products/shiny/download-server/</a> and copy the link.</p>
+<p><code>wget</code> is a free utility for download of files from the web and we use it download Shiny server from RStudio’s website. It may or may not be installed with you CentOS version, but if it’s missing you can install it by typing: <code>sudo yum install wget</code></p>
 <pre class="r"><code>wget https://download3.rstudio.org/centos6.3/x86_64/shiny-server-1.5.12.933-x86_64.rpm
 sudo yum install --nogpgcheck shiny-server-1.5.12.933-x86_64.rpm</code></pre>
 <p><img src=/img/shiny_azure/16.png width="800"  /></p>
+<p><strong>NOTE:</strong> Be sure to check the current version of Shiny Server in RStudio’s website, as the link in the code chunck above might be old.</p>
 </div>
 </div>
 <div id="enable-port-3838" class="section level1">
@@ -289,6 +291,7 @@ ls</code></pre>
 <li><p>The README file in Shiny server GitHub’s repository is pretty good: <a href="https://github.com/rstudio/shiny-server/blob/master/README.md" class="uri">https://github.com/rstudio/shiny-server/blob/master/README.md</a></p></li>
 <li><p>The documentation for Shiny server is a great one also: <a href="https://docs.rstudio.com/shiny-server/" class="uri">https://docs.rstudio.com/shiny-server/</a></p></li>
 <li><p>Dean Attali’s blog post: <a href="https://deanattali.com/2015/05/09/setup-rstudio-shiny-server-digital-ocean/" class="uri">https://deanattali.com/2015/05/09/setup-rstudio-shiny-server-digital-ocean/</a></p></li>
+<li><p>EDIT: You can find <a href="https://github.com/canovasjm/shiny_server">a shell script in my GitHub</a> that will take care of the steps detailed in 4). Remember to check in RStudio’s website if the current version of Shiny Server matches the one in the script. You will still need to configure port 3838 as it’s shown in 5)</p></li>
 </ul>
 </div>
 
