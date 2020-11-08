@@ -11,6 +11,8 @@ output:
     toc: true
 ---
 
+<link href="/rmarkdown-libs/anchor-sections/anchor-sections.css" rel="stylesheet" />
+<script src="/rmarkdown-libs/anchor-sections/anchor-sections.js"></script>
 
 <div id="TOC">
 <ul>
@@ -71,7 +73,7 @@ output:
 <p>The answer is through the Internet. Using our own laptops, we are going to <em>log in</em> into the server and take control of it. The steps below show you how to connect a local computer running Linux (i.e. your laptop) to our VM using the Linux terminal. As far as I know, the steps also work for Mac computers though I haven’t tried them by myself.</p>
 <div id="get-the-public-ip-of-your-vm" class="section level2">
 <h2><span class="header-section-number">3.1</span> Get the public IP of your VM</h2>
-<p>In order to log in, we will need the public IP. You can get that information and more by clicking on the VM’s name, so that you go to <code>Home &gt; Virtual Machines &gt; testing-vm</code>. Once there, Azure shows a summary for that VM. As long as the VM is <strong>Running</strong> it will have a public IP.</p>
+<p>In order to log in, we will need the public IP. You can get that information and more by clicking on the VM’s name here: <code>Home &gt; Virtual Machines &gt; testing-vm</code>. Once there, Azure shows a summary for that VM. As long as the VM is <strong>Running</strong> it will have a public IP.</p>
 <p><img src=/img/shiny_azure/9.png width="750"  /></p>
 <p>Then click <strong>Connect</strong> on the top left and a pane on the right of the screen will show up. From the there, copy the last line which in this case is <code>ssh juanmanuel@40.80.146.164</code></p>
 <p><img src=/img/shiny_azure/10.png width="750"  /></p>
@@ -138,7 +140,7 @@ output:
 <div id="download-and-install-shiny-server" class="section level2">
 <h2><span class="header-section-number">4.4</span> Download and install Shiny Server</h2>
 <p>Choose the right version for you here: <a href="https://rstudio.com/products/shiny/download-server/" class="uri">https://rstudio.com/products/shiny/download-server/</a> and copy the link.</p>
-<p><code>wget</code> is a free utility for download of files from the web and we use it download Shiny server from RStudio’s website. It may or may not be installed with you CentOS version, but if it’s missing you can install it by typing: <code>sudo yum install wget</code></p>
+<p><code>wget</code> is a free utility for download of files from the web and we use it to download Shiny server from RStudio’s website. It may or may not be installed with you CentOS version, but if it’s missing you can install it by typing: <code>sudo yum install wget</code></p>
 <pre class="r"><code>wget https://download3.rstudio.org/centos6.3/x86_64/shiny-server-1.5.12.933-x86_64.rpm
 sudo yum install --nogpgcheck shiny-server-1.5.12.933-x86_64.rpm</code></pre>
 <p><img src=/img/shiny_azure/16.png width="800"  /></p>
