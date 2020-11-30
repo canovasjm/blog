@@ -1,0 +1,196 @@
+---
+title: 'GitHub Actions: Run a python script on schedule and commit changes'
+author: ''
+date: '2020-11-29'
+slug: github-actions-run-a-python-script-on-schedule-and-commit-changes
+categories: []
+tags: []
+output:
+  blogdown::html_page:
+    number_sections: true
+    toc: true
+---
+
+<link href="index_files/anchor-sections/anchor-sections.css" rel="stylesheet" />
+<script src="index_files/anchor-sections/anchor-sections.js"></script>
+
+<div id="TOC">
+<ul>
+<li><a href="#introduction"><span class="toc-section-number">1</span> Introduction</a></li>
+<li><a href="#github-actions"><span class="toc-section-number">2</span> GitHub Actions</a></li>
+<li><a href="#im-a-data-scientist-not-a-devops"><span class="toc-section-number">3</span> I’m a Data Scientist, not a DevOps</a></li>
+<li><a href="#still-not-convinced-show-me-an-example"><span class="toc-section-number">4</span> Still not convinced, show me an example</a></li>
+<li><a href="#our-first-gh-action"><span class="toc-section-number">5</span> Our first GH Action</a></li>
+<li><a href="#dissecting-the-workflow"><span class="toc-section-number">6</span> Dissecting the workflow</a><ul>
+<li><a href="#part-1-name"><span class="toc-section-number">6.1</span> Part 1: <code>name</code></a></li>
+<li><a href="#part-2-on"><span class="toc-section-number">6.2</span> Part 2: <code>on</code></a></li>
+<li><a href="#part-3-jobs"><span class="toc-section-number">6.3</span> Part 3: <code>jobs</code></a></li>
+</ul></li>
+<li><a href="#part-3-the-details"><span class="toc-section-number">7</span> Part 3: the details</a><ul>
+<li><a href="#runs-on-ubuntu-latest"><span class="toc-section-number">7.1</span> <code>runs-on: ubuntu-latest</code></a></li>
+<li><a href="#steps"><span class="toc-section-number">7.2</span> <code>steps:</code></a><ul>
+<li><a href="#uses-actionscheckoutv2"><span class="toc-section-number">7.2.1</span> <code>uses: actions/checkout@v2</code></a></li>
+<li><a href="#uses-actionssetup-pythonv2"><span class="toc-section-number">7.2.2</span> <code>uses: actions/setup-python@v2</code></a></li>
+<li><a href="#run"><span class="toc-section-number">7.2.3</span> <code>run: |</code></a></li>
+<li><a href="#uses-ad-mgithub-push-actionv0.6.0"><span class="toc-section-number">7.2.4</span> <code>uses: ad-m/github-push-action@v0.6.0</code></a></li>
+</ul></li>
+</ul></li>
+<li><a href="#claim-your-badge"><span class="toc-section-number">8</span> Claim your badge</a></li>
+<li><a href="#where-to-go-next"><span class="toc-section-number">9</span> Where to go next</a></li>
+</ul>
+</div>
+
+<div id="introduction" class="section level1">
+<h1><span class="header-section-number">1</span> Introduction</h1>
+<p>If you are a GitHub user, you probably have seen those little images in the README of your favourite repositories. For example, let’s check <a href="https://github.com/pandas-dev/pandas">Pandas’</a>:</p>
+<p><img src=/img/github_actions/01.png width="750"  /></p>
+<p>But what are these images and what do they mean? In the first place, these images are called “badges” and they show the resulting status of different workflows. Most of these workflows are part of what is called CI/CD, short for <em>Continuous Integration</em> and <em>Continuous Deployment</em>, respectively.</p>
+<p>In CI/CD workflows DevOps and Software Engineers create “tests” for repositories where people collaborate coding. The aim of these tests is to check that new code does not break existing code. You can read more details about CI/CD here: <a href="https://docs.github.com/en/free-pro-team@latest/actions/guides/about-continuous-integration" class="uri">https://docs.github.com/en/free-pro-team@latest/actions/guides/about-continuous-integration</a></p>
+</div>
+<div id="github-actions" class="section level1">
+<h1><span class="header-section-number">2</span> GitHub Actions</h1>
+<p>GitHub actions is a tool to run these workflows and the best part is that is completely integrated to GitHub. Go to any of your repositories and look for the “Actions” tab:</p>
+<p><img src=/img/github_actions/02.png width="750"  /></p>
+<p>Also, GH Actions are free of charge up to a quota of 2000 minutes per user per month. That means that you can have several workflows, set up on different repositories, and the time they take to run should be less than 2000 minutes per month, to keep using it free of charge.</p>
+</div>
+<div id="im-a-data-scientist-not-a-devops" class="section level1">
+<h1><span class="header-section-number">3</span> I’m a Data Scientist, not a DevOps</h1>
+<blockquote>
+<p><em>Q: Hey! I’m a Data Scientist, not a DevOps nor a Software Engineer. Why should I care about this?</em></p>
+</blockquote>
+<p>There are many reasons, but the ones I found most powerful are:</p>
+<ul>
+<li>You can use GH Actions to run scripts on schedule, without worrying about setting up virtual machines on the cloud.<br />
+</li>
+<li>You can integrate the workflow to the repository seamlessly. That is, the workflows can read from and write to the repository where the code lives.<br />
+</li>
+<li>You have all the power <code>git</code> can offers: version control, collaboration, branches, diff, and more.</li>
+</ul>
+<p>IMHO GitHub Actions is a super tool to run ETL workflows.</p>
+</div>
+<div id="still-not-convinced-show-me-an-example" class="section level1">
+<h1><span class="header-section-number">4</span> Still not convinced, show me an example</h1>
+<p>To show you the power of GH Actions I made a scraper in python to scrape the daily updates on Covid-19 in San Juan Province, Argentina.</p>
+<p>The local government maintains a dashboard with the updates: <a href="https://sisanjuan.gob.ar/modulo-coronavirus" class="uri">https://sisanjuan.gob.ar/modulo-coronavirus</a></p>
+<p><img src=/img/github_actions/03.png width="750"  /></p>
+<p>The dashboard is updated everyday between 19:30 and 21:00 UTC-3. The problem is that it only shows daily updates, but there is no track of the historical data.</p>
+<p>To keep a record of all this data, I made python script that scrapes the dashboard and appends the results to a csv file. The resulting csv file is saved in folder <code>data/</code></p>
+<p>Everything is on the <a href="https://github.com/canovasjm/covid-19-san-juan">GitHub repository</a>: the <code>py</code> script, the data saved as a <code>csv</code> file, and the <code>yml</code> workflow.</p>
+</div>
+<div id="our-first-gh-action" class="section level1">
+<h1><span class="header-section-number">5</span> Our first GH Action</h1>
+<p>Everything is this section is taken from GH’s documentation: <a href="https://docs.github.com/en/free-pro-team@latest/actions/learn-github-actions/introduction-to-github-actions" class="uri">https://docs.github.com/en/free-pro-team@latest/actions/learn-github-actions/introduction-to-github-actions</a>.</p>
+<ol style="list-style-type: decimal">
+<li><p>To enable GH Actions on your repository you first need to create a directory called <code>.github/workflows</code></p></li>
+<li><p>In the <code>.github/workflows</code> directory, create a new file with the name you want for your workflow and the extension yml. For example, mine is: <code>scraper-sj-gobierno.yml</code></p></li>
+</ol>
+<p><img src=/img/github_actions/04.png width="750"  /></p>
+<p>For the sake of understanding this tutorial, go to the link above and read about the vocabulary related to GH Actions: event, jobs, actions, etc. The following image helps understanding how they relate to each other:</p>
+<p><img src=/img/github_actions/05.png width="350"  /></p>
+</div>
+<div id="dissecting-the-workflow" class="section level1">
+<h1><span class="header-section-number">6</span> Dissecting the workflow</h1>
+<p>All the magic happens in the yml file we saved to <code>.github/workflows</code>, i.e. in <code>scraper-sj-gobierno.yml</code>. Find below the complete code:</p>
+<pre class="yml"><code>name: scraper-san-juan-gobierno
+
+on:
+  schedule:
+    - cron: &#39;0 12 * * *&#39; # runs at 12:00 UTC everyday
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: checkout repo content
+        uses: actions/checkout@v2 # checkout the repository content to github runner
+
+      - name: setup python
+        uses: actions/setup-python@v2
+        with:
+          python-version: &#39;3.7.7&#39; # install the python version needed
+
+      - name: execute py script # run sj-gobierno.py to get the latest data
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          python sj-gobierno.py
+
+      - name: commit files
+        run: |
+          git config --local user.email &quot;action@github.com&quot;
+          git config --local user.name &quot;GitHub Action&quot;
+          git add -A
+          git commit -m &quot;update data&quot; -a
+
+      - name: push changes
+        uses: ad-m/github-push-action@v0.6.0
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: main  </code></pre>
+<p>As indentation shows, there 3 main parts to it which we will analyze in detail.</p>
+<div id="part-1-name" class="section level2">
+<h2><span class="header-section-number">6.1</span> Part 1: <code>name</code></h2>
+<p>Optional - The name of the workflow as it will appear in the Actions tab of the GitHub repository.</p>
+</div>
+<div id="part-2-on" class="section level2">
+<h2><span class="header-section-number">6.2</span> Part 2: <code>on</code></h2>
+<p>Specify the event that automatically triggers the workflow file. This example is scheduled using cron but you can also trigger the workflow based on other events, such as the <code>push</code> event, so that the jobs run every time someone pushes a change to the repository.</p>
+<p>If you plan to schedule a workflow, I recommend <a href="https://crontab.guru/">crontab.guru</a> to construct your cron expressions.</p>
+</div>
+<div id="part-3-jobs" class="section level2">
+<h2><span class="header-section-number">6.3</span> Part 3: <code>jobs</code></h2>
+<p>Groups together all the jobs that run in the yml workflow file. Full details in the following section.</p>
+<hr />
+</div>
+</div>
+<div id="part-3-the-details" class="section level1">
+<h1><span class="header-section-number">7</span> Part 3: the details</h1>
+<div id="runs-on-ubuntu-latest" class="section level2">
+<h2><span class="header-section-number">7.1</span> <code>runs-on: ubuntu-latest</code></h2>
+<p>Configures the job to run on an Ubuntu Linux runner. This means that the job will execute on a fresh virtual machine hosted by GitHub.</p>
+</div>
+<div id="steps" class="section level2">
+<h2><span class="header-section-number">7.2</span> <code>steps:</code></h2>
+<p>Groups together all the steps that run in the job. Each line nested under this section is a separate action.</p>
+<div id="uses-actionscheckoutv2" class="section level3">
+<h3><span class="header-section-number">7.2.1</span> <code>uses: actions/checkout@v2</code></h3>
+<p>The <code>uses</code> keyword tells the job to retrieve v2 of the community action named <code>actions/checkout@v2</code>. This is an action that checks out your repository and downloads it to the runner, allowing you to run actions against your code.<br />
+You must use the checkout action any time your workflow will run against the repository’s code or you are using an action defined in the repository.</p>
+</div>
+<div id="uses-actionssetup-pythonv2" class="section level3">
+<h3><span class="header-section-number">7.2.2</span> <code>uses: actions/setup-python@v2</code></h3>
+<p>The <code>uses</code> keyword tells the job to retrieve v2 of the community action named <code>actions/setup-python@v2</code>. This action installs python into the runner. Next, <code>python-version: '3.x'</code> installs the latest version of python 3 available, whereas <code>python-version: '3.7.7'</code> installs that specific version of python.</p>
+</div>
+<div id="run" class="section level3">
+<h3><span class="header-section-number">7.2.3</span> <code>run: |</code></h3>
+<p>We are not using any community action here. Note there are two calls to <code>run: |</code> , one is named <code>execute py script</code> and the other is named <code>commit files</code></p>
+<p>In the first, we are running python code in the runner. We first install <code>pip</code> and then the required libraries which are in the <code>requirements.txt</code> file. Finally, we run the python script that scrapes the website.</p>
+<p>In the second call to <code>run: |</code> , we are staging and commiting the changes.</p>
+</div>
+<div id="uses-ad-mgithub-push-actionv0.6.0" class="section level3">
+<h3><span class="header-section-number">7.2.4</span> <code>uses: ad-m/github-push-action@v0.6.0</code></h3>
+<p>We use an action from user <a href="https://github.com/ad-m/github-push-action">ad-m</a> to push the changes back to the repository.</p>
+</div>
+</div>
+</div>
+<div id="claim-your-badge" class="section level1">
+<h1><span class="header-section-number">8</span> Claim your badge</h1>
+<p>To show your badges you need to go to “Actions”, select the name of the workflow, click on the <span class="math inline">\(\cdots\)</span> menu and then click on “Create status badge”.</p>
+<p><img src=/img/github_actions/06.png width="750"  /></p>
+<p>This will pop up a window where you can “Copy status badge Markdown”</p>
+<p><img src=/img/github_actions/07.png width="450"  /></p>
+<p>Finally, edit your README.md file and paste the copied text on top:</p>
+<p><img src=/img/github_actions/08.png width="750"  /></p>
+<p>At first, the badge will be grey and showing the legend “no status”. After it has run successfully, it will change to green and “passing”.</p>
+<p><img src=/img/github_actions/09.png width="750"  /></p>
+</div>
+<div id="where-to-go-next" class="section level1">
+<h1><span class="header-section-number">9</span> Where to go next</h1>
+<ul>
+<li><p>You can also set up the workflow to only run on certain branches, paths, or tags. For syntax examples see: <a href="https://docs.github.com/en/free-pro-team@latest/actions/reference/workflow-syntax-for-github-actions#onpushpull_requestpaths" class="uri">https://docs.github.com/en/free-pro-team@latest/actions/reference/workflow-syntax-for-github-actions#onpushpull_requestpaths</a></p></li>
+<li><p>GitHub Actions documentation: <a href="https://docs.github.com/en/free-pro-team@latest/actions" class="uri">https://docs.github.com/en/free-pro-team@latest/actions</a></p></li>
+<li><p>GitHub Actions starter guide: <a href="https://docs.github.com/en/free-pro-team@latest/actions/learn-github-actions#creating-a-workflow-file" class="uri">https://docs.github.com/en/free-pro-team@latest/actions/learn-github-actions#creating-a-workflow-file</a></p></li>
+<li><p>Discussion about GH Actions on branches: <a href="https://stackoverflow.com/questions/63436541/github-action-workflow-schedule-not-working-on-non-default-branch" class="uri">https://stackoverflow.com/questions/63436541/github-action-workflow-schedule-not-working-on-non-default-branch</a></p></li>
+</ul>
+</div>
