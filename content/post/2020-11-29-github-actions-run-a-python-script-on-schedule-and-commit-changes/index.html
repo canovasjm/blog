@@ -58,7 +58,7 @@ output:
 <blockquote>
 <p><em>Q: Hey! I’m a Data Scientist, not a DevOps nor a Software Engineer. Why should I care about this?</em></p>
 </blockquote>
-<p>There are many reasons, but the ones I found most powerful are:</p>
+<p>There are many reasons, but the ones I find most powerful are:</p>
 <ul>
 <li>You can use GH Actions to run scripts on schedule, without worrying about setting up virtual machines on the cloud.<br />
 </li>
@@ -82,10 +82,11 @@ output:
 <p>Everything is this section is taken from GH’s documentation: <a href="https://docs.github.com/en/free-pro-team@latest/actions/learn-github-actions/introduction-to-github-actions" class="uri">https://docs.github.com/en/free-pro-team@latest/actions/learn-github-actions/introduction-to-github-actions</a>.</p>
 <ol style="list-style-type: decimal">
 <li><p>To enable GH Actions on your repository you first need to create a directory called <code>.github/workflows</code></p></li>
-<li><p>In the <code>.github/workflows</code> directory, create a new file with the name you want for your workflow and the extension yml. For example, mine is: <code>scraper-sj-gobierno.yml</code></p></li>
+<li><p>In the <code>.github/workflows</code> directory, create a new file with the name you want for your workflow and the extension <code>yml</code>. For example, mine is: <code>scraper-sj-gobierno.yml</code></p></li>
 </ol>
 <p><img src=/img/github_actions/04.png width="750"  /></p>
-<p>For the sake of understanding this tutorial, go to the link above and read about the vocabulary related to GH Actions: event, jobs, actions, etc. The following image helps understanding how they relate to each other:</p>
+<p>(Take into account that <code>yml</code> files are <a href="https://www.codeproject.com/Articles/1214409/Learn-YAML-in-five-minutes">indentation sensitive</a>)</p>
+<p>For the sake of understanding this tutorial, go to the GH documentation link above and read about the vocabulary related to GH Actions: event, jobs, actions, etc. The following image helps understanding how they relate to each other:</p>
 <p><img src=/img/github_actions/05.png width="350"  /></p>
 </div>
 <div id="dissecting-the-workflow" class="section level1">
@@ -128,7 +129,7 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           branch: main  </code></pre>
-<p>As indentation shows, there 3 main parts to it which we will analyze in detail.</p>
+<p>As indentation shows, there are 3 main parts to it which we will analyze in detail.</p>
 <div id="part-1-name" class="section level2">
 <h2><span class="header-section-number">6.1</span> Part 1: <code>name</code></h2>
 <p>Optional - The name of the workflow as it will appear in the Actions tab of the GitHub repository.</p>
@@ -171,6 +172,8 @@ You must use the checkout action any time your workflow will run against the rep
 <div id="uses-ad-mgithub-push-actionv0.6.0" class="section level3">
 <h3><span class="header-section-number">7.2.4</span> <code>uses: ad-m/github-push-action@v0.6.0</code></h3>
 <p>We use an action from user <a href="https://github.com/ad-m/github-push-action">ad-m</a> to push the changes back to the repository.</p>
+<p>Note that here there is a line showing <code>${{ secrets.GITHUB_TOKEN }}</code>. In GH terminology, this is called a “<a href="https://docs.github.com/en/free-pro-team@latest/actions/reference/encrypted-secrets">secret</a>”. Secrets are encrypted environment variables that allow you to store sensitive information, such as passwords or API keys. To access the secrets in your workflow you will need the dollar sign, the double curly braces, the word <code>secret</code> followed by a period and your secret’s name. Something like this: <code>${{ secrets.SECRET_NAME }}</code></p>
+<p>GitHub automatically creates a <code>GITHUB_TOKEN</code> secret to use in your workflow, so you don’t have to worry about creating this. The <code>GITHUB_TOKEN</code> secret allows us to authenticate ourselves (in this example is needed to push the changes).</p>
 </div>
 </div>
 </div>
@@ -191,6 +194,9 @@ You must use the checkout action any time your workflow will run against the rep
 <li><p>You can also set up the workflow to only run on certain branches, paths, or tags. For syntax examples see: <a href="https://docs.github.com/en/free-pro-team@latest/actions/reference/workflow-syntax-for-github-actions#onpushpull_requestpaths" class="uri">https://docs.github.com/en/free-pro-team@latest/actions/reference/workflow-syntax-for-github-actions#onpushpull_requestpaths</a></p></li>
 <li><p>GitHub Actions documentation: <a href="https://docs.github.com/en/free-pro-team@latest/actions" class="uri">https://docs.github.com/en/free-pro-team@latest/actions</a></p></li>
 <li><p>GitHub Actions starter guide: <a href="https://docs.github.com/en/free-pro-team@latest/actions/learn-github-actions#creating-a-workflow-file" class="uri">https://docs.github.com/en/free-pro-team@latest/actions/learn-github-actions#creating-a-workflow-file</a></p></li>
+<li><p>GitHub Actions cheatsheet: <a href="https://resources.github.com/whitepapers/GitHub-Actions-Cheat-sheet/" class="uri">https://resources.github.com/whitepapers/GitHub-Actions-Cheat-sheet/</a></p></li>
+<li><p>GitHub secrets: <a href="https://docs.github.com/en/free-pro-team@latest/actions/reference/encrypted-secrets" class="uri">https://docs.github.com/en/free-pro-team@latest/actions/reference/encrypted-secrets</a></p></li>
+<li><p>YAML syntax: <a href="https://www.codeproject.com/Articles/1214409/Learn-YAML-in-five-minutes" class="uri">https://www.codeproject.com/Articles/1214409/Learn-YAML-in-five-minutes</a></p></li>
 <li><p>Discussion about GH Actions on branches: <a href="https://stackoverflow.com/questions/63436541/github-action-workflow-schedule-not-working-on-non-default-branch" class="uri">https://stackoverflow.com/questions/63436541/github-action-workflow-schedule-not-working-on-non-default-branch</a></p></li>
 </ul>
 </div>

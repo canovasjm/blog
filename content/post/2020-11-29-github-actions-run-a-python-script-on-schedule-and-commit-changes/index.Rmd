@@ -34,7 +34,7 @@ Also, GH Actions are free of charge up to a quota of 2000 minutes per user per m
 
 > *Q: Hey! I'm a Data Scientist, not a DevOps nor a Software Engineer. Why should I care about this?*
 
-There are many reasons, but the ones I found most powerful are:   
+There are many reasons, but the ones I find most powerful are:   
 
 * You can use GH Actions to run scripts on schedule, without worrying about setting up virtual machines on the cloud.  
 * You can integrate the workflow to the repository seamlessly. That is, the workflows can read from and write to the repository where the code lives.    
@@ -62,11 +62,13 @@ Everything is this section is taken from GH's documentation: https://docs.github
 
 1) To enable GH Actions on your repository you first need to create a directory called `.github/workflows`  
 
-2) In the `.github/workflows` directory, create a new file with the name you want for your workflow and the extension yml. For example, mine is: `scraper-sj-gobierno.yml`
+2) In the `.github/workflows` directory, create a new file with the name you want for your workflow and the extension `yml`. For example, mine is: `scraper-sj-gobierno.yml`  
 
 <img src=/img/github_actions/04.png width="750"  />  
 
-For the sake of understanding this tutorial, go to the link above and read about the vocabulary related to GH Actions: event, jobs, actions, etc. The following image helps understanding how they relate to each other:  
+(Take into account that `yml` files are [indentation sensitive](https://www.codeproject.com/Articles/1214409/Learn-YAML-in-five-minutes))  
+
+For the sake of understanding this tutorial, go to the GH documentation link above and read about the vocabulary related to GH Actions: event, jobs, actions, etc. The following image helps understanding how they relate to each other:  
 
 <img src=/img/github_actions/05.png width="350"  />  
 
@@ -114,7 +116,7 @@ jobs:
           branch: main  
 ```
 
-As indentation shows, there 3 main parts to it which we will analyze in detail.
+As indentation shows, there are 3 main parts to it which we will analyze in detail.
 
 ## Part 1: `name`  
 
@@ -163,6 +165,10 @@ In the second call to `run: |` , we are staging and commiting the changes.
 
 We use an action from user [ad-m](https://github.com/ad-m/github-push-action) to push the changes back to the repository.  
 
+Note that here there is a line showing `${{ secrets.GITHUB_TOKEN }}`. In GH terminology, this is called a "[secret](https://docs.github.com/en/free-pro-team@latest/actions/reference/encrypted-secrets)". Secrets are encrypted environment variables that allow you to store sensitive information, such as passwords or API keys. To access the secrets in your workflow you will need the dollar sign, the double curly braces, the word `secret` followed by a period and your secret's name. Something like this: `${{ secrets.SECRET_NAME }}`  
+
+GitHub automatically creates a `GITHUB_TOKEN` secret to use in your workflow, so you don't have to worry about creating this. The `GITHUB_TOKEN` secret allows us to authenticate ourselves (in this example is needed to push the changes).    
+
 # Claim your badge  
 
 To show your badges you need to go to "Actions", select the name of the workflow, click on the $\cdots$ menu and then click on "Create status badge". 
@@ -188,6 +194,12 @@ At first, the badge will be grey and showing the legend "no status". After it ha
 * GitHub Actions documentation: https://docs.github.com/en/free-pro-team@latest/actions    
 
 * GitHub Actions starter guide: https://docs.github.com/en/free-pro-team@latest/actions/learn-github-actions#creating-a-workflow-file   
+
+* GitHub Actions cheatsheet: https://resources.github.com/whitepapers/GitHub-Actions-Cheat-sheet/   
+
+* GitHub secrets: https://docs.github.com/en/free-pro-team@latest/actions/reference/encrypted-secrets
+
+* YAML syntax: https://www.codeproject.com/Articles/1214409/Learn-YAML-in-five-minutes  
 
 * Discussion about GH Actions on branches: https://stackoverflow.com/questions/63436541/github-action-workflow-schedule-not-working-on-non-default-branch    
 
