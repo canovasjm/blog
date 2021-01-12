@@ -1,0 +1,155 @@
+---
+title: GitHub Secrets from Python and R
+author: ''
+date: '2021-01-12'
+slug: github-secrets-from-python-and-r
+categories: []
+tags: []
+output:
+  blogdown::html_page:
+    number_sections: true
+    toc: true
+---
+
+<script src="index_files/header-attrs/header-attrs.js"></script>
+<link href="index_files/anchor-sections/anchor-sections.css" rel="stylesheet" />
+<script src="index_files/anchor-sections/anchor-sections.js"></script>
+
+<div id="TOC">
+<ul>
+<li><a href="#introduction"><span class="toc-section-number">1</span> Introduction</a></li>
+<li><a href="#setting-the-problem"><span class="toc-section-number">2</span> Setting the problem</a></li>
+<li><a href="#locally-environment-variables"><span class="toc-section-number">3</span> Locally: Environment variables</a></li>
+<li><a href="#read-environment-variables"><span class="toc-section-number">4</span> Read environment variables</a>
+<ul>
+<li><a href="#read-into-python-script"><span class="toc-section-number">4.1</span> Read into python script</a></li>
+<li><a href="#read-into-r-script"><span class="toc-section-number">4.2</span> Read into R script</a></li>
+</ul></li>
+<li><a href="#on-github-secrets"><span class="toc-section-number">5</span> On GitHub: Secrets</a>
+<ul>
+<li><a href="#create-github-secrets"><span class="toc-section-number">5.1</span> Create GitHub secrets</a></li>
+<li><a href="#use-github-secrets-in-a-workflow"><span class="toc-section-number">5.2</span> Use GitHub secrets in a workflow</a></li>
+</ul></li>
+<li><a href="#miscellaneous"><span class="toc-section-number">6</span> Miscellaneous</a></li>
+<li><a href="#references"><span class="toc-section-number">7</span> References</a></li>
+</ul>
+</div>
+
+<div id="introduction" class="section level1" number="1">
+<h1><span class="header-section-number">1</span> Introduction</h1>
+<p>Hardcoding sensitive information (passwords, API keys, etc) in your scripts is a bad idea. Why? It’s unsafe and it kills collaboration, to name a few. Sharing your scripts with your colleagues (or with the community) means exposing your sensitive information.</p>
+<p>One way to deal with this problem is by means of environment variables… but what if my code is on GitHub and it requires this sensitive information to run some workflows? Then GitHub Secrets gets you covered.</p>
+<p><em>In this post I assume you are familiar with GitHub Actions and its terminology. If not, I recommend you to learn about them before diving in. I explained most of these with greater detail here: <a href="https://canovasjm.netlify.app/2020/11/29/github-actions-run-a-python-script-on-schedule-and-commit-changes/" class="uri">https://canovasjm.netlify.app/2020/11/29/github-actions-run-a-python-script-on-schedule-and-commit-changes/</a></em></p>
+</div>
+<div id="setting-the-problem" class="section level1" number="2">
+<h1><span class="header-section-number">2</span> Setting the problem</h1>
+<p>I think the best way to explain this is by developing an example: we are going to send an email using Python and R. In both scripts, we will need to authenticate with the email account and its password.</p>
+</div>
+<div id="locally-environment-variables" class="section level1" number="3">
+<h1><span class="header-section-number">3</span> Locally: Environment variables</h1>
+<p>Environment variables are a way to store sensitive information. As other variables, they have a name and an associated value. The names of the variables are case-sensitive and, by convention, environment variables should have UPPER CASE names.</p>
+<p><a href="https://www.youtube.com/watch?v=5iWhQWVXosU">Corey Schafer</a> has an excellent video on how to set environment variables on macOS, where he sets the environment variables in <code>.bash_profile</code>. In other <a href="https://youtu.be/jowCUo_UGts">Unix-alike systems</a> you might not have that file; instead you can set the environment variables in <code>.profile</code>.</p>
+<p>Either of these files are in <code>/home/your-user</code>. For more details about the differences between <code>.bash_profile</code> and <code>.profile</code> read <a href="https://superuser.com/questions/171035/profile-or-bash-profile">here</a>.</p>
+<p>Regardless of where you set the variables, the process is the same: you need to use the key word <code>export</code> + VARIABLE_NAME + equal sign <strong>with no spaces</strong> + VARIABLE_VALUE.</p>
+<pre class="shell"><code>export EMAIL_SENDER=&quot;sender.address@domain.com&quot;
+export EMAIL_PASSWORD=&quot;password.for.sender&quot;
+export EMAIL_RECIPIENT=&quot;recipient.address@domain.com&quot;</code></pre>
+<p>We set three environment variables here to use in our scripts: <code>EMAIL_SENDER</code>, <code>EMAIL_PASSWORD</code> and <code>EMAIL_RECIPIENT</code>.</p>
+</div>
+<div id="read-environment-variables" class="section level1" number="4">
+<h1><span class="header-section-number">4</span> Read environment variables</h1>
+<p>We’ve just set our environment variables. Now, we need to read them and, as you will see next, the process is very similar in Python and R.</p>
+<p>You can always check the full code on the <a href="https://github.com/canovasjm/gh-secrets">GitHub repository</a>, but the main lines to read the variables into our scripts are:</p>
+<div id="read-into-python-script" class="section level2" number="4.1">
+<h2><span class="header-section-number">4.1</span> Read into python script</h2>
+<p>We’ll need the function <code>os.environ.get()</code> from module <code>os</code></p>
+<pre class="python"><code># required libraries
+import os
+
+# get emails and password from environment variables
+EMAIL_SENDER = os.environ.get(&quot;EMAIL_SENDER&quot;)
+EMAIL_PASSWORD = os.environ.get(&quot;EMAIL_PASSWORD&quot;)
+EMAIL_RECIPIENT = os.environ.get(&quot;EMAIL_RECIPIENT&quot;)</code></pre>
+</div>
+<div id="read-into-r-script" class="section level2" number="4.2">
+<h2><span class="header-section-number">4.2</span> Read into R script</h2>
+<p>We’ll need the function <code>Sys.getenv()</code>. This functions is from {base} package.</p>
+<pre class="r"><code># read environment variables 
+EMAIL_SENDER &lt;- Sys.getenv(&quot;EMAIL_SENDER&quot;)
+EMAIL_PASSWORD &lt;- Sys.getenv(&quot;EMAIL_PASSWORD&quot;)
+EMAIL_RECIPIENT &lt;- Sys.getenv(&quot;EMAIL_RECIPIENT&quot;)</code></pre>
+</div>
+</div>
+<div id="on-github-secrets" class="section level1" number="5">
+<h1><span class="header-section-number">5</span> On GitHub: Secrets</h1>
+<p>Let’s add an extra layer of complexity: suppose we have these scripts configured to run on a workflow with GitHub Actions. How to pass the “environment variables”, if the scripts are not running in our local environment?</p>
+<p>GitHub Secrets are the environment variables we learned before, but for our GitHub repositories. From <a href="https://docs.github.com/en/free-pro-team@latest/actions/reference/encrypted-secrets">GitHub Actions’ documentation</a>:</p>
+<blockquote>
+<blockquote>
+<p>“Secrets are encrypted environment variables that you create in an organization, repository, or repository environment. The secrets that you create are available to use in GitHub Actions workflows.”</p>
+</blockquote>
+</blockquote>
+<div id="create-github-secrets" class="section level2" number="5.1">
+<h2><span class="header-section-number">5.1</span> Create GitHub secrets</h2>
+<p>Go to your repository and click on “Settings”:</p>
+<p><img src=/img/github_secrets/01.png width="750"  /></p>
+<p>Next, click on “Secrets” and then “New repository secret”:</p>
+<p><img src=/img/github_secrets/02.png width="750"  /></p>
+</div>
+<div id="use-github-secrets-in-a-workflow" class="section level2" number="5.2">
+<h2><span class="header-section-number">5.2</span> Use GitHub secrets in a workflow</h2>
+<p>In order to use the secrets in our scripts we first need to call them with <code>env:</code> inside the workflow’s <code>.yaml</code> file. The syntax to call a secret is the following: <code>${{ secrets.SECRET_NAME }}</code></p>
+<ul>
+<li>In python workflow:</li>
+</ul>
+<pre class="yaml"><code>- name: execute py script # email-from-python.py
+        env: 
+          EMAIL_SENDER: ${{ secrets.EMAIL_SENDER }}
+          EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
+          EMAIL_RECIPIENT: ${{ secrets.EMAIL_RECIPIENT }}
+        run: python email-from-python.py</code></pre>
+<ul>
+<li>In R workflow:</li>
+</ul>
+<pre class="yaml"><code>- name: execute r script # email-from-r.R
+        env: 
+          EMAIL_SENDER: ${{ secrets.EMAIL_SENDER }}
+          EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
+          EMAIL_RECIPIENT: ${{ secrets.EMAIL_RECIPIENT }}
+        run: Rscript email-from-r.R</code></pre>
+</div>
+</div>
+<div id="miscellaneous" class="section level1" number="6">
+<h1><span class="header-section-number">6</span> Miscellaneous</h1>
+<p>The <code>.yaml</code> files for the two workflows are the following (you can get the code from the <a href="https://github.com/canovasjm/gh-secrets/tree/main/.github/workflows">repository</a>):</p>
+<ul>
+<li>In python workflow:</li>
+</ul>
+<p><img src=/img/github_secrets/03.png width="750"  /></p>
+<ul>
+<li>In R workflow:</li>
+</ul>
+<p><img src=/img/github_secrets/04.png width="750"  /></p>
+<p>You may have noticed that the workflow for the python script runs in <code>ubuntu-latest</code>, while the one for R runs in <code>macOS-latest</code>.</p>
+<p>The reason for this, quoting Jim Hester, is: <em>“The main advantage to using macOS for R is CRAN provides pre-compiled binaries for R packages on macOS, something they do not do for linux”.</em></p>
+<p>See the discussion here: <a href="https://github.com/actions/starter-workflows/pull/166#discussion_r474693777" class="uri">https://github.com/actions/starter-workflows/pull/166#discussion_r474693777</a></p>
+</div>
+<div id="references" class="section level1" number="7">
+<h1><span class="header-section-number">7</span> References</h1>
+<ul>
+<li><p>Environment variables and emails with Python:<br />
+<a href="https://www.youtube.com/watch?v=5iWhQWVXosU" class="uri">https://www.youtube.com/watch?v=5iWhQWVXosU</a></p></li>
+<li><p>Environment variables in Unix-alike systems:<br />
+<a href="https://linuxize.com/post/how-to-set-and-list-environment-variables-in-linux/" class="uri">https://linuxize.com/post/how-to-set-and-list-environment-variables-in-linux/</a></p></li>
+<li><p>Unix-alike systems:<br />
+<a href="https://youtu.be/jowCUo_UGts" class="uri">https://youtu.be/jowCUo_UGts</a></p></li>
+<li><p>About <code>.profile</code> and <code>.bash_profile</code>:<br />
+<a href="https://superuser.com/questions/171035/profile-or-bash-profile" class="uri">https://superuser.com/questions/171035/profile-or-bash-profile</a></p></li>
+<li><p>GitHub Secrets for authentication:<br />
+<a href="https://github.community/t/using-secrets-for-code-and-database-credentials/135875/12" class="uri">https://github.community/t/using-secrets-for-code-and-database-credentials/135875/12</a></p></li>
+<li><p>Gmail account configuration to send emails:<br />
+<a href="https://stackoverflow.com/a/65360635/10152848" class="uri">https://stackoverflow.com/a/65360635/10152848</a></p></li>
+<li><p>GitHub Actions for R:<br />
+<a href="https://www.jimhester.com/talk/2020-rsc-github-actions/" class="uri">https://www.jimhester.com/talk/2020-rsc-github-actions/</a></p></li>
+</ul>
+</div>
