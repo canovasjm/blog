@@ -95,20 +95,26 @@ jobs:
         uses: actions/setup-python@v2
         with:
           python-version: '3.7.7' # install the python version needed
-
-      - name: execute py script # run sj-gobierno.py to get the latest data
+          
+      - name: install python packages
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
-          python sj-gobierno.py
-
+          
+      - name: execute py script # run sj-gobierno.py to get the latest data
+        env: 
+          EMAIL_ADDRESS: ${{ secrets.EMAIL_ADDRESS }}
+          EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
+          EMAIL_RECIPIENT: ${{ secrets.EMAIL_RECIPIENT }}
+        run: python sj-gobierno.py
+          
       - name: commit files
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
           git add -A
           git commit -m "update data" -a
-
+          
       - name: push changes
         uses: ad-m/github-push-action@v0.6.0
         with:
@@ -136,6 +142,8 @@ Groups together all the jobs that run in the yml workflow file. Full details in 
 
 # Part 3: the details   
 
+**EDIT:** This section has been refactored because of some lines of code missing in the `.yml` file (see comments section to get more context). Now is fixed. Thanks Matt for the heads up! 
+
 ## `runs-on: ubuntu-latest`   
 
 Configures the job to run on an Ubuntu Linux runner. This means that the job will execute on a fresh virtual machine hosted by GitHub.   
@@ -144,30 +152,40 @@ Configures the job to run on an Ubuntu Linux runner. This means that the job wil
 
 Groups together all the steps that run in the job. Each line nested under this section is a separate action.  
 
-### `uses: actions/checkout@v2`  
+### `name: checkout repo content`  
 
 The `uses` keyword tells the job to retrieve v2 of the community action named `actions/checkout@v2`. This is an action that checks out your repository and downloads it to the runner, allowing you to run actions against your code.   
 You must use the checkout action any time your workflow will run against the repository's code or you are using an action defined in the repository. 
 
-### `uses: actions/setup-python@v2`  
+### `name: setup python`  
 
-The `uses` keyword tells the job to retrieve v2 of the community action named `actions/setup-python@v2`. This action installs python into the runner. Next, `python-version: '3.x'` installs the latest version of python 3 available, whereas `python-version: '3.7.7'` installs that specific version of python.
+The `uses` keyword tells the job to retrieve v2 of the community action named `actions/setup-python@v2`. This action installs python into the runner. You can choose either `python-version: '3.x'` which installs the latest version of python 3 available, or an specific version of python such as `python-version: '3.7.7'` 
 
-### `run: |`
+### `name: install python packages`
 
-We are not using any community action here. Note there are two calls to `run: |` , one is named `execute py script` and the other is named `commit files`   
+Using `run: |`, we run python code in the runner. We first install `pip` and then the required libraries which are in the `requirements.txt` file. 
 
-In the first, we are running python code in the runner. We first install `pip` and then the required libraries which are in the `requirements.txt` file. Finally, we run the python script that scrapes the website.
+### `name: execute py script`
 
-In the second call to `run: |` , we are staging and commiting the changes.
+Here we run the python script that scrapes the website. As opposed to the previous step, we don't need the `|` because now we call a single line of python code to run the script.
 
-### `uses: ad-m/github-push-action@v0.6.0`
+Additionally, here you see the `env:` keyword which is used to call "GitHub secrets". I will explain them later.
 
-We use an action from user [ad-m](https://github.com/ad-m/github-push-action) to push the changes back to the repository.  
+Even though the `pip install` step we run previously also runs python code, we called it in a separate step due to the principle of least privilege. You don't need access to the secrets to install the required libraries, so that goes in a separate step. Thanks to user [airtower-luna](https://github.community/t/using-secrets-for-code-and-database-credentials/135875/12?u=canovasjm) for warning me about this.
+
+### `name: commit files`
+
+Here we are staging and committing the changes.
+
+### `name: push changes`
+
+We use the action `github-push-action@v0.6.0` from user [ad-m](https://github.com/ad-m/github-push-action) to push the changes back to the repository.  
 
 Note that here there is a line showing `${{ secrets.GITHUB_TOKEN }}`. In GH terminology, this is called a "[secret](https://docs.github.com/en/free-pro-team@latest/actions/reference/encrypted-secrets)". Secrets are encrypted environment variables that allow you to store sensitive information, such as passwords or API keys. To access the secrets in your workflow you will need the dollar sign, the double curly braces, the word `secret` followed by a period and your secret's name. Something like this: `${{ secrets.SECRET_NAME }}`  
 
-GitHub automatically creates a `GITHUB_TOKEN` secret to use in your workflow, so you don't have to worry about creating this. The `GITHUB_TOKEN` secret allows us to authenticate ourselves (in this example is needed to push the changes).    
+GitHub automatically creates a `GITHUB_TOKEN` secret to use in your workflow, so you don't have to worry about creating this. The `GITHUB_TOKEN` secret allows us to authenticate ourselves (in this example is needed to push the changes).  
+
+On the other hand, the secrets `EMAIL_ADDRESS`, `EMAIL_PASSWORD` and `EMAIL_RECIPIENT` we used in a previous step are not created automatically and need to be set up. I recommend checking another blog post I wrote specifically on GitHub secrets to get full details on how to create yours: https://canovasjm.netlify.app/2021/01/12/github-secrets-from-python-and-r/
 
 # Claim your badge  
 
