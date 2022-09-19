@@ -1,0 +1,259 @@
+---
+title: Downsample time series in SQL
+author: ''
+date: '2022-09-18'
+slug: downsample-time-series-in-sql
+categories: []
+tags: []
+output:
+  blogdown::html_page:
+    number_sections: true
+    toc: true
+    highlight: tango
+---
+
+<style type="text/css">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {  background-color: #f8f8f8; }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ef2929; } /* Alert */
+code span.an { color: #8f5902; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #c4a000; } /* Attribute */
+code span.bn { color: #0000cf; } /* BaseN */
+code span.cf { color: #204a87; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4e9a06; } /* Char */
+code span.cn { color: #000000; } /* Constant */
+code span.co { color: #8f5902; font-style: italic; } /* Comment */
+code span.cv { color: #8f5902; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #8f5902; font-weight: bold; font-style: italic; } /* Documentation */
+code span.dt { color: #204a87; } /* DataType */
+code span.dv { color: #0000cf; } /* DecVal */
+code span.er { color: #a40000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #0000cf; } /* Float */
+code span.fu { color: #000000; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #204a87; font-weight: bold; } /* Keyword */
+code span.op { color: #ce5c00; font-weight: bold; } /* Operator */
+code span.ot { color: #8f5902; } /* Other */
+code span.pp { color: #8f5902; font-style: italic; } /* Preprocessor */
+code span.sc { color: #000000; } /* SpecialChar */
+code span.ss { color: #4e9a06; } /* SpecialString */
+code span.st { color: #4e9a06; } /* String */
+code span.va { color: #000000; } /* Variable */
+code span.vs { color: #4e9a06; } /* VerbatimString */
+code span.wa { color: #8f5902; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+<div id="TOC">
+<ul>
+<li><a href="#introduction" id="toc-introduction"><span class="toc-section-number">1</span> Introduction</a></li>
+<li><a href="#refreshers" id="toc-refreshers"><span class="toc-section-number">2</span> Refreshers</a></li>
+<li><a href="#example-context" id="toc-example-context"><span class="toc-section-number">3</span> Example context</a></li>
+<li><a href="#data-base-set-up" id="toc-data-base-set-up"><span class="toc-section-number">4</span> Data base set up</a></li>
+<li><a href="#create-table-and-insert-data" id="toc-create-table-and-insert-data"><span class="toc-section-number">5</span> <code>CREATE</code> table and <code>INSERT</code> data</a></li>
+<li><a href="#date_trunc-to-the-rescue" id="toc-date_trunc-to-the-rescue"><span class="toc-section-number">6</span> <code>date_trunc()</code> to the rescue</a></li>
+<li><a href="#downsampling" id="toc-downsampling"><span class="toc-section-number">7</span> Downsampling</a></li>
+<li><a href="#dissecting-our-cte" id="toc-dissecting-our-cte"><span class="toc-section-number">8</span> Dissecting our CTE</a></li>
+<li><a href="#conclusion" id="toc-conclusion"><span class="toc-section-number">9</span> Conclusion</a></li>
+<li><a href="#references" id="toc-references"><span class="toc-section-number">10</span> References</a></li>
+</ul>
+</div>
+
+<div id="introduction" class="section level1" number="1">
+<h1><span class="header-section-number">1</span> Introduction</h1>
+<p>I recently came across a problem known as <em>time series downsampling</em>. Having many observations at a certain time granularity level (second, minute, hour, etc.) the idea is to go one (or more) level up. That way, from a set of observations within a time frame, we want to select one observation and keep it.</p>
+<p>But how do we know which observation to keep? Should we keep the first observation in the set? Or the last one? Or maybe the average of all the observations? In order to do so, we will need an aggregate function.</p>
+</div>
+<div id="refreshers" class="section level1" number="2">
+<h1><span class="header-section-number">2</span> Refreshers</h1>
+<p>Let’s first recap some concepts:</p>
+<ul>
+<li><p>In mathematics, a <strong>time series</strong> is a series of data points indexed (or listed or graphed) in time order. Most commonly, a time series is a sequence taken at successive equally spaced points in time.</p></li>
+<li><p><strong>Downsampling</strong> referes to the process of changing the granularity of our data to a coarser grain, for example, changing from seconds to minutes.</p></li>
+<li><p>An <strong>aggregate function</strong> performs a calculation on a set of values, and returns a single value. Examples: <code>AVG()</code>, <code>MAX()</code>, <code>MIN()</code>, <code>COUNT()</code></p></li>
+</ul>
+<p><img src=/img/downsample_ts/01.png width="750"  /></p>
+<p>Using the definitions above, we want to downsample our time series using an aggregate function.</p>
+</div>
+<div id="example-context" class="section level1" number="3">
+<h1><span class="header-section-number">3</span> Example context</h1>
+<p>Suppose we collect temperature data on a machine up to the second granularity by means of a sensor. To add an extra layer of complexity, these measurements are taken at random intervals: some times we collect 25 observations per minute, others 42 observations, others 60, and so on.</p>
+<p>But for our business case keeping only the most recent observation is fine. Restating our problem: from the set of observations the sensor collects per minute, we want to keep only 1 (the most recent). Example:</p>
+<p><img src=/img/downsample_ts/02.png width="750"  /></p>
+</div>
+<div id="data-base-set-up" class="section level1" number="4">
+<h1><span class="header-section-number">4</span> Data base set up</h1>
+<p>In order to follow along with the example, we are going to spin up a Postgres SQL database within a docker container, load some data and downsample it. Please refer to the README in the repo here: <a href="https://github.com/canovasjm/sql-times" class="uri">https://github.com/canovasjm/sql-times</a></p>
+</div>
+<div id="create-table-and-insert-data" class="section level1" number="5">
+<h1><span class="header-section-number">5</span> <code>CREATE</code> table and <code>INSERT</code> data</h1>
+<p>Let’s create a table an insert some data.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">-- Example 1: data granularity is in seconds, we want</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="co">-- want to roll up to the minute</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co">-- drop the table if exists </span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="kw">DROP</span> <span class="kw">TABLE</span> <span class="cf">IF</span> <span class="kw">EXISTS</span> atable;</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="co">-- create the table</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="kw">CREATE</span> <span class="kw">TABLE</span> atable (</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>  sensor_id text,</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>  <span class="dt">time</span> <span class="dt">timestamp</span> <span class="kw">without</span> <span class="dt">time</span> <span class="dt">zone</span>,</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">value</span> <span class="dt">smallint</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>  );</span></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co">-- insert some sample data</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="kw">INSERT</span> <span class="kw">INTO</span> atable (sensor_id, <span class="dt">time</span>, <span class="fu">value</span>) </span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="kw">VALUES</span> (<span class="st">&#39;ABC&#39;</span>, <span class="st">&#39;2022-04-08 09:00:00&#39;</span>, <span class="dv">27</span>);</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="kw">INSERT</span> <span class="kw">INTO</span> atable (sensor_id, <span class="dt">time</span>, <span class="fu">value</span>) </span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="kw">VALUES</span> (<span class="st">&#39;ABC&#39;</span>, <span class="st">&#39;2022-04-08 09:00:01&#39;</span>, <span class="dv">30</span>);</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="kw">INSERT</span> <span class="kw">INTO</span> atable (sensor_id, <span class="dt">time</span>, <span class="fu">value</span>) </span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="kw">VALUES</span> (<span class="st">&#39;ABC&#39;</span>, <span class="st">&#39;2022-04-08 09:00:21&#39;</span>, <span class="dv">22</span>);</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a><span class="kw">INSERT</span> <span class="kw">INTO</span> atable (sensor_id, <span class="dt">time</span>, <span class="fu">value</span>) </span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a><span class="kw">VALUES</span> (<span class="st">&#39;ABC&#39;</span>, <span class="st">&#39;2022-04-08 09:01:14&#39;</span>, <span class="dv">31</span>);</span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a><span class="kw">INSERT</span> <span class="kw">INTO</span> atable (sensor_id, <span class="dt">time</span>, <span class="fu">value</span>) </span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a><span class="kw">VALUES</span> (<span class="st">&#39;ABC&#39;</span>, <span class="st">&#39;2022-04-08 09:01:21&#39;</span>, <span class="dv">28</span>);</span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a><span class="kw">INSERT</span> <span class="kw">INTO</span> atable (sensor_id, <span class="dt">time</span>, <span class="fu">value</span>) </span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a><span class="kw">VALUES</span> (<span class="st">&#39;ABC&#39;</span>, <span class="st">&#39;2022-04-08 09:01:38&#39;</span>, <span class="dv">35</span>);</span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a><span class="kw">INSERT</span> <span class="kw">INTO</span> atable (sensor_id, <span class="dt">time</span>, <span class="fu">value</span>) </span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a><span class="kw">VALUES</span> (<span class="st">&#39;ABC&#39;</span>, <span class="st">&#39;2022-04-08 09:02:07&#39;</span>, <span class="dv">33</span>);</span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a><span class="kw">INSERT</span> <span class="kw">INTO</span> atable (sensor_id, <span class="dt">time</span>, <span class="fu">value</span>) </span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a><span class="kw">VALUES</span> (<span class="st">&#39;ABC&#39;</span>, <span class="st">&#39;2022-04-08 09:02:11&#39;</span>, <span class="dv">19</span>);</span>
+<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a><span class="kw">INSERT</span> <span class="kw">INTO</span> atable (sensor_id, <span class="dt">time</span>, <span class="fu">value</span>) </span>
+<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a><span class="kw">VALUES</span> (<span class="st">&#39;ABC&#39;</span>, <span class="st">&#39;2022-04-08 09:02:56&#39;</span>, <span class="dv">25</span>);</span>
+<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a><span class="kw">INSERT</span> <span class="kw">INTO</span> atable (sensor_id, <span class="dt">time</span>, <span class="fu">value</span>) </span>
+<span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a><span class="kw">VALUES</span> (<span class="st">&#39;XYZ&#39;</span>, <span class="st">&#39;2022-04-08 09:00:00&#39;</span>, <span class="dv">26</span>);</span>
+<span id="cb2-31"><a href="#cb2-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-32"><a href="#cb2-32" aria-hidden="true" tabindex="-1"></a><span class="kw">INSERT</span> <span class="kw">INTO</span> atable (sensor_id, <span class="dt">time</span>, <span class="fu">value</span>) </span>
+<span id="cb2-33"><a href="#cb2-33" aria-hidden="true" tabindex="-1"></a><span class="kw">VALUES</span> (<span class="st">&#39;XYZ&#39;</span>, <span class="st">&#39;2022-04-08 09:00:25&#39;</span>, <span class="dv">37</span>);</span>
+<span id="cb2-34"><a href="#cb2-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-35"><a href="#cb2-35" aria-hidden="true" tabindex="-1"></a><span class="kw">INSERT</span> <span class="kw">INTO</span> atable (sensor_id, <span class="dt">time</span>, <span class="fu">value</span>) </span>
+<span id="cb2-36"><a href="#cb2-36" aria-hidden="true" tabindex="-1"></a><span class="kw">VALUES</span> (<span class="st">&#39;XYZ&#39;</span>, <span class="st">&#39;2022-04-08 09:00:47&#39;</span>, <span class="dv">29</span>);</span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co">-- check what we have in `atable` </span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="op">*</span> <span class="kw">FROM</span> atable;</span></code></pre></div>
+<p><img src=/img/downsample_ts/03.png width="750"  /></p>
+</div>
+<div id="date_trunc-to-the-rescue" class="section level1" number="6">
+<h1><span class="header-section-number">6</span> <code>date_trunc()</code> to the rescue</h1>
+<p>The code to downsample is provided by Andriy M in this Stack Overflow question: <a href="https://stackoverflow.com/questions/7335627/sampling-sql-timeseries" class="uri">https://stackoverflow.com/questions/7335627/sampling-sql-timeseries</a></p>
+<p>But this code will not work as is in Postgres, so I made a minor modification using a Postgres specific function: <code>date_trunc()</code>.</p>
+<p>More details about <code>date_trunc()</code> here: <a href="https://www.postgresql.org/docs/current/functions-datetime.html#FUNCTIONS-DATETIME-TRUNC" class="uri">https://www.postgresql.org/docs/current/functions-datetime.html#FUNCTIONS-DATETIME-TRUNC</a></p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co">-- see how date_trunc() works</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> </span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  sensor_id, </span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>  date_trunc(<span class="st">&#39;minute&#39;</span>, <span class="dt">time</span>) <span class="kw">AS</span> truncated_time, </span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">value</span> </span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> atable;</span></code></pre></div>
+<p><img src=/img/downsample_ts/04.png width="750"  /></p>
+<p>As we see above, <code>date_trunc()</code> is just truncating the seconds of the timestamps.</p>
+</div>
+<div id="downsampling" class="section level1" number="7">
+<h1><span class="header-section-number">7</span> Downsampling</h1>
+<p>Back to the answer from Andriy M in Stack Overflow, let’s run the code to downsample with our <code>date_trunc()</code> modification:</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co">-- query to get only the most recent </span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="co">-- data point within a minute</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>  t.<span class="op">*</span>  <span class="co">/* you might want to be more specific here */</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> atable t</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>  <span class="kw">INNER</span> <span class="kw">JOIN</span> (</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>    <span class="kw">SELECT</span></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>      sensor_id,</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>      <span class="fu">MAX</span>(<span class="dt">time</span>) <span class="kw">AS</span> <span class="dt">time</span></span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>    <span class="kw">FROM</span> atable</span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>    <span class="kw">GROUP</span> <span class="kw">BY</span> sensor_id, date_trunc(<span class="st">&#39;minute&#39;</span>, <span class="dt">time</span>)</span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>  ) m <span class="kw">ON</span> t.<span class="dt">time</span> <span class="op">=</span> m.<span class="dt">time</span> <span class="kw">AND</span> t.sensor_id <span class="op">=</span> m.sensor_id</span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a><span class="kw">ORDER</span> <span class="kw">BY</span> sensor_id, <span class="dt">time</span>; <span class="co">-- ORDER BY is optional</span></span></code></pre></div>
+<p>The code above can be rewritten more elegantly using a <a href="https://www.postgresql.org/docs/14/queries-with.html">CTE</a>, so here we go:</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co">-- query to get only the most recent </span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="co">-- data point within a minute, with CTE</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="kw">WITH</span> times_cte <span class="kw">AS</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>(</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>    <span class="kw">SELECT</span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>        sensor_id,</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>        <span class="fu">MAX</span>(<span class="dt">time</span>) <span class="kw">AS</span> <span class="dt">time</span></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>    <span class="kw">FROM</span> atable</span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>    <span class="kw">GROUP</span> <span class="kw">BY</span> sensor_id, date_trunc(<span class="st">&#39;minute&#39;</span>, <span class="dt">time</span>)</span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span></span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>  t.<span class="op">*</span>  <span class="co">/* you might want to be more specific here */</span></span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> atable t</span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>  <span class="kw">INNER</span> <span class="kw">JOIN</span> times_cte m </span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>    <span class="kw">ON</span> t.<span class="dt">time</span> <span class="op">=</span> m.<span class="dt">time</span> <span class="kw">AND</span> t.sensor_id <span class="op">=</span> m.sensor_id</span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a><span class="kw">ORDER</span> <span class="kw">BY</span> sensor_id, <span class="dt">time</span>;  <span class="co">-- ORDER BY is optional</span></span></code></pre></div>
+</div>
+<div id="dissecting-our-cte" class="section level1" number="8">
+<h1><span class="header-section-number">8</span> Dissecting our CTE</h1>
+<p>The query inside the <code>WITH</code> statement, i.e:</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>        sensor_id,</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>        <span class="fu">MAX</span>(<span class="dt">time</span>) <span class="kw">AS</span> <span class="dt">time</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> atable</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="kw">GROUP</span> <span class="kw">BY</span> sensor_id, date_trunc(<span class="st">&#39;minute&#39;</span>, <span class="dt">time</span>)</span></code></pre></div>
+<p>Gives the following result:</p>
+<p><img src=/img/downsample_ts/05.png width="750"  /></p>
+<p>As Andriy M explains in his <a href="https://stackoverflow.com/questions/7335627/sampling-sql-timeseries">answer</a>, the next step is to <em>join the obtained list back to the original table to pull the data for the obtained timestamps</em>.</p>
+<p><img src=/img/downsample_ts/06.png width="750"  /></p>
+<p>Next, the lines:</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="kw">INNER</span> <span class="kw">JOIN</span> times_cte m </span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  <span class="kw">ON</span> t.<span class="dt">time</span> <span class="op">=</span> m.<span class="dt">time</span> <span class="kw">AND</span> t.sensor_id <span class="op">=</span> m.sensor_id</span></code></pre></div>
+<p>will pull the information from the <code>value</code> column. Running the entire query:</p>
+<p><img src=/img/downsample_ts/07.png width="750"  /></p>
+<p>We can see the ‘value’ column now.</p>
+</div>
+<div id="conclusion" class="section level1" number="9">
+<h1><span class="header-section-number">9</span> Conclusion</h1>
+<p>In this post we covered how to downsample a time series using SQL and a very simple example.</p>
+<p>Do you know other ways to downsample time series? Please leave a comment and tell us more!</p>
+<p>Did you spot an error in the code or a typo? Feel free to leave a comment, raise in issue or open a PR on the GitHub <a href="https://github.com/canovasjm/sql-times">repo</a> :)</p>
+</div>
+<div id="references" class="section level1" number="10">
+<h1><span class="header-section-number">10</span> References</h1>
+<p>Downsampling code from Stack Overflow question:<br />
+<a href="https://stackoverflow.com/questions/7335627/sampling-sql-timeseries" class="uri">https://stackoverflow.com/questions/7335627/sampling-sql-timeseries</a></p>
+<p>Wikipedia on time series:<br />
+<a href="https://en.wikipedia.org/wiki/Time_series" class="uri">https://en.wikipedia.org/wiki/Time_series</a></p>
+<p>Course by Kevin Feasel on Data Camp:<br />
+<a href="https://campus.datacamp.com/courses/time-series-analysis-in-sql-server/aggregating-time-series-data?ex=8" class="uri">https://campus.datacamp.com/courses/time-series-analysis-in-sql-server/aggregating-time-series-data?ex=8</a></p>
+<p>Microsoft’s docs on aggregate functions:<br />
+<a href="https://docs.microsoft.com/en-us/sql/t-sql/functions/aggregate-functions-transact-sql?view=sql-server-ver16" class="uri">https://docs.microsoft.com/en-us/sql/t-sql/functions/aggregate-functions-transact-sql?view=sql-server-ver16</a></p>
+</div>
